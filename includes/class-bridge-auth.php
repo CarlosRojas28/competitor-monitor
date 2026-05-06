@@ -41,9 +41,9 @@ class WC_Competitor_Monitor_Bridge_Auth {
 			return self::dev_mode() ? $secret : '';
 		}
 
-		$iv  = random_bytes( 12 );
-		$tag = '';
-		$key = self::encryption_key();
+		$iv        = random_bytes( 12 );
+		$tag       = '';
+		$key       = self::encryption_key();
 		$encrypted = openssl_encrypt( $secret, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag );
 
 		if ( false === $encrypted ) {
@@ -114,7 +114,7 @@ class WC_Competitor_Monitor_Bridge_Auth {
 	/**
 	 * Verifies a signed inbound REST request from the SaaS.
 	 *
-	 * @param WP_REST_Request $request REST request.
+	 * @param WP_REST_Request     $request REST request.
 	 * @param array<string,mixed> $settings Plugin settings.
 	 * @return true|WP_Error
 	 */
@@ -153,8 +153,8 @@ class WC_Competitor_Monitor_Bridge_Auth {
 			return new WP_Error( 'cpsm_bridge_secret_missing', __( 'Pro bridge secret is not configured.', 'competitor-price-stock-monitor' ), array( 'status' => 401 ) );
 		}
 
-		$url      = rest_url( $request->get_route() );
-		$query    = $request->get_query_params();
+		$url   = rest_url( $request->get_route() );
+		$query = $request->get_query_params();
 		if ( ! empty( $query ) ) {
 			$url = add_query_arg( $query, $url );
 		}
@@ -272,4 +272,3 @@ class WC_Competitor_Monitor_Bridge_Auth {
 		return (string) base64_decode( strtr( $value, '-_', '+/' ) );
 	}
 }
-

@@ -264,7 +264,7 @@ class WC_Competitor_Monitor_Security {
 		$ips = array();
 
 		if ( function_exists( 'dns_get_record' ) ) {
-			$records = @dns_get_record( $host, DNS_A + DNS_AAAA );
+			$records = @dns_get_record( $host, DNS_A + DNS_AAAA ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- dns_get_record emits warnings on network failure; errors handled via is_array() check below
 			if ( is_array( $records ) ) {
 				foreach ( $records as $record ) {
 					if ( ! empty( $record['ip'] ) ) {

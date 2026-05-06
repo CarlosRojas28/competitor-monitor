@@ -41,8 +41,8 @@ class WC_Competitor_Monitor_Activator {
 			return;
 		}
 
-		$site_id = (string) ( $settings['pro_site_id'] ?? '' );
-		$key_id  = (string) ( $settings['pro_key_id'] ?? '' );
+		$site_id          = (string) ( $settings['pro_site_id'] ?? '' );
+		$key_id           = (string) ( $settings['pro_key_id'] ?? '' );
 		$secret_encrypted = (string) ( $settings['pro_plugin_to_saas_secret_encrypted'] ?? '' );
 
 		if ( '' === $site_id || '' === $key_id || '' === $secret_encrypted ) {
@@ -54,24 +54,29 @@ class WC_Competitor_Monitor_Activator {
 			return;
 		}
 
-		$body    = wp_json_encode( array(
-			'event'      => 'plugin.installed',
-			'version'    => WC_COMPETITOR_MONITOR_VERSION,
-			'php_version' => PHP_VERSION,
-			'wp_version'  => get_bloginfo( 'version' ),
-			'wc_version'  => defined( 'WC_VERSION' ) ? WC_VERSION : '',
-			'site_url'    => home_url( '/' ),
-		) );
-		$url     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
-		$headers = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
+		$body                    = wp_json_encode(
+			array(
+				'event'       => 'plugin.installed',
+				'version'     => WC_COMPETITOR_MONITOR_VERSION,
+				'php_version' => PHP_VERSION,
+				'wp_version'  => get_bloginfo( 'version' ),
+				'wc_version'  => defined( 'WC_VERSION' ) ? WC_VERSION : '',
+				'site_url'    => home_url( '/' ),
+			)
+		);
+		$url                     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
+		$headers                 = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
 		$headers['Content-Type'] = 'application/json';
 
-		wp_remote_post( $url, array(
-			'headers'   => $headers,
-			'body'      => $body,
-			'timeout'   => 5,
-			'blocking'  => false,
-		) );
+		wp_remote_post(
+			$url,
+			array(
+				'headers'  => $headers,
+				'body'     => $body,
+				'timeout'  => 5,
+				'blocking' => false,
+			)
+		);
 	}
 
 	/**

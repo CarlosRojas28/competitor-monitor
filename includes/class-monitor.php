@@ -59,10 +59,10 @@ class WC_Competitor_Monitor_Monitor {
 	/**
 	 * Constructor.
 	 *
-	 * @param WC_Competitor_Monitor_DB          $db Database layer.
-	 * @param WC_Competitor_Monitor_Crawler     $crawler Crawler.
-	 * @param WC_Competitor_Monitor_Parser      $parser Parser.
-	 * @param WC_Competitor_Monitor_Alerts      $alerts Alerts.
+	 * @param WC_Competitor_Monitor_DB              $db Database layer.
+	 * @param WC_Competitor_Monitor_Crawler         $crawler Crawler.
+	 * @param WC_Competitor_Monitor_Parser          $parser Parser.
+	 * @param WC_Competitor_Monitor_Alerts          $alerts Alerts.
 	 * @param WC_Competitor_Monitor_Recommendations $recommendations Recommendations.
 	 * @param WC_Competitor_Monitor_Pro_Client|null $pro_client Pro SaaS client.
 	 */
@@ -140,17 +140,17 @@ class WC_Competitor_Monitor_Monitor {
 	public function get_original_price_restore_status( int $product_id ): array {
 		$product_id = absint( $product_id );
 		$status     = array(
-			'pro_active'               => $this->pro_client && $this->pro_client->is_connected(),
-			'enabled'                  => false,
-			'has_original_price'       => false,
-			'current_price'            => null,
-			'original_price'           => null,
-			'lowest_competitor_price'  => null,
-			'lowest_competitor_name'   => '',
+			'pro_active'                => $this->pro_client && $this->pro_client->is_connected(),
+			'enabled'                   => false,
+			'has_original_price'        => false,
+			'current_price'             => null,
+			'original_price'            => null,
+			'lowest_competitor_price'   => null,
+			'lowest_competitor_name'    => '',
 			'competitive_restore_limit' => null,
-			'can_restore'              => false,
-			'reason'                   => 'not_checked',
-			'message'                  => '',
+			'can_restore'               => false,
+			'reason'                    => 'not_checked',
+			'message'                   => '',
 		);
 
 		if ( ! function_exists( 'wc_get_product' ) ) {
@@ -179,8 +179,8 @@ class WC_Competitor_Monitor_Monitor {
 			return $status;
 		}
 
-		$current_price  = $this->get_product_price( $product );
-		$original_price = $this->db->get_original_product_price( $product_id );
+		$current_price                = $this->get_product_price( $product );
+		$original_price               = $this->db->get_original_product_price( $product_id );
 		$status['current_price']      = $current_price;
 		$status['original_price']     = $original_price;
 		$status['has_original_price'] = null !== $original_price;
@@ -206,7 +206,7 @@ class WC_Competitor_Monitor_Monitor {
 
 		$lowest = $this->lowest_in_stock_competitor( $product_id );
 		if ( null !== $lowest ) {
-			$limit = round( max( 0, (float) $lowest['price'] - 0.01 ), wc_get_price_decimals() );
+			$limit                               = round( max( 0, (float) $lowest['price'] - 0.01 ), wc_get_price_decimals() );
 			$status['lowest_competitor_price']   = (float) $lowest['price'];
 			$status['lowest_competitor_name']    = (string) $lowest['competitor_name'];
 			$status['competitive_restore_limit'] = $limit;
@@ -302,14 +302,14 @@ class WC_Competitor_Monitor_Monitor {
 			'info',
 			__( 'Original customer price restored for a WooCommerce product.', 'competitor-price-stock-monitor' ),
 			array(
-				'product_id'          => $product_id,
-				'mapping_id'          => $mapping_id,
-				'user_id'             => absint( $user_id ),
-				'old_price'           => $old_price,
-				'restored_price'      => $original_price,
-				'baseline_price'      => $original_price,
-				'price_adjustment_id' => $adjustment_id,
-				'closed_adjustments'  => $closed_events,
+				'product_id'              => $product_id,
+				'mapping_id'              => $mapping_id,
+				'user_id'                 => absint( $user_id ),
+				'old_price'               => $old_price,
+				'restored_price'          => $original_price,
+				'baseline_price'          => $original_price,
+				'price_adjustment_id'     => $adjustment_id,
+				'closed_adjustments'      => $closed_events,
 				'lowest_competitor_price' => $status['lowest_competitor_price'],
 				'lowest_competitor_name'  => $status['lowest_competitor_name'],
 			)
@@ -438,7 +438,7 @@ class WC_Competitor_Monitor_Monitor {
 			absint( $mapping->id ),
 			null !== $competitor_price ? (float) $competitor_price : null,
 			$stock_status,
-			'' === sanitize_text_field( (string) ( $mapping->competitor_product_title ?? '' ) ) ? sanitize_text_field( (string) ( $parsed['title'] ?? '' ) ) : ''
+			'' === sanitize_text_field( (string) ( $mapping->competitor_product_title ?? '' ) ) ? sanitize_text_field( (string) ( $parsed['title'] ?? '' ) ) : '' // phpcs:ignore WordPress.PHP.YodaConditions.NotYoda -- condition IS Yoda; phpcs false positive on ternary
 		);
 		if ( '' === sanitize_text_field( (string) ( $mapping->competitor_product_title ?? '' ) ) && ! empty( $parsed['title'] ) ) {
 			$mapping->competitor_product_title = sanitize_text_field( (string) $parsed['title'] );
@@ -470,13 +470,13 @@ class WC_Competitor_Monitor_Monitor {
 		do_action( 'wc_competitor_monitor_mapping_changed', absint( $mapping->id ), 'check_completed' );
 
 		return array(
-			'success'          => true,
-			'price'            => $competitor_price,
-			'stock_status'     => $stock_status,
-			'difference'       => $diff_percentage,
-			'page_title'       => $parsed['title'] ?? '',
-			'raw_status'       => $raw_status,
-			'history_id'       => $history_id,
+			'success'               => true,
+			'price'                 => $competitor_price,
+			'stock_status'          => $stock_status,
+			'difference'            => $diff_percentage,
+			'page_title'            => $parsed['title'] ?? '',
+			'raw_status'            => $raw_status,
+			'history_id'            => $history_id,
 			'auto_price_adjustment' => $auto_adjustment,
 		);
 	}
@@ -484,8 +484,8 @@ class WC_Competitor_Monitor_Monitor {
 	/**
 	 * Checks a mapping through the Pro SaaS renderer.
 	 *
-	 * @param object     $mapping Mapping row.
-	 * @param WC_Product $product Product.
+	 * @param object              $mapping Mapping row.
+	 * @param WC_Product          $product Product.
 	 * @param array<string,mixed> $previous Previous values.
 	 * @return array<string,mixed>
 	 */
@@ -550,19 +550,19 @@ class WC_Competitor_Monitor_Monitor {
 		$this->db->update_mapping(
 			absint( $mapping->id ),
 			array(
-				'product_id'             => absint( $mapping->product_id ),
-				'competitor_name'        => sanitize_text_field( (string) ( $mapping->competitor_name ?: ( $suggestion['competitor_name'] ?? '' ) ) ),
-				'competitor_product_title' => '' !== $current_title ? $current_title : $suggested_title,
-				'competitor_url'         => esc_url_raw( (string) ( $suggestion['competitor_url'] ?? $mapping->competitor_url ) ),
-				'price_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $suggestion['price_selector'] ?? $mapping->price_selector ) ),
-				'stock_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $suggestion['stock_selector'] ?? $mapping->stock_selector ) ),
-				'browser_user_agent'     => (string) ( $mapping->browser_user_agent ?? '' ),
-				'browser_cookie_header'  => (string) ( $mapping->browser_cookie_header ?? '' ),
-				'currency'               => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $suggestion['currency'] ?? $mapping->currency ) ),
-				'min_margin_percentage'  => (float) $mapping->min_margin_percentage,
-				'suggested_increase_mode' => (string) ( $mapping->suggested_increase_mode ?? 'global' ),
+				'product_id'                    => absint( $mapping->product_id ),
+				'competitor_name'               => sanitize_text_field( (string) ( $mapping->competitor_name ?: ( $suggestion['competitor_name'] ?? '' ) ) ),
+				'competitor_product_title'      => '' !== $current_title ? $current_title : $suggested_title,
+				'competitor_url'                => esc_url_raw( (string) ( $suggestion['competitor_url'] ?? $mapping->competitor_url ) ),
+				'price_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $suggestion['price_selector'] ?? $mapping->price_selector ) ),
+				'stock_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $suggestion['stock_selector'] ?? $mapping->stock_selector ) ),
+				'browser_user_agent'            => (string) ( $mapping->browser_user_agent ?? '' ),
+				'browser_cookie_header'         => (string) ( $mapping->browser_cookie_header ?? '' ),
+				'currency'                      => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $suggestion['currency'] ?? $mapping->currency ) ),
+				'min_margin_percentage'         => (float) $mapping->min_margin_percentage,
+				'suggested_increase_mode'       => (string) ( $mapping->suggested_increase_mode ?? 'global' ),
 				'suggested_increase_percentage' => isset( $mapping->suggested_increase_percentage ) ? (float) $mapping->suggested_increase_percentage : null,
-				'active'                 => (int) $mapping->active,
+				'active'                        => (int) $mapping->active,
 			)
 		);
 
@@ -603,15 +603,15 @@ class WC_Competitor_Monitor_Monitor {
 		do_action( 'wc_competitor_monitor_mapping_changed', absint( $mapping->id ), 'pro_check_completed' );
 
 		return array(
-			'success'      => true,
-			'price'        => $competitor_price,
-			'stock_status' => $stock_status,
-			'difference'   => $diff_percentage,
-			'page_title'   => sanitize_text_field( (string) ( $suggestion['product_title'] ?? '' ) ),
-			'raw_status'   => $raw_status,
-			'history_id'   => $history_id,
-			'engine'       => sanitize_text_field( (string) ( $job['result']['render']['engine'] ?? 'pro_saas' ) ),
-			'ai_used'      => ! empty( $job['result']['extraction']['ai']['used'] ),
+			'success'               => true,
+			'price'                 => $competitor_price,
+			'stock_status'          => $stock_status,
+			'difference'            => $diff_percentage,
+			'page_title'            => sanitize_text_field( (string) ( $suggestion['product_title'] ?? '' ) ),
+			'raw_status'            => $raw_status,
+			'history_id'            => $history_id,
+			'engine'                => sanitize_text_field( (string) ( $job['result']['render']['engine'] ?? 'pro_saas' ) ),
+			'ai_used'               => ! empty( $job['result']['extraction']['ai']['used'] ),
 			'auto_price_adjustment' => $auto_adjustment,
 		);
 	}
@@ -625,8 +625,8 @@ class WC_Competitor_Monitor_Monitor {
 	 * @return object
 	 */
 	private function mapping_with_latest_values( object $mapping, ?float $price, ?string $stock_status ): object {
-		$updated = clone $mapping;
-		$updated->last_price = $price;
+		$updated                    = clone $mapping;
+		$updated->last_price        = $price;
 		$updated->last_stock_status = $stock_status ?: 'unknown';
 
 		return $updated;
@@ -713,7 +713,7 @@ class WC_Competitor_Monitor_Monitor {
 		}
 
 		$baseline_price = $this->db->capture_original_product_price( absint( $mapping->product_id ), 'first_auto_adjustment' );
-		$applied = $this->apply_product_price( $product, $new_price );
+		$applied        = $this->apply_product_price( $product, $new_price );
 		if ( empty( $applied['success'] ) ) {
 			$this->alerts->maybe_create(
 				absint( $target_mapping->id ),
@@ -788,15 +788,15 @@ class WC_Competitor_Monitor_Monitor {
 			'info',
 			__( 'Automatic Pro pricing updated a WooCommerce product price.', 'competitor-price-stock-monitor' ),
 			array(
-				'mapping_id'          => absint( $target_mapping->id ),
-				'product_id'          => absint( $mapping->product_id ),
-				'old_price'           => $old_price,
-				'baseline_price'      => $baseline_price,
-				'new_price'           => $new_price,
-				'price_adjustment_id' => $adjustment_id,
-				'cost_at_change'      => $cost_at_change,
-				'recommendation_type' => sanitize_key( (string) $recommendation['type'] ),
-				'competitive_target'  => isset( $recommendation['competitive_target'] ) ? (float) $recommendation['competitive_target'] : null,
+				'mapping_id'            => absint( $target_mapping->id ),
+				'product_id'            => absint( $mapping->product_id ),
+				'old_price'             => $old_price,
+				'baseline_price'        => $baseline_price,
+				'new_price'             => $new_price,
+				'price_adjustment_id'   => $adjustment_id,
+				'cost_at_change'        => $cost_at_change,
+				'recommendation_type'   => sanitize_key( (string) $recommendation['type'] ),
+				'competitive_target'    => isset( $recommendation['competitive_target'] ) ? (float) $recommendation['competitive_target'] : null,
 				'competitors_evaluated' => isset( $recommendation['competitors_evaluated'] ) ? absint( $recommendation['competitors_evaluated'] ) : 0,
 			)
 		);
@@ -885,9 +885,9 @@ class WC_Competitor_Monitor_Monitor {
 
 			if ( null === $lowest || $price < (float) $lowest['price'] ) {
 				$lowest = array(
-					'mapping_id'       => absint( $mapping->id ),
-					'price'            => $price,
-					'competitor_name'  => sanitize_text_field( (string) $mapping->competitor_name ),
+					'mapping_id'      => absint( $mapping->id ),
+					'price'           => $price,
+					'competitor_name' => sanitize_text_field( (string) $mapping->competitor_name ),
 				);
 			}
 		}
@@ -1025,7 +1025,14 @@ class WC_Competitor_Monitor_Monitor {
 		);
 
 		$this->db->touch_mapping_checked_at( absint( $mapping->id ) );
-		$this->db->insert_log( 'error', $error, array( 'mapping_id' => absint( $mapping->id ), 'status' => $status ) );
+		$this->db->insert_log(
+			'error',
+			$error,
+			array(
+				'mapping_id' => absint( $mapping->id ),
+				'status'     => $status,
+			)
+		);
 	}
 
 	/**
@@ -1133,22 +1140,27 @@ class WC_Competitor_Monitor_Monitor {
 			return;
 		}
 
-		$body    = wp_json_encode( array(
-			'event'      => 'repricing.first_applied',
-			'product_id' => $product_id,
-			'old_price'  => $old_price,
-			'new_price'  => $new_price,
-			'site_url'   => home_url( '/' ),
-		) );
-		$url     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
-		$headers = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
+		$body                    = wp_json_encode(
+			array(
+				'event'      => 'repricing.first_applied',
+				'product_id' => $product_id,
+				'old_price'  => $old_price,
+				'new_price'  => $new_price,
+				'site_url'   => home_url( '/' ),
+			)
+		);
+		$url                     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
+		$headers                 = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
 		$headers['Content-Type'] = 'application/json';
 
-		wp_remote_post( $url, array(
-			'headers'  => $headers,
-			'body'     => $body,
-			'timeout'  => 5,
-			'blocking' => false,
-		) );
+		wp_remote_post(
+			$url,
+			array(
+				'headers'  => $headers,
+				'body'     => $body,
+				'timeout'  => 5,
+				'blocking' => false,
+			)
+		);
 	}
 }

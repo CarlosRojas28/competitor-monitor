@@ -9,10 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$wc_competitor_monitor_is_editing = $wc_competitor_monitor_editing_mapping && ! empty( $wc_competitor_monitor_editing_mapping->id );
-$wc_competitor_monitor_global_increase_mode = sanitize_key( (string) ( $wc_competitor_monitor_settings['suggested_increase_limit_mode'] ?? 'percent' ) );
+$wc_competitor_monitor_is_editing                 = $wc_competitor_monitor_editing_mapping && ! empty( $wc_competitor_monitor_editing_mapping->id );
+$wc_competitor_monitor_global_increase_mode       = sanitize_key( (string) ( $wc_competitor_monitor_settings['suggested_increase_limit_mode'] ?? 'percent' ) );
 $wc_competitor_monitor_global_increase_percentage = max( 0, min( 999.99, (float) ( $wc_competitor_monitor_settings['suggested_increase_limit_percentage'] ?? 5.0 ) ) );
-$wc_competitor_monitor_global_increase_text = 'none' === $wc_competitor_monitor_global_increase_mode
+$wc_competitor_monitor_global_increase_text       = 'none' === $wc_competitor_monitor_global_increase_mode
 	? __( 'Global setting: no increase limit.', 'competitor-price-stock-monitor' )
 	: sprintf(
 		/* translators: %s: configured percentage. */
@@ -26,14 +26,14 @@ if ( ! in_array( $wc_competitor_monitor_edit_increase_mode, array( 'global', 'pe
 $wc_competitor_monitor_edit_increase_percentage = $wc_competitor_monitor_is_editing && null !== ( $wc_competitor_monitor_editing_mapping->suggested_increase_percentage ?? null )
 	? (float) $wc_competitor_monitor_editing_mapping->suggested_increase_percentage
 	: $wc_competitor_monitor_global_increase_percentage;
-$wc_competitor_monitor_global_auto_price_mode = sanitize_key( (string) ( $wc_competitor_monitor_settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
+$wc_competitor_monitor_global_auto_price_mode   = sanitize_key( (string) ( $wc_competitor_monitor_settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
 if ( ! in_array( $wc_competitor_monitor_global_auto_price_mode, array( 'enabled', 'disabled' ), true ) ) {
 	$wc_competitor_monitor_global_auto_price_mode = 'disabled';
 }
 $wc_competitor_monitor_global_auto_price_text = 'enabled' === $wc_competitor_monitor_global_auto_price_mode
 	? __( 'Use global setting: apply recommended prices automatically.', 'competitor-price-stock-monitor' )
 	: __( 'Use global setting: do not change prices automatically.', 'competitor-price-stock-monitor' );
-$wc_competitor_monitor_edit_auto_price_mode = 'global';
+$wc_competitor_monitor_edit_auto_price_mode   = 'global';
 if ( $wc_competitor_monitor_is_editing ) {
 	$wc_competitor_monitor_edit_auto_price_mode = sanitize_key( (string) get_post_meta( absint( $wc_competitor_monitor_editing_mapping->product_id ), WC_Competitor_Monitor_DB::PRODUCT_AUTO_PRICE_MODE_META, true ) );
 	if ( ! in_array( $wc_competitor_monitor_edit_auto_price_mode, array( 'global', 'enabled', 'disabled' ), true ) ) {
@@ -266,11 +266,17 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 							<td>
 								<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_impact['attributed_gross_profit'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 								<?php if ( ! empty( $wc_competitor_monitor_impact['revenue_uplift_without_cost'] ) ) : ?>
-									<br><small><?php echo esc_html( sprintf(
+									<br><small>
+									<?php
+									echo esc_html(
+										sprintf(
 										/* translators: %s: revenue uplift amount. */
-										__( '%s unverified uplift', 'competitor-price-stock-monitor' ),
-										wp_strip_all_tags( $this->format_money( (float) $wc_competitor_monitor_impact['revenue_uplift_without_cost'] ) )
-									) ); ?></small>
+											__( '%s unverified uplift', 'competitor-price-stock-monitor' ),
+											wp_strip_all_tags( $this->format_money( (float) $wc_competitor_monitor_impact['revenue_uplift_without_cost'] ) )
+										)
+									);
+									?>
+									</small>
 								<?php endif; ?>
 							</td>
 							<td>
@@ -286,7 +292,19 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 								</span>
 							</td>
 							<td class="wccm-row-actions">
-								<a class="button button-small" href="<?php echo esc_url( add_query_arg( array( 'page' => 'competitor-price-stock-monitor-products', 'mapping_id' => absint( $wc_competitor_monitor_mapping->id ) ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit', 'competitor-price-stock-monitor' ); ?></a>
+								<a class="button button-small" href="
+								<?php
+								echo esc_url(
+									add_query_arg(
+										array(
+											'page'       => 'competitor-price-stock-monitor-products',
+											'mapping_id' => absint( $wc_competitor_monitor_mapping->id ),
+										),
+										admin_url( 'admin.php' )
+									)
+								);
+								?>
+																		"><?php esc_html_e( 'Edit', 'competitor-price-stock-monitor' ); ?></a>
 
 								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 									<input type="hidden" name="action" value="wc_competitor_monitor_run_check">
@@ -295,7 +313,20 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 									<button type="submit" class="button button-small"><?php esc_html_e( 'Run check now', 'competitor-price-stock-monitor' ); ?></button>
 								</form>
 
-								<a class="button button-small" href="<?php echo esc_url( add_query_arg( array( 'page' => 'competitor-price-stock-monitor-products', 'view' => 'history', 'mapping_id' => absint( $wc_competitor_monitor_mapping->id ) ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'View history', 'competitor-price-stock-monitor' ); ?></a>
+								<a class="button button-small" href="
+								<?php
+								echo esc_url(
+									add_query_arg(
+										array(
+											'page'       => 'competitor-price-stock-monitor-products',
+											'view'       => 'history',
+											'mapping_id' => absint( $wc_competitor_monitor_mapping->id ),
+										),
+										admin_url( 'admin.php' )
+									)
+								);
+								?>
+																		"><?php esc_html_e( 'View history', 'competitor-price-stock-monitor' ); ?></a>
 
 								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 									<input type="hidden" name="action" value="wc_competitor_monitor_toggle_mapping">

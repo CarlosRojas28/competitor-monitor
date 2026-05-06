@@ -220,7 +220,7 @@ class WC_Competitor_Monitor_Admin {
 			array(
 				'ajaxUrl'                   => admin_url( 'admin-ajax.php' ),
 				'confirmDelete'             => __( 'This action cannot be undone. Continue?', 'competitor-price-stock-monitor' ),
-				'searchProductsNonce'      => wp_create_nonce( 'search-products' ),
+				'searchProductsNonce'       => wp_create_nonce( 'search-products' ),
 				'searchProductsPlaceholder' => __( 'Search product by name or SKU...', 'competitor-price-stock-monitor' ),
 			)
 		);
@@ -254,13 +254,13 @@ class WC_Competitor_Monitor_Admin {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin view state.
 		$wc_competitor_monitor_mapping_id = isset( $_GET['mapping_id'] ) ? absint( wp_unslash( $_GET['mapping_id'] ) ) : 0;
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin view state.
-		$wc_competitor_monitor_view            = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : '';
-		$wc_competitor_monitor_editing_mapping = $wc_competitor_monitor_mapping_id > 0 ? $this->db->get_mapping( $wc_competitor_monitor_mapping_id ) : null;
-		$wc_competitor_monitor_mappings        = $this->db->get_mappings( array( 'limit' => 200 ) );
-		$wc_competitor_monitor_history         = ( 'history' === $wc_competitor_monitor_view && $wc_competitor_monitor_mapping_id > 0 ) ? $this->db->get_history( 50, $wc_competitor_monitor_mapping_id ) : array();
-		$wc_competitor_monitor_settings        = $this->db->get_settings();
+		$wc_competitor_monitor_view                   = isset( $_GET['view'] ) ? sanitize_key( wp_unslash( $_GET['view'] ) ) : '';
+		$wc_competitor_monitor_editing_mapping        = $wc_competitor_monitor_mapping_id > 0 ? $this->db->get_mapping( $wc_competitor_monitor_mapping_id ) : null;
+		$wc_competitor_monitor_mappings               = $this->db->get_mappings( array( 'limit' => 200 ) );
+		$wc_competitor_monitor_history                = ( 'history' === $wc_competitor_monitor_view && $wc_competitor_monitor_mapping_id > 0 ) ? $this->db->get_history( 50, $wc_competitor_monitor_mapping_id ) : array();
+		$wc_competitor_monitor_settings               = $this->db->get_settings();
 		$wc_competitor_monitor_product_search_enabled = function_exists( 'WC' ) && wp_script_is( 'wc-enhanced-select', 'registered' );
-		$wc_competitor_monitor_product_options = $this->product_select_options( 300 );
+		$wc_competitor_monitor_product_options        = $this->product_select_options( 300 );
 
 		include WC_COMPETITOR_MONITOR_PATH . 'admin/views/products.php';
 	}
@@ -349,38 +349,38 @@ class WC_Competitor_Monitor_Admin {
 			return;
 		}
 
-		$product_id        = absint( $post->ID );
-		$settings          = $this->db->get_settings();
-		$mappings          = $this->db->get_mappings(
+		$product_id           = absint( $post->ID );
+		$settings             = $this->db->get_settings();
+		$mappings             = $this->db->get_mappings(
 			array(
 				'product_id' => $product_id,
 				'limit'      => 50,
 			)
 		);
-		$product_mode      = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_AUTO_PRICE_MODE_META, true ) );
-		$product_mode      = in_array( $product_mode, array( 'enabled', 'disabled' ), true ) ? $product_mode : 'global';
-		$global_auto_mode  = 'enabled' === sanitize_key( (string) ( $settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
-		$global_mode_label = $global_auto_mode
+		$product_mode         = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_AUTO_PRICE_MODE_META, true ) );
+		$product_mode         = in_array( $product_mode, array( 'enabled', 'disabled' ), true ) ? $product_mode : 'global';
+		$global_auto_mode     = 'enabled' === sanitize_key( (string) ( $settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
+		$global_mode_label    = $global_auto_mode
 			? __( 'Use global setting: enabled', 'competitor-price-stock-monitor' )
 			: __( 'Use global setting: disabled', 'competitor-price-stock-monitor' );
-		$restore_mode      = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META, true ) );
-		$restore_mode      = in_array( $restore_mode, array( 'enabled', 'disabled' ), true ) ? $restore_mode : 'global';
-		$global_restore_mode = 'enabled' === sanitize_key( (string) ( $settings['original_price_restore_mode'] ?? 'disabled' ) );
+		$restore_mode         = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META, true ) );
+		$restore_mode         = in_array( $restore_mode, array( 'enabled', 'disabled' ), true ) ? $restore_mode : 'global';
+		$global_restore_mode  = 'enabled' === sanitize_key( (string) ( $settings['original_price_restore_mode'] ?? 'disabled' ) );
 		$global_restore_label = $global_restore_mode
 			? __( 'Use global setting: enabled', 'competitor-price-stock-monitor' )
 			: __( 'Use global setting: disabled', 'competitor-price-stock-monitor' );
-		$currency          = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD';
-		$last_adjusted_at  = get_post_meta( $product_id, '_cpsm_last_auto_price_adjusted_at', true );
-		$last_old_price    = get_post_meta( $product_id, '_cpsm_last_auto_price_old', true );
-		$last_new_price    = get_post_meta( $product_id, '_cpsm_last_auto_price_new', true );
-		$original_price    = $this->db->get_original_product_price( $product_id );
+		$currency             = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD';
+		$last_adjusted_at     = get_post_meta( $product_id, '_cpsm_last_auto_price_adjusted_at', true );
+		$last_old_price       = get_post_meta( $product_id, '_cpsm_last_auto_price_old', true );
+		$last_new_price       = get_post_meta( $product_id, '_cpsm_last_auto_price_new', true );
+		$original_price       = $this->db->get_original_product_price( $product_id );
 		$original_captured_at = get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_CAPTURED_AT_META, true );
-		$original_source   = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_SOURCE_META, true ) );
-		$profit_impact     = $this->db->get_profit_impact_for_product( $product_id );
-		$latest_adjustment = is_array( $profit_impact['latest_adjustment'] ?? null ) ? $profit_impact['latest_adjustment'] : null;
-		$restore_status    = $this->monitor->get_original_price_restore_status( $product_id );
-		$product_cost_data = $this->db->get_product_cost_data( $product_id );
-		$manual_cost       = get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_COST_META, true );
+		$original_source      = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_SOURCE_META, true ) );
+		$profit_impact        = $this->db->get_profit_impact_for_product( $product_id );
+		$latest_adjustment    = is_array( $profit_impact['latest_adjustment'] ?? null ) ? $profit_impact['latest_adjustment'] : null;
+		$restore_status       = $this->monitor->get_original_price_restore_status( $product_id );
+		$product_cost_data    = $this->db->get_product_cost_data( $product_id );
+		$manual_cost          = get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_COST_META, true );
 
 		wp_nonce_field( 'wc_competitor_monitor_product_metabox_' . $product_id, 'wc_competitor_monitor_product_metabox_nonce' );
 		?>
@@ -455,7 +455,22 @@ class WC_Competitor_Monitor_Admin {
 						<?php endif; ?>
 						<?php if ( ! empty( $restore_status['can_restore'] ) ) : ?>
 							<p>
-								<a class="button" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'wc_competitor_monitor_restore_original_price', 'product_id' => $product_id ), admin_url( 'admin-post.php' ) ), 'wc_competitor_monitor_restore_original_price_' . $product_id ) ); ?>"><?php esc_html_e( 'Restore original price', 'competitor-price-stock-monitor' ); ?></a>
+								<a class="button" href="
+								<?php
+								echo esc_url(
+									wp_nonce_url(
+										add_query_arg(
+											array(
+												'action' => 'wc_competitor_monitor_restore_original_price',
+												'product_id' => $product_id,
+											),
+											admin_url( 'admin-post.php' )
+										),
+										'wc_competitor_monitor_restore_original_price_' . $product_id
+									)
+								);
+								?>
+														"><?php esc_html_e( 'Restore original price', 'competitor-price-stock-monitor' ); ?></a>
 							</p>
 						<?php elseif ( ! empty( $restore_status['message'] ) ) : ?>
 							<p class="description"><?php echo esc_html( (string) $restore_status['message'] ); ?></p>
@@ -542,7 +557,19 @@ class WC_Competitor_Monitor_Admin {
 								<td><?php echo $this->format_price( null !== $mapping->last_price ? (float) $mapping->last_price : null ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
 								<td><span class="wccm-badge wccm-badge-<?php echo esc_attr( $mapping->last_stock_status ?: 'unknown' ); ?>"><?php echo esc_html( $mapping->last_stock_status ?: __( 'unknown', 'competitor-price-stock-monitor' ) ); ?></span></td>
 								<td><?php echo $mapping->last_checked_at ? esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $mapping->last_checked_at ) ) : '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-								<td><a class="button button-small" href="<?php echo esc_url( add_query_arg( array( 'page' => 'competitor-price-stock-monitor-products', 'mapping_id' => absint( $mapping->id ) ), admin_url( 'admin.php' ) ) ); ?>"><?php esc_html_e( 'Edit mapping', 'competitor-price-stock-monitor' ); ?></a></td>
+								<td><a class="button button-small" href="
+								<?php
+								echo esc_url(
+									add_query_arg(
+										array(
+											'page'       => 'competitor-price-stock-monitor-products',
+											'mapping_id' => absint( $mapping->id ),
+										),
+										admin_url( 'admin.php' )
+									)
+								);
+								?>
+																			"><?php esc_html_e( 'Edit mapping', 'competitor-price-stock-monitor' ); ?></a></td>
 							</tr>
 						<?php endforeach; ?>
 					</tbody>
@@ -645,17 +672,17 @@ class WC_Competitor_Monitor_Admin {
 
 		$mapping_id = $this->db->insert_mapping(
 			array(
-				'product_id'             => absint( $post_id ),
-				'competitor_name'        => $competitor_name,
-				'competitor_product_title' => $this->competitor_product_title_from_url( $url, $competitor_name ),
-				'competitor_url'         => $url,
-				'price_selector'         => '',
-				'stock_selector'         => '',
-				'currency'               => $currency,
-				'min_margin_percentage'  => $margin,
-				'suggested_increase_mode' => 'global',
+				'product_id'                    => absint( $post_id ),
+				'competitor_name'               => $competitor_name,
+				'competitor_product_title'      => $this->competitor_product_title_from_url( $url, $competitor_name ),
+				'competitor_url'                => $url,
+				'price_selector'                => '',
+				'stock_selector'                => '',
+				'currency'                      => $currency,
+				'min_margin_percentage'         => $margin,
+				'suggested_increase_mode'       => 'global',
 				'suggested_increase_percentage' => null,
-				'active'                 => $active ? 1 : 0,
+				'active'                        => $active ? 1 : 0,
 			)
 		);
 
@@ -683,18 +710,18 @@ class WC_Competitor_Monitor_Admin {
 		}
 
 		$data = array(
-			'product_id'             => isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0,
-			'competitor_name'        => isset( $_POST['competitor_name'] ) ? sanitize_text_field( wp_unslash( $_POST['competitor_name'] ) ) : '',
-			'competitor_url'         => $url,
-			'price_selector'         => isset( $_POST['price_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( sanitize_text_field( wp_unslash( $_POST['price_selector'] ) ) ) : '',
-			'stock_selector'         => isset( $_POST['stock_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( sanitize_text_field( wp_unslash( $_POST['stock_selector'] ) ) ) : '',
-			'browser_user_agent'     => isset( $_POST['browser_user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['browser_user_agent'] ) ) : '',
-			'browser_cookie_header'  => isset( $_POST['browser_cookie_header'] ) ? WC_Competitor_Monitor_Security::sanitize_cookie_header( sanitize_textarea_field( wp_unslash( $_POST['browser_cookie_header'] ) ) ) : '',
-			'currency'               => isset( $_POST['currency'] ) ? WC_Competitor_Monitor_Security::sanitize_currency( sanitize_text_field( wp_unslash( $_POST['currency'] ) ) ) : '',
-			'min_margin_percentage'  => isset( $_POST['min_margin_percentage'] ) ? (float) sanitize_text_field( wp_unslash( $_POST['min_margin_percentage'] ) ) : 20,
-			'suggested_increase_mode' => isset( $_POST['suggested_increase_mode'] ) ? sanitize_key( wp_unslash( $_POST['suggested_increase_mode'] ) ) : 'global',
+			'product_id'                    => isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0,
+			'competitor_name'               => isset( $_POST['competitor_name'] ) ? sanitize_text_field( wp_unslash( $_POST['competitor_name'] ) ) : '',
+			'competitor_url'                => $url,
+			'price_selector'                => isset( $_POST['price_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( sanitize_text_field( wp_unslash( $_POST['price_selector'] ) ) ) : '',
+			'stock_selector'                => isset( $_POST['stock_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( sanitize_text_field( wp_unslash( $_POST['stock_selector'] ) ) ) : '',
+			'browser_user_agent'            => isset( $_POST['browser_user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['browser_user_agent'] ) ) : '',
+			'browser_cookie_header'         => isset( $_POST['browser_cookie_header'] ) ? WC_Competitor_Monitor_Security::sanitize_cookie_header( sanitize_textarea_field( wp_unslash( $_POST['browser_cookie_header'] ) ) ) : '',
+			'currency'                      => isset( $_POST['currency'] ) ? WC_Competitor_Monitor_Security::sanitize_currency( sanitize_text_field( wp_unslash( $_POST['currency'] ) ) ) : '',
+			'min_margin_percentage'         => isset( $_POST['min_margin_percentage'] ) ? (float) sanitize_text_field( wp_unslash( $_POST['min_margin_percentage'] ) ) : 20,
+			'suggested_increase_mode'       => isset( $_POST['suggested_increase_mode'] ) ? sanitize_key( wp_unslash( $_POST['suggested_increase_mode'] ) ) : 'global',
 			'suggested_increase_percentage' => isset( $_POST['suggested_increase_percentage'] ) ? (float) sanitize_text_field( wp_unslash( $_POST['suggested_increase_percentage'] ) ) : null,
-			'active'                 => isset( $_POST['active'] ) ? 1 : 0,
+			'active'                        => isset( $_POST['active'] ) ? 1 : 0,
 		);
 
 		if ( $data['product_id'] <= 0 ) {
@@ -717,8 +744,8 @@ class WC_Competitor_Monitor_Admin {
 			$message = __( 'Mapping updated.', 'competitor-price-stock-monitor' );
 		} else {
 			$data['competitor_product_title'] = $this->competitor_product_title_from_url( $url, $data['competitor_name'] );
-			$mapping_id = $this->db->insert_mapping( $data );
-			$message = __( 'Mapping created.', 'competitor-price-stock-monitor' );
+			$mapping_id                       = $this->db->insert_mapping( $data );
+			$message                          = __( 'Mapping created.', 'competitor-price-stock-monitor' );
 		}
 
 		if ( $mapping_id > 0 ) {
@@ -842,22 +869,22 @@ class WC_Competitor_Monitor_Admin {
 
 		$previous = $this->db->get_settings();
 		$settings = array(
-			'alert_email'              => isset( $_POST['alert_email'] ) ? sanitize_email( wp_unslash( $_POST['alert_email'] ) ) : get_option( 'admin_email' ),
-			'email_alerts'             => isset( $_POST['email_alerts'] ) ? 1 : 0,
-			'price_change_threshold'   => isset( $_POST['price_change_threshold'] ) ? max( 0, (float) sanitize_text_field( wp_unslash( $_POST['price_change_threshold'] ) ) ) : 5.0,
-			'suggested_increase_limit_mode' => isset( $_POST['suggested_increase_limit_mode'] ) ? sanitize_key( wp_unslash( $_POST['suggested_increase_limit_mode'] ) ) : 'percent',
+			'alert_email'                         => isset( $_POST['alert_email'] ) ? sanitize_email( wp_unslash( $_POST['alert_email'] ) ) : get_option( 'admin_email' ),
+			'email_alerts'                        => isset( $_POST['email_alerts'] ) ? 1 : 0,
+			'price_change_threshold'              => isset( $_POST['price_change_threshold'] ) ? max( 0, (float) sanitize_text_field( wp_unslash( $_POST['price_change_threshold'] ) ) ) : 5.0,
+			'suggested_increase_limit_mode'       => isset( $_POST['suggested_increase_limit_mode'] ) ? sanitize_key( wp_unslash( $_POST['suggested_increase_limit_mode'] ) ) : 'percent',
 			'suggested_increase_limit_percentage' => isset( $_POST['suggested_increase_limit_percentage'] ) ? max( 0, min( 999.99, (float) sanitize_text_field( wp_unslash( $_POST['suggested_increase_limit_percentage'] ) ) ) ) : 5.0,
-			'auto_price_adjustment_mode' => isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : (string) ( $previous['auto_price_adjustment_mode'] ?? 'disabled' ),
-			'auto_price_kill_switch'     => isset( $_POST['auto_price_kill_switch'] ) ? 1 : 0,
-			'original_price_restore_mode' => isset( $_POST['original_price_restore_mode'] ) ? sanitize_key( wp_unslash( $_POST['original_price_restore_mode'] ) ) : (string) ( $previous['original_price_restore_mode'] ?? 'disabled' ),
-			'check_frequency'          => isset( $_POST['check_frequency'] ) ? sanitize_key( wp_unslash( $_POST['check_frequency'] ) ) : 'daily',
-			'user_agent'               => isset( $_POST['user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['user_agent'] ) ) : '',
-			'timeout'                  => isset( $_POST['timeout'] ) ? max( 3, min( 30, absint( wp_unslash( $_POST['timeout'] ) ) ) ) : 10,
-			'max_response_size'        => isset( $_POST['max_response_size'] ) ? max( 10240, min( 5242880, absint( wp_unslash( $_POST['max_response_size'] ) ) ) ) : 1048576,
-			'batch_size'               => isset( $_POST['batch_size'] ) ? max( 1, min( 100, absint( wp_unslash( $_POST['batch_size'] ) ) ) ) : 10,
-			'delete_data_on_uninstall' => isset( $_POST['delete_data_on_uninstall'] ) ? 1 : 0,
-			'pro_enabled'              => isset( $_POST['pro_enabled'] ) ? 1 : 0,
-			'pro_saas_url'             => isset( $_POST['pro_saas_url'] ) ? esc_url_raw( wp_unslash( $_POST['pro_saas_url'] ) ) : 'http://127.0.0.1:8788',
+			'auto_price_adjustment_mode'          => isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : (string) ( $previous['auto_price_adjustment_mode'] ?? 'disabled' ),
+			'auto_price_kill_switch'              => isset( $_POST['auto_price_kill_switch'] ) ? 1 : 0,
+			'original_price_restore_mode'         => isset( $_POST['original_price_restore_mode'] ) ? sanitize_key( wp_unslash( $_POST['original_price_restore_mode'] ) ) : (string) ( $previous['original_price_restore_mode'] ?? 'disabled' ),
+			'check_frequency'                     => isset( $_POST['check_frequency'] ) ? sanitize_key( wp_unslash( $_POST['check_frequency'] ) ) : 'daily',
+			'user_agent'                          => isset( $_POST['user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['user_agent'] ) ) : '',
+			'timeout'                             => isset( $_POST['timeout'] ) ? max( 3, min( 30, absint( wp_unslash( $_POST['timeout'] ) ) ) ) : 10,
+			'max_response_size'                   => isset( $_POST['max_response_size'] ) ? max( 10240, min( 5242880, absint( wp_unslash( $_POST['max_response_size'] ) ) ) ) : 1048576,
+			'batch_size'                          => isset( $_POST['batch_size'] ) ? max( 1, min( 100, absint( wp_unslash( $_POST['batch_size'] ) ) ) ) : 10,
+			'delete_data_on_uninstall'            => isset( $_POST['delete_data_on_uninstall'] ) ? 1 : 0,
+			'pro_enabled'                         => isset( $_POST['pro_enabled'] ) ? 1 : 0,
+			'pro_saas_url'                        => isset( $_POST['pro_saas_url'] ) ? esc_url_raw( wp_unslash( $_POST['pro_saas_url'] ) ) : 'http://127.0.0.1:8788',
 		);
 
 		if ( ! in_array( $settings['check_frequency'], array( 'daily', 'twelve_hours', 'six_hours', 'hourly' ), true ) ) {
@@ -873,6 +900,13 @@ class WC_Competitor_Monitor_Admin {
 		}
 
 		if ( ! in_array( $settings['original_price_restore_mode'], array( 'disabled', 'enabled' ), true ) ) {
+			$settings['original_price_restore_mode'] = 'disabled';
+		}
+
+		$pro_is_active = ! empty( $previous['pro_enabled'] ) && 'active' === (string) ( $previous['pro_license_status'] ?? '' );
+		if ( ! $pro_is_active ) {
+			$settings['check_frequency']             = 'daily';
+			$settings['auto_price_adjustment_mode']  = 'disabled';
 			$settings['original_price_restore_mode'] = 'disabled';
 		}
 
@@ -898,6 +932,12 @@ class WC_Competitor_Monitor_Admin {
 
 		$mode = isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : 'disabled';
 		if ( ! in_array( $mode, array( 'disabled', 'enabled' ), true ) ) {
+			$mode = 'disabled';
+		}
+
+		$current_settings = $this->db->get_settings();
+		$pro_is_active    = ! empty( $current_settings['pro_enabled'] ) && 'active' === (string) ( $current_settings['pro_license_status'] ?? '' );
+		if ( ! $pro_is_active ) {
 			$mode = 'disabled';
 		}
 
@@ -1242,7 +1282,7 @@ class WC_Competitor_Monitor_Admin {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Redirected admin notices are read-only.
-		$type    = sanitize_key( wp_unslash( $_GET['wccm_notice'] ) );
+		$type = sanitize_key( wp_unslash( $_GET['wccm_notice'] ) );
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Redirected admin notices are read-only.
 		$message = sanitize_text_field( wp_unslash( $_GET['wccm_message'] ) );
 		$class   = 'error' === $type ? 'notice notice-error' : 'notice notice-success';
@@ -1462,7 +1502,7 @@ class WC_Competitor_Monitor_Admin {
 				continue;
 			}
 
-			$label = method_exists( $product, 'get_formatted_name' ) ? (string) $product->get_formatted_name() : $this->product_title( $product_id );
+			$label                  = method_exists( $product, 'get_formatted_name' ) ? (string) $product->get_formatted_name() : $this->product_title( $product_id );
 			$options[ $product_id ] = rawurldecode( wp_strip_all_tags( $label ) );
 		}
 

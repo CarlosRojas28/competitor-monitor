@@ -222,7 +222,7 @@ class WC_Competitor_Monitor_Parser {
 	 * @return array<int,string>
 	 */
 	private function amazon_price_sections( string $html ): array {
-		$tokens = array(
+		$tokens   = array(
 			'id="priceToPay"',
 			'id=\'priceToPay\'',
 			'id="corePrice_feature_div"',
@@ -259,7 +259,7 @@ class WC_Competitor_Monitor_Parser {
 				continue;
 			}
 
-			$sections[]  = substr( $html, $start, $end - $start );
+			$sections[]   = substr( $html, $start, $end - $start );
 			$seen[ $key ] = true;
 		}
 
@@ -472,7 +472,7 @@ class WC_Competitor_Monitor_Parser {
 
 		$texts = array();
 		foreach ( $nodes as $node ) {
-			$text = trim( (string) preg_replace( '/\s+/u', ' ', $node->textContent ) );
+			$text = trim( (string) preg_replace( '/\s+/u', ' ', $node->textContent ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- textContent is a standard DOM property
 			if ( '' === $text && $node instanceof DOMElement ) {
 				foreach ( array( 'content', 'value', 'data-price', 'aria-label' ) as $attribute ) {
 					$attribute_value = trim( (string) $node->getAttribute( $attribute ) );

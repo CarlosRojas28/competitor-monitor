@@ -16,17 +16,17 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class WC_Competitor_Monitor_DB {
 
-	public const DB_VERSION  = '1.7.0';
-	public const OPTION_KEY  = 'wc_competitor_monitor_settings';
-	public const DB_OPTION   = 'wc_competitor_monitor_db_version';
-	public const CRON_OFFSET = 'wc_competitor_monitor_cron_offset';
-	public const PRODUCT_AUTO_PRICE_MODE_META = '_cpsm_auto_price_adjustment_mode';
+	public const DB_VERSION                               = '1.7.0';
+	public const OPTION_KEY                               = 'wc_competitor_monitor_settings';
+	public const DB_OPTION                                = 'wc_competitor_monitor_db_version';
+	public const CRON_OFFSET                              = 'wc_competitor_monitor_cron_offset';
+	public const PRODUCT_AUTO_PRICE_MODE_META             = '_cpsm_auto_price_adjustment_mode';
 	public const PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META = '_cpsm_original_price_restore_mode';
-	public const PRODUCT_ORIGINAL_PRICE_META = '_cpsm_original_customer_price';
-	public const PRODUCT_ORIGINAL_PRICE_CAPTURED_AT_META = '_cpsm_original_customer_price_captured_at';
-	public const PRODUCT_ORIGINAL_PRICE_SOURCE_META = '_cpsm_original_customer_price_source';
-	public const PRODUCT_COST_META = '_cpsm_product_cost';
-	public const PRODUCT_COST_SOURCE_META = '_cpsm_product_cost_source';
+	public const PRODUCT_ORIGINAL_PRICE_META              = '_cpsm_original_customer_price';
+	public const PRODUCT_ORIGINAL_PRICE_CAPTURED_AT_META  = '_cpsm_original_customer_price_captured_at';
+	public const PRODUCT_ORIGINAL_PRICE_SOURCE_META       = '_cpsm_original_customer_price_source';
+	public const PRODUCT_COST_META                        = '_cpsm_product_cost';
+	public const PRODUCT_COST_SOURCE_META                 = '_cpsm_product_cost_source';
 
 	/**
 	 * Returns all custom table names.
@@ -37,10 +37,10 @@ class WC_Competitor_Monitor_DB {
 		global $wpdb;
 
 		return array(
-			'mappings' => $wpdb->prefix . 'wc_competitor_monitor_mappings',
-			'history'  => $wpdb->prefix . 'wc_competitor_monitor_history',
-			'alerts'   => $wpdb->prefix . 'wc_competitor_monitor_alerts',
-			'logs'     => $wpdb->prefix . 'wc_competitor_monitor_logs',
+			'mappings'          => $wpdb->prefix . 'wc_competitor_monitor_mappings',
+			'history'           => $wpdb->prefix . 'wc_competitor_monitor_history',
+			'alerts'            => $wpdb->prefix . 'wc_competitor_monitor_alerts',
+			'logs'              => $wpdb->prefix . 'wc_competitor_monitor_logs',
 			'price_adjustments' => $wpdb->prefix . 'wc_competitor_monitor_price_adjustments',
 		);
 	}
@@ -204,39 +204,39 @@ class WC_Competitor_Monitor_DB {
 	 */
 	public function default_settings(): array {
 		return array(
-			'alert_email'              => get_option( 'admin_email' ),
-			'email_alerts'             => 0,
-			'price_change_threshold'   => 5.0,
-			'suggested_increase_limit_mode' => 'percent',
+			'alert_email'                         => get_option( 'admin_email' ),
+			'email_alerts'                        => 0,
+			'price_change_threshold'              => 5.0,
+			'suggested_increase_limit_mode'       => 'percent',
 			'suggested_increase_limit_percentage' => 5.0,
-			'auto_price_adjustment_mode' => 'disabled',
-			'auto_price_kill_switch'     => 0,
-			'original_price_restore_mode' => 'disabled',
-			'check_frequency'          => 'daily',
-			'user_agent'               => 'Competitor Price Stock Monitor/' . WC_COMPETITOR_MONITOR_VERSION . ' (' . home_url( '/' ) . ')',
-			'timeout'                  => 10,
-			'max_response_size'        => 1048576,
-			'batch_size'               => 10,
-			'delete_data_on_uninstall' => 0,
-			'pro_enabled'              => 0,
-			'pro_saas_url'             => 'http://127.0.0.1:8788',
-			'pro_license_key'          => '',
-			'pro_license_key_encrypted' => '',
-			'pro_license_key_preview'  => '',
-			'pro_api_key'              => '',
-			'bridge_auth_version'      => '',
-			'pro_site_id'              => '',
-			'pro_key_id'               => '',
+			'auto_price_adjustment_mode'          => 'disabled',
+			'auto_price_kill_switch'              => 0,
+			'original_price_restore_mode'         => 'disabled',
+			'check_frequency'                     => 'daily',
+			'user_agent'                          => 'Competitor Price Stock Monitor/' . WC_COMPETITOR_MONITOR_VERSION . ' (' . home_url( '/' ) . ')',
+			'timeout'                             => 10,
+			'max_response_size'                   => 1048576,
+			'batch_size'                          => 10,
+			'delete_data_on_uninstall'            => 0,
+			'pro_enabled'                         => 0,
+			'pro_saas_url'                        => 'http://127.0.0.1:8788',
+			'pro_license_key'                     => '',
+			'pro_license_key_encrypted'           => '',
+			'pro_license_key_preview'             => '',
+			'pro_api_key'                         => '',
+			'bridge_auth_version'                 => '',
+			'pro_site_id'                         => '',
+			'pro_key_id'                          => '',
 			'pro_plugin_to_saas_secret_encrypted' => '',
-			'pro_plugin_to_saas_secret_preview' => '',
+			'pro_plugin_to_saas_secret_preview'   => '',
 			'pro_saas_to_plugin_secret_encrypted' => '',
-			'pro_saas_to_plugin_secret_preview' => '',
-			'pro_license_status'       => '',
-			'pro_plan'                 => '',
-			'pro_license_message'      => '',
-			'last_mapping_sync_at'     => '',
-			'last_mapping_sync_status' => '',
-			'last_mapping_sync_message' => '',
+			'pro_saas_to_plugin_secret_preview'   => '',
+			'pro_license_status'                  => '',
+			'pro_plan'                            => '',
+			'pro_license_message'                 => '',
+			'last_mapping_sync_at'                => '',
+			'last_mapping_sync_status'            => '',
+			'last_mapping_sync_message'           => '',
 		);
 	}
 
@@ -443,19 +443,19 @@ class WC_Competitor_Monitor_DB {
 	 */
 	public function product_cost_meta_keys(): array {
 		$keys = array(
-			'_wc_cog_cost'          => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
-			'_wc_cogs_cost'         => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
-			'_wc_cog_cost_value'    => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
-			'_wc_cogs_total_value'  => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
-			'_alg_wc_cog_cost'      => __( 'Cost of Goods for WooCommerce', 'competitor-price-stock-monitor' ),
-			'_wcj_purchase_price'   => __( 'Booster purchase price', 'competitor-price-stock-monitor' ),
+			'_wc_cog_cost'                => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
+			'_wc_cogs_cost'               => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
+			'_wc_cog_cost_value'          => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
+			'_wc_cogs_total_value'        => __( 'WooCommerce cost of goods', 'competitor-price-stock-monitor' ),
+			'_alg_wc_cog_cost'            => __( 'Cost of Goods for WooCommerce', 'competitor-price-stock-monitor' ),
+			'_wcj_purchase_price'         => __( 'Booster purchase price', 'competitor-price-stock-monitor' ),
 			'_wcj_product_purchase_price' => __( 'Booster purchase price', 'competitor-price-stock-monitor' ),
-			'_yith_cog_cost'        => __( 'YITH cost of goods', 'competitor-price-stock-monitor' ),
-			'yith_cog_cost'         => __( 'YITH cost of goods', 'competitor-price-stock-monitor' ),
-			'_atum_purchase_price'  => __( 'ATUM purchase price', 'competitor-price-stock-monitor' ),
-			'_product_cost'         => __( 'Product cost metadata', 'competitor-price-stock-monitor' ),
-			'_cost'                 => __( 'Product cost metadata', 'competitor-price-stock-monitor' ),
-			self::PRODUCT_COST_META => __( 'Competitor Monitor product cost', 'competitor-price-stock-monitor' ),
+			'_yith_cog_cost'              => __( 'YITH cost of goods', 'competitor-price-stock-monitor' ),
+			'yith_cog_cost'               => __( 'YITH cost of goods', 'competitor-price-stock-monitor' ),
+			'_atum_purchase_price'        => __( 'ATUM purchase price', 'competitor-price-stock-monitor' ),
+			'_product_cost'               => __( 'Product cost metadata', 'competitor-price-stock-monitor' ),
+			'_cost'                       => __( 'Product cost metadata', 'competitor-price-stock-monitor' ),
+			self::PRODUCT_COST_META       => __( 'Competitor Monitor product cost', 'competitor-price-stock-monitor' ),
 		);
 
 		/**
@@ -465,7 +465,7 @@ class WC_Competitor_Monitor_DB {
 		 *
 		 * @param array<string,string> $keys Product cost meta keys.
 		 */
-		$filtered = apply_filters( 'competitor_price_stock_monitor_product_cost_meta_keys', $keys );
+		$filtered = apply_filters( 'wc_competitor_monitor_product_cost_meta_keys', $keys );
 		if ( ! is_array( $filtered ) ) {
 			return $keys;
 		}
@@ -534,23 +534,23 @@ class WC_Competitor_Monitor_DB {
 		$now   = current_time( 'mysql' );
 
 		$insert = array(
-			'product_id'             => absint( $data['product_id'] ?? 0 ),
-			'competitor_name'        => sanitize_text_field( (string) ( $data['competitor_name'] ?? '' ) ),
-			'competitor_product_title' => sanitize_text_field( (string) ( $data['competitor_product_title'] ?? '' ) ),
-			'competitor_url'         => esc_url_raw( (string) ( $data['competitor_url'] ?? '' ) ),
-			'price_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['price_selector'] ?? '' ) ),
-			'stock_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['stock_selector'] ?? '' ) ),
-			'browser_user_agent'     => sanitize_text_field( (string) ( $data['browser_user_agent'] ?? '' ) ),
-			'browser_cookie_header'  => WC_Competitor_Monitor_Security::sanitize_cookie_header( (string) ( $data['browser_cookie_header'] ?? '' ) ),
-			'currency'               => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $data['currency'] ?? '' ) ),
-			'min_margin_percentage'  => $this->normalize_percentage( $data['min_margin_percentage'] ?? 20 ),
-			'suggested_increase_mode' => $this->sanitize_mapping_increase_mode( (string) ( $data['suggested_increase_mode'] ?? 'global' ) ),
+			'product_id'                    => absint( $data['product_id'] ?? 0 ),
+			'competitor_name'               => sanitize_text_field( (string) ( $data['competitor_name'] ?? '' ) ),
+			'competitor_product_title'      => sanitize_text_field( (string) ( $data['competitor_product_title'] ?? '' ) ),
+			'competitor_url'                => esc_url_raw( (string) ( $data['competitor_url'] ?? '' ) ),
+			'price_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['price_selector'] ?? '' ) ),
+			'stock_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['stock_selector'] ?? '' ) ),
+			'browser_user_agent'            => sanitize_text_field( (string) ( $data['browser_user_agent'] ?? '' ) ),
+			'browser_cookie_header'         => WC_Competitor_Monitor_Security::sanitize_cookie_header( (string) ( $data['browser_cookie_header'] ?? '' ) ),
+			'currency'                      => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $data['currency'] ?? '' ) ),
+			'min_margin_percentage'         => $this->normalize_percentage( $data['min_margin_percentage'] ?? 20 ),
+			'suggested_increase_mode'       => $this->sanitize_mapping_increase_mode( (string) ( $data['suggested_increase_mode'] ?? 'global' ) ),
 			'suggested_increase_percentage' => $this->normalize_optional_increase_percentage( $data['suggested_increase_percentage'] ?? null ),
-			'active'                 => empty( $data['active'] ) ? 0 : 1,
-			'sync_uuid'              => ! empty( $data['sync_uuid'] ) ? sanitize_text_field( (string) $data['sync_uuid'] ) : wp_generate_uuid4(),
-			'sync_status'            => 'pending',
-			'created_at'             => $now,
-			'updated_at'             => $now,
+			'active'                        => empty( $data['active'] ) ? 0 : 1,
+			'sync_uuid'                     => ! empty( $data['sync_uuid'] ) ? sanitize_text_field( (string) $data['sync_uuid'] ) : wp_generate_uuid4(),
+			'sync_status'                   => 'pending',
+			'created_at'                    => $now,
+			'updated_at'                    => $now,
 		);
 
 		$wpdb->insert(
@@ -574,28 +574,28 @@ class WC_Competitor_Monitor_DB {
 
 		$table = $this->tables()['mappings'];
 
-		$update = array(
-			'product_id'             => absint( $data['product_id'] ?? 0 ),
-			'competitor_name'        => sanitize_text_field( (string) ( $data['competitor_name'] ?? '' ) ),
-			'competitor_url'         => esc_url_raw( (string) ( $data['competitor_url'] ?? '' ) ),
-			'price_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['price_selector'] ?? '' ) ),
-			'stock_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['stock_selector'] ?? '' ) ),
-			'browser_user_agent'     => sanitize_text_field( (string) ( $data['browser_user_agent'] ?? '' ) ),
-			'browser_cookie_header'  => WC_Competitor_Monitor_Security::sanitize_cookie_header( (string) ( $data['browser_cookie_header'] ?? '' ) ),
-			'currency'               => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $data['currency'] ?? '' ) ),
-			'min_margin_percentage'  => $this->normalize_percentage( $data['min_margin_percentage'] ?? 20 ),
-			'suggested_increase_mode' => $this->sanitize_mapping_increase_mode( (string) ( $data['suggested_increase_mode'] ?? 'global' ) ),
+		$update  = array(
+			'product_id'                    => absint( $data['product_id'] ?? 0 ),
+			'competitor_name'               => sanitize_text_field( (string) ( $data['competitor_name'] ?? '' ) ),
+			'competitor_url'                => esc_url_raw( (string) ( $data['competitor_url'] ?? '' ) ),
+			'price_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['price_selector'] ?? '' ) ),
+			'stock_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $data['stock_selector'] ?? '' ) ),
+			'browser_user_agent'            => sanitize_text_field( (string) ( $data['browser_user_agent'] ?? '' ) ),
+			'browser_cookie_header'         => WC_Competitor_Monitor_Security::sanitize_cookie_header( (string) ( $data['browser_cookie_header'] ?? '' ) ),
+			'currency'                      => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $data['currency'] ?? '' ) ),
+			'min_margin_percentage'         => $this->normalize_percentage( $data['min_margin_percentage'] ?? 20 ),
+			'suggested_increase_mode'       => $this->sanitize_mapping_increase_mode( (string) ( $data['suggested_increase_mode'] ?? 'global' ) ),
 			'suggested_increase_percentage' => $this->normalize_optional_increase_percentage( $data['suggested_increase_percentage'] ?? null ),
-			'active'                 => empty( $data['active'] ) ? 0 : 1,
-			'sync_status'            => 'pending',
-			'sync_error'             => '',
-			'updated_at'             => current_time( 'mysql' ),
+			'active'                        => empty( $data['active'] ) ? 0 : 1,
+			'sync_status'                   => 'pending',
+			'sync_error'                    => '',
+			'updated_at'                    => current_time( 'mysql' ),
 		);
 		$formats = array( '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%f', '%s', '%f', '%d', '%s', '%s', '%s' );
 
 		if ( array_key_exists( 'competitor_product_title', $data ) ) {
 			$update['competitor_product_title'] = sanitize_text_field( (string) $data['competitor_product_title'] );
-			$formats[] = '%s';
+			$formats[]                          = '%s';
 		}
 
 		$result = $wpdb->update(
@@ -1024,10 +1024,10 @@ class WC_Competitor_Monitor_DB {
 		$result = $wpdb->update(
 			$this->tables()['mappings'],
 			array(
-				'active'     => $active ? 1 : 0,
+				'active'      => $active ? 1 : 0,
 				'sync_status' => 'pending',
-				'sync_error' => '',
-				'updated_at' => current_time( 'mysql' ),
+				'sync_error'  => '',
+				'updated_at'  => current_time( 'mysql' ),
 			),
 			array( 'id' => absint( $id ) ),
 			array( '%d', '%s', '%s', '%s' ),
@@ -1049,7 +1049,7 @@ class WC_Competitor_Monitor_DB {
 	public function update_mapping_after_check( int $id, ?float $price, ?string $stock_status, string $competitor_product_title = '' ): void {
 		global $wpdb;
 
-		$update = array(
+		$update  = array(
 			'last_checked_at'   => current_time( 'mysql' ),
 			'last_price'        => $price,
 			'last_stock_status' => $stock_status ? sanitize_text_field( $stock_status ) : null,
@@ -1062,7 +1062,7 @@ class WC_Competitor_Monitor_DB {
 		$competitor_product_title = sanitize_text_field( $competitor_product_title );
 		if ( '' !== $competitor_product_title ) {
 			$update['competitor_product_title'] = $competitor_product_title;
-			$formats[] = '%s';
+			$formats[]                          = '%s';
 		}
 
 		$wpdb->update(
@@ -1107,16 +1107,16 @@ class WC_Competitor_Monitor_DB {
 		global $wpdb;
 
 		$insert = array(
-			'mapping_id'                => absint( $data['mapping_id'] ?? 0 ),
-			'product_id'                => absint( $data['product_id'] ?? 0 ),
-			'competitor_price'          => isset( $data['competitor_price'] ) ? (float) $data['competitor_price'] : null,
-			'competitor_stock_status'   => isset( $data['competitor_stock_status'] ) ? sanitize_text_field( (string) $data['competitor_stock_status'] ) : null,
-			'our_price'                 => isset( $data['our_price'] ) ? (float) $data['our_price'] : null,
-			'difference_amount'         => isset( $data['difference_amount'] ) ? (float) $data['difference_amount'] : null,
-			'difference_percentage'     => isset( $data['difference_percentage'] ) ? (float) $data['difference_percentage'] : null,
-			'checked_at'                => $data['checked_at'] ?? current_time( 'mysql' ),
-			'raw_status'                => sanitize_text_field( (string) ( $data['raw_status'] ?? '' ) ),
-			'error_message'             => isset( $data['error_message'] ) ? sanitize_textarea_field( (string) $data['error_message'] ) : null,
+			'mapping_id'              => absint( $data['mapping_id'] ?? 0 ),
+			'product_id'              => absint( $data['product_id'] ?? 0 ),
+			'competitor_price'        => isset( $data['competitor_price'] ) ? (float) $data['competitor_price'] : null,
+			'competitor_stock_status' => isset( $data['competitor_stock_status'] ) ? sanitize_text_field( (string) $data['competitor_stock_status'] ) : null,
+			'our_price'               => isset( $data['our_price'] ) ? (float) $data['our_price'] : null,
+			'difference_amount'       => isset( $data['difference_amount'] ) ? (float) $data['difference_amount'] : null,
+			'difference_percentage'   => isset( $data['difference_percentage'] ) ? (float) $data['difference_percentage'] : null,
+			'checked_at'              => $data['checked_at'] ?? current_time( 'mysql' ),
+			'raw_status'              => sanitize_text_field( (string) ( $data['raw_status'] ?? '' ) ),
+			'error_message'           => isset( $data['error_message'] ) ? sanitize_textarea_field( (string) $data['error_message'] ) : null,
 		);
 
 		$wpdb->insert(
@@ -1237,8 +1237,8 @@ class WC_Competitor_Monitor_DB {
 
 		$table          = $this->tables()['alerts'];
 		$mappings_table = $this->tables()['mappings'];
-		$limit = max( 1, absint( $limit ) );
-		$where = 'WHERE 1=1';
+		$limit          = max( 1, absint( $limit ) );
+		$where          = 'WHERE 1=1';
 
 		if ( null !== $unread_only ) {
 			$where .= $wpdb->prepare( ' AND a.is_read = %d', $unread_only ? 0 : 1 );
@@ -1429,14 +1429,14 @@ class WC_Competitor_Monitor_DB {
 				'attribution_ends_at' => (string) $adjustment->attribution_ends_at,
 			);
 
-			$events[] = $event;
+			$events[]                           = $event;
 			$events_by_product[ $product_id ][] = $event;
-			$product_ids[ $product_id ] = true;
+			$product_ids[ $product_id ]         = true;
 			if ( ! empty( $event['currency'] ) ) {
 				$currency = (string) $event['currency'];
 			}
 			if ( empty( $event['cost_at_change'] ) || (float) $event['cost_at_change'] <= 0 ) {
-				$missing_cost++;
+				++$missing_cost;
 			}
 		}
 
@@ -1472,9 +1472,10 @@ class WC_Competitor_Monitor_DB {
 		}
 
 		try {
-			$orders     = array();
-			$page       = 1;
-			$batch_size = 100;
+			$orders      = array();
+			$page        = 1;
+			$batch_size  = 100;
+			$batch_count = 0;
 			do {
 				$batch = wc_get_orders(
 					array(
@@ -1491,9 +1492,10 @@ class WC_Competitor_Monitor_DB {
 					break;
 				}
 
-				$orders = array_merge( $orders, $batch );
-				$page++;
-			} while ( count( $batch ) === $batch_size && $page <= 50 );
+				$batch_count = count( $batch );
+				$orders      = array_merge( $orders, $batch );
+				++$page;
+			} while ( $batch_count === $batch_size && $page <= 50 );
 		} catch ( Throwable $exception ) {
 			$summary['calculation_note'] = sanitize_text_field( $exception->getMessage() );
 			return $summary;
@@ -1542,13 +1544,13 @@ class WC_Competitor_Monitor_DB {
 					continue;
 				}
 
-				$line_total     = (float) $item->get_total();
-				$unit_net_price = $line_total / $quantity;
+				$line_total       = (float) $item->get_total();
+				$unit_net_price   = $line_total / $quantity;
 				$comparison_price = null !== $event['baseline_price'] && (float) $event['baseline_price'] > 0
 					? (float) $event['baseline_price']
 					: (float) $event['old_price'];
-				$product_id     = absint( $event['product_id'] );
-				$mapping_id     = absint( $event['mapping_id'] );
+				$product_id       = absint( $event['product_id'] );
+				$mapping_id       = absint( $event['mapping_id'] );
 
 				if ( ! isset( $product_impacts[ $product_id ] ) ) {
 					if ( ! isset( $mapping_cache[ $mapping_id ] ) ) {
@@ -1581,43 +1583,43 @@ class WC_Competitor_Monitor_DB {
 				$dynamic_revenue  = $unit_net_price * $quantity;
 				$revenue_uplift   = $dynamic_revenue - $baseline_revenue;
 
-				$product_impacts[ $product_id ]['baseline_revenue'] += $baseline_revenue;
-				$product_impacts[ $product_id ]['dynamic_revenue']  += $dynamic_revenue;
-				$summary['baseline_revenue']                        += $baseline_revenue;
-				$summary['dynamic_revenue']                         += $dynamic_revenue;
+				$product_impacts[ $product_id ]['baseline_revenue']            += $baseline_revenue;
+				$product_impacts[ $product_id ]['dynamic_revenue']             += $dynamic_revenue;
+				$summary['baseline_revenue']                                   += $baseline_revenue;
+				$summary['dynamic_revenue']                                    += $dynamic_revenue;
 				$product_impacts[ $product_id ]['units_sold_after_adjustment'] += $quantity;
-				$summary['units_sold_after_adjustment'] += $quantity;
-				$order_id = method_exists( $order, 'get_id' ) ? absint( $order->get_id() ) : spl_object_id( $order );
+				$summary['units_sold_after_adjustment']                        += $quantity;
+				$order_id                    = method_exists( $order, 'get_id' ) ? absint( $order->get_id() ) : spl_object_id( $order );
 				$counted_orders[ $order_id ] = true;
 				$product_impacts[ $product_id ]['order_ids'][ $order_id ] = true;
 
 				if ( ! empty( $event['cost_at_change'] ) && (float) $event['cost_at_change'] > 0 ) {
-					$cost                   = (float) $event['cost_at_change'];
-					$baseline_gross_profit  = ( $comparison_price - $cost ) * $quantity;
-					$dynamic_gross_profit   = ( $unit_net_price - $cost ) * $quantity;
-					$gross_profit_uplift    = $dynamic_gross_profit - $baseline_gross_profit;
+					$cost                  = (float) $event['cost_at_change'];
+					$baseline_gross_profit = ( $comparison_price - $cost ) * $quantity;
+					$dynamic_gross_profit  = ( $unit_net_price - $cost ) * $quantity;
+					$gross_profit_uplift   = $dynamic_gross_profit - $baseline_gross_profit;
 
-					$product_impacts[ $product_id ]['baseline_gross_profit'] += $baseline_gross_profit;
-					$product_impacts[ $product_id ]['dynamic_gross_profit']  += $dynamic_gross_profit;
-					$product_impacts[ $product_id ]['gross_profit_uplift']   += $gross_profit_uplift;
+					$product_impacts[ $product_id ]['baseline_gross_profit']   += $baseline_gross_profit;
+					$product_impacts[ $product_id ]['dynamic_gross_profit']    += $dynamic_gross_profit;
+					$product_impacts[ $product_id ]['gross_profit_uplift']     += $gross_profit_uplift;
 					$product_impacts[ $product_id ]['attributed_gross_profit'] += $gross_profit_uplift;
-					$product_impacts[ $product_id ]['costed_units']          += $quantity;
-					$summary['baseline_gross_profit']                       += $baseline_gross_profit;
-					$summary['dynamic_gross_profit']                        += $dynamic_gross_profit;
-					$summary['gross_profit_uplift']                         += $gross_profit_uplift;
-					$summary['attributed_gross_profit']                     += $gross_profit_uplift;
+					$product_impacts[ $product_id ]['costed_units']            += $quantity;
+					$summary['baseline_gross_profit']                          += $baseline_gross_profit;
+					$summary['dynamic_gross_profit']                           += $dynamic_gross_profit;
+					$summary['gross_profit_uplift']                            += $gross_profit_uplift;
+					$summary['attributed_gross_profit']                        += $gross_profit_uplift;
 				} else {
 					$product_impacts[ $product_id ]['revenue_uplift_without_cost'] += $revenue_uplift;
 					$product_impacts[ $product_id ]['uncosted_units']              += $quantity;
-					$summary['revenue_uplift_without_cost']                       += $revenue_uplift;
+					$summary['revenue_uplift_without_cost']                        += $revenue_uplift;
 				}
 			}
 		}
 
 		foreach ( $product_impacts as $product_id => $impact ) {
-			$product_impacts[ $product_id ]['orders_count'] = count( $impact['order_ids'] );
-			$baseline_gross_profit = (float) $product_impacts[ $product_id ]['baseline_gross_profit'];
-			$gross_profit_uplift   = (float) $product_impacts[ $product_id ]['gross_profit_uplift'];
+			$product_impacts[ $product_id ]['orders_count']      = count( $impact['order_ids'] );
+			$baseline_gross_profit                               = (float) $product_impacts[ $product_id ]['baseline_gross_profit'];
+			$gross_profit_uplift                                 = (float) $product_impacts[ $product_id ]['gross_profit_uplift'];
 			$product_impacts[ $product_id ]['uplift_percentage'] = $baseline_gross_profit > 0 ? ( $gross_profit_uplift / $baseline_gross_profit ) * 100 : 0.0;
 			if ( (float) $product_impacts[ $product_id ]['costed_units'] > 0 && (float) $product_impacts[ $product_id ]['uncosted_units'] > 0 ) {
 				$product_impacts[ $product_id ]['cost_data_status'] = 'partial';
@@ -1634,10 +1636,10 @@ class WC_Competitor_Monitor_DB {
 			}
 		);
 
-		$summary['orders_count'] = count( $counted_orders );
-		$summary['gross_profit_uplift'] = (float) $summary['dynamic_gross_profit'] - (float) $summary['baseline_gross_profit'];
-		$summary['attributed_gross_profit'] = (float) $summary['gross_profit_uplift'];
-		$summary['uplift_percentage'] = (float) $summary['baseline_gross_profit'] > 0 ? ( (float) $summary['gross_profit_uplift'] / (float) $summary['baseline_gross_profit'] ) * 100 : 0.0;
+		$summary['orders_count']               = count( $counted_orders );
+		$summary['gross_profit_uplift']        = (float) $summary['dynamic_gross_profit'] - (float) $summary['baseline_gross_profit'];
+		$summary['attributed_gross_profit']    = (float) $summary['gross_profit_uplift'];
+		$summary['uplift_percentage']          = (float) $summary['baseline_gross_profit'] > 0 ? ( (float) $summary['gross_profit_uplift'] / (float) $summary['baseline_gross_profit'] ) * 100 : 0.0;
 		$summary['products_missing_cost_data'] = count(
 			array_filter(
 				$product_impacts,
@@ -1646,8 +1648,8 @@ class WC_Competitor_Monitor_DB {
 				}
 			)
 		);
-		$summary['product_impacts'] = array_slice( $product_impacts, 0, 250 );
-		$summary['top_products'] = array_slice( $product_impacts, 0, max( 1, absint( $top_limit ) ) );
+		$summary['product_impacts']            = array_slice( $product_impacts, 0, 250 );
+		$summary['top_products']               = array_slice( $product_impacts, 0, max( 1, absint( $top_limit ) ) );
 
 		return $summary;
 	}

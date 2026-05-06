@@ -4,6 +4,11 @@
  * without a full WordPress installation.
  */
 
+// Prevent direct web access. PHPUnit runs as CLI so this guard is skipped there.
+if ( 'cli' !== PHP_SAPI && ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'ABSPATH', __DIR__ . '/../' );
 define( 'MINUTE_IN_SECONDS', 60 );
 define( 'CPSM_DEV_MODE', false );

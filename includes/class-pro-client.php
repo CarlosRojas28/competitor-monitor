@@ -166,8 +166,8 @@ class WC_Competitor_Monitor_Pro_Client {
 	/**
 	 * Requests an automatic mapping suggestion from the SaaS.
 	 *
-	 * @param string $competitor_url Competitor URL.
-	 * @param bool   $force_duplicate Force a fresh extraction even when the SaaS has seen this URL before.
+	 * @param string              $competitor_url Competitor URL.
+	 * @param bool                $force_duplicate Force a fresh extraction even when the SaaS has seen this URL before.
 	 * @param array<string,mixed> $context Optional job context.
 	 * @return array<string,mixed>
 	 */
@@ -297,10 +297,10 @@ class WC_Competitor_Monitor_Pro_Client {
 	/**
 	 * Synchronizes local competitor mappings to the SaaS.
 	 *
-	 * @param string              $mode Sync mode: full, upsert, or delete.
+	 * @param string                         $mode Sync mode: full, upsert, or delete.
 	 * @param array<int,array<string,mixed>> $mappings Mapping payloads.
-	 * @param array<int,string>   $deleted_sync_uuids Deleted mapping sync UUIDs.
-	 * @param string              $reason Change reason.
+	 * @param array<int,string>              $deleted_sync_uuids Deleted mapping sync UUIDs.
+	 * @param string                         $reason Change reason.
 	 * @return array<string,mixed>
 	 */
 	public function sync_mappings( string $mode, array $mappings, array $deleted_sync_uuids = array(), string $reason = 'manual' ): array {
@@ -418,8 +418,8 @@ class WC_Competitor_Monitor_Pro_Client {
 	 * @return array<string,mixed>
 	 */
 	private function remote_request( string $method, string $saas_url, string $path, string $api_key, array $body ): array {
-		$url     = trailingslashit( $saas_url ) . ltrim( $path, '/' );
-		$headers = array(
+		$url      = trailingslashit( $saas_url ) . ltrim( $path, '/' );
+		$headers  = array(
 			'Accept'       => 'application/json',
 			'Content-Type' => 'application/json',
 		);
@@ -502,17 +502,18 @@ class WC_Competitor_Monitor_Pro_Client {
 	 * @param string $status License status.
 	 * @param string $plan Plan.
 	 * @param string $message Status message.
+	 * @param array  $bridge Bridge credentials (site_id, key_id, secret).
 	 * @return void
 	 */
 	private function save_license_state( string $saas_url, string $license_key, string $api_key, string $status, string $plan, string $message, array $bridge = array() ): void {
 		$settings = array(
-				'pro_enabled'         => 1,
-				'pro_saas_url'        => $saas_url,
-				'pro_license_key'     => '',
-				'pro_api_key'         => WC_Competitor_Monitor_Bridge_Auth::dev_mode() ? $api_key : '',
-				'pro_license_status'  => $status,
-				'pro_plan'            => $plan,
-				'pro_license_message' => $message,
+			'pro_enabled'         => 1,
+			'pro_saas_url'        => $saas_url,
+			'pro_license_key'     => '',
+			'pro_api_key'         => WC_Competitor_Monitor_Bridge_Auth::dev_mode() ? $api_key : '',
+			'pro_license_status'  => $status,
+			'pro_plan'            => $plan,
+			'pro_license_message' => $message,
 		);
 
 		if ( '' !== $license_key ) {
@@ -523,16 +524,16 @@ class WC_Competitor_Monitor_Pro_Client {
 		if ( ! empty( $bridge ) ) {
 			$plugin_to_saas_secret = sanitize_text_field( (string) ( $bridge['plugin_to_saas_secret'] ?? '' ) );
 			$saas_to_plugin_secret = sanitize_text_field( (string) ( $bridge['saas_to_plugin_secret'] ?? '' ) );
-			$settings = array_merge(
+			$settings              = array_merge(
 				$settings,
 				array(
-					'bridge_auth_version' => sanitize_key( (string) ( $bridge['auth_version'] ?? 'hmac_v1' ) ),
-					'pro_site_id'         => sanitize_text_field( (string) ( $bridge['site_id'] ?? '' ) ),
-					'pro_key_id'          => sanitize_text_field( (string) ( $bridge['key_id'] ?? '' ) ),
+					'bridge_auth_version'                 => sanitize_key( (string) ( $bridge['auth_version'] ?? 'hmac_v1' ) ),
+					'pro_site_id'                         => sanitize_text_field( (string) ( $bridge['site_id'] ?? '' ) ),
+					'pro_key_id'                          => sanitize_text_field( (string) ( $bridge['key_id'] ?? '' ) ),
 					'pro_plugin_to_saas_secret_encrypted' => WC_Competitor_Monitor_Bridge_Auth::encrypt_secret( $plugin_to_saas_secret ),
-					'pro_plugin_to_saas_secret_preview' => sanitize_text_field( (string) ( $bridge['plugin_to_saas_secret_preview'] ?? $this->preview_secret( $plugin_to_saas_secret ) ) ),
+					'pro_plugin_to_saas_secret_preview'   => sanitize_text_field( (string) ( $bridge['plugin_to_saas_secret_preview'] ?? $this->preview_secret( $plugin_to_saas_secret ) ) ),
 					'pro_saas_to_plugin_secret_encrypted' => WC_Competitor_Monitor_Bridge_Auth::encrypt_secret( $saas_to_plugin_secret ),
-					'pro_saas_to_plugin_secret_preview' => sanitize_text_field( (string) ( $bridge['saas_to_plugin_secret_preview'] ?? $this->preview_secret( $saas_to_plugin_secret ) ) ),
+					'pro_saas_to_plugin_secret_preview'   => sanitize_text_field( (string) ( $bridge['saas_to_plugin_secret_preview'] ?? $this->preview_secret( $saas_to_plugin_secret ) ) ),
 				)
 			);
 		}
@@ -677,7 +678,7 @@ class WC_Competitor_Monitor_Pro_Client {
 	 * @return bool
 	 */
 	private function is_allowed_local_saas_url( string $saas_host ): bool {
-		$saas_host       = strtolower( trim( $saas_host ) );
+		$saas_host        = strtolower( trim( $saas_host ) );
 		$local_saas_hosts = array( '127.0.0.1', 'localhost', '::1' );
 		if ( ! in_array( $saas_host, $local_saas_hosts, true ) ) {
 			return false;

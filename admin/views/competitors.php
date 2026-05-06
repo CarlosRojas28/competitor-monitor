@@ -54,11 +54,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<th><?php esc_html_e( 'Stock', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Active', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'SaaS sync', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Actions', 'competitor-price-stock-monitor' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php if ( empty( $wc_competitor_monitor_mappings ) ) : ?>
-					<tr><td colspan="8"><?php esc_html_e( 'No competitor URLs have been added yet.', 'competitor-price-stock-monitor' ); ?></td></tr>
+					<tr><td colspan="9"><?php esc_html_e( 'No competitor URLs have been added yet.', 'competitor-price-stock-monitor' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $wc_competitor_monitor_mappings as $wc_competitor_monitor_mapping ) : ?>
 						<tr>
@@ -89,6 +90,39 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<?php if ( ! empty( $wc_competitor_monitor_mapping->sync_error ) ) : ?>
 									<br><small><?php echo esc_html( (string) $wc_competitor_monitor_mapping->sync_error ); ?></small>
 								<?php endif; ?>
+							</td>
+							<td class="wccm-row-actions">
+								<?php
+								$wc_competitor_monitor_edit_url = add_query_arg(
+									array(
+										'page'       => 'competitor-price-stock-monitor-products',
+										'mapping_id' => absint( $wc_competitor_monitor_mapping->id ),
+									),
+									admin_url( 'admin.php' )
+								);
+								?>
+								<a class="button button-small" href="<?php echo esc_url( $wc_competitor_monitor_edit_url ); ?>"><?php esc_html_e( 'Edit', 'competitor-price-stock-monitor' ); ?></a>
+
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+									<input type="hidden" name="action" value="wc_competitor_monitor_run_check">
+									<input type="hidden" name="mapping_id" value="<?php echo esc_attr( absint( $wc_competitor_monitor_mapping->id ) ); ?>">
+									<?php wp_nonce_field( 'wc_competitor_monitor_run_check_' . absint( $wc_competitor_monitor_mapping->id ) ); ?>
+									<button type="submit" class="button button-small"><?php esc_html_e( 'Run check', 'competitor-price-stock-monitor' ); ?></button>
+								</form>
+
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+									<input type="hidden" name="action" value="wc_competitor_monitor_toggle_mapping">
+									<input type="hidden" name="mapping_id" value="<?php echo esc_attr( absint( $wc_competitor_monitor_mapping->id ) ); ?>">
+									<?php wp_nonce_field( 'wc_competitor_monitor_toggle_mapping_' . absint( $wc_competitor_monitor_mapping->id ) ); ?>
+									<button type="submit" class="button button-small"><?php echo esc_html( empty( $wc_competitor_monitor_mapping->active ) ? __( 'Activate', 'competitor-price-stock-monitor' ) : __( 'Deactivate', 'competitor-price-stock-monitor' ) ); ?></button>
+								</form>
+
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="wccm-delete-form">
+									<input type="hidden" name="action" value="wc_competitor_monitor_delete_mapping">
+									<input type="hidden" name="mapping_id" value="<?php echo esc_attr( absint( $wc_competitor_monitor_mapping->id ) ); ?>">
+									<?php wp_nonce_field( 'wc_competitor_monitor_delete_mapping_' . absint( $wc_competitor_monitor_mapping->id ) ); ?>
+									<button type="submit" class="button button-small button-link-delete"><?php esc_html_e( 'Delete', 'competitor-price-stock-monitor' ); ?></button>
+								</form>
 							</td>
 						</tr>
 					<?php endforeach; ?>

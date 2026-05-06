@@ -42,7 +42,7 @@ require_once WC_COMPETITOR_MONITOR_PATH . 'includes/class-rest-api.php';
 require_once WC_COMPETITOR_MONITOR_PATH . 'includes/class-admin.php';
 require_once WC_COMPETITOR_MONITOR_PATH . 'includes/class-plugin.php';
 
-add_filter( 'cron_schedules', array( 'WC_Competitor_Monitor_Activator', 'add_cron_schedules' ) );
+add_filter( 'cron_schedules', array( 'WC_Competitor_Monitor_Activator', 'add_cron_schedules' ) ); // phpcs:ignore WordPress.WP.CronInterval.ChangeDetected -- interval is 6 h, defined in add_cron_schedules()
 
 register_activation_hook( __FILE__, array( 'WC_Competitor_Monitor_Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'WC_Competitor_Monitor_Deactivator', 'deactivate' ) );

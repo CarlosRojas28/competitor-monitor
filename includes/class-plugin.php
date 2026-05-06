@@ -34,14 +34,14 @@ class WC_Competitor_Monitor_Plugin {
 	public function __construct() {
 		$this->db = new WC_Competitor_Monitor_DB();
 
-		$crawler          = new WC_Competitor_Monitor_Crawler( $this->db );
-		$parser           = new WC_Competitor_Monitor_Parser();
-		$alerts           = new WC_Competitor_Monitor_Alerts( $this->db );
-		$recommendations  = new WC_Competitor_Monitor_Recommendations( $this->db );
-		$pro_client       = new WC_Competitor_Monitor_Pro_Client( $this->db );
-		$sync             = new WC_Competitor_Monitor_Sync( $this->db, $pro_client );
-		$this->monitor    = new WC_Competitor_Monitor_Monitor( $this->db, $crawler, $parser, $alerts, $recommendations, $pro_client );
-		new WC_Competitor_Monitor_REST_API( $this->db );
+		$crawler         = new WC_Competitor_Monitor_Crawler( $this->db );
+		$parser          = new WC_Competitor_Monitor_Parser();
+		$alerts          = new WC_Competitor_Monitor_Alerts( $this->db );
+		$recommendations = new WC_Competitor_Monitor_Recommendations( $this->db );
+		$pro_client      = new WC_Competitor_Monitor_Pro_Client( $this->db );
+		$sync            = new WC_Competitor_Monitor_Sync( $this->db, $pro_client );
+		$this->monitor   = new WC_Competitor_Monitor_Monitor( $this->db, $crawler, $parser, $alerts, $recommendations, $pro_client );
+		new WC_Competitor_Monitor_REST_API( $this->db, $this->monitor );
 
 		if ( is_admin() ) {
 			new WC_Competitor_Monitor_Admin( $this->db, $this->monitor, $recommendations, $pro_client, $sync );
@@ -87,8 +87,8 @@ class WC_Competitor_Monitor_Plugin {
 	/**
 	 * Syncs the latest profit impact snapshot after revenue-bearing orders change.
 	 *
-	 * @param int              $order_id Order ID.
-	 * @param WC_Order|null    $order Order object when provided by WooCommerce.
+	 * @param int           $order_id Order ID.
+	 * @param WC_Order|null $order Order object when provided by WooCommerce.
 	 * @return void
 	 */
 	public function sync_profit_impact_after_order( int $order_id = 0, $order = null ): void {

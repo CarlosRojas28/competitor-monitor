@@ -14,7 +14,7 @@ if ( ! in_array( $wc_competitor_monitor_increase_limit_mode, array( 'percent', '
 	$wc_competitor_monitor_increase_limit_mode = 'percent';
 }
 $wc_competitor_monitor_increase_limit_percentage = max( 0, min( 999.99, (float) ( $wc_competitor_monitor_settings['suggested_increase_limit_percentage'] ?? 5.0 ) ) );
-$wc_competitor_monitor_auto_price_mode = sanitize_key( (string) ( $wc_competitor_monitor_settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
+$wc_competitor_monitor_auto_price_mode           = sanitize_key( (string) ( $wc_competitor_monitor_settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
 if ( ! in_array( $wc_competitor_monitor_auto_price_mode, array( 'disabled', 'enabled' ), true ) ) {
 	$wc_competitor_monitor_auto_price_mode = 'disabled';
 }
@@ -27,14 +27,14 @@ $wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) 
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
 	$wc_competitor_monitor_saas_base_url = 'http://127.0.0.1:8788';
 }
-$wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/app/checkout';
-$wc_competitor_monitor_sites_url   = $wc_competitor_monitor_saas_base_url . '/app/sites';
-$wc_competitor_monitor_cron_event = WC_Competitor_Monitor_Activator::scheduled_event();
+$wc_competitor_monitor_upgrade_url          = $wc_competitor_monitor_saas_base_url . '/app/checkout';
+$wc_competitor_monitor_sites_url            = $wc_competitor_monitor_saas_base_url . '/app/sites';
+$wc_competitor_monitor_cron_event           = WC_Competitor_Monitor_Activator::scheduled_event();
 $wc_competitor_monitor_cron_schedule_labels = array(
-	'hourly'                           => __( 'Hourly', 'competitor-price-stock-monitor' ),
-	'wc_competitor_monitor_six_hours'  => __( 'Every 6 hours', 'competitor-price-stock-monitor' ),
-	'twicedaily'                       => __( 'Every 12 hours', 'competitor-price-stock-monitor' ),
-	'daily'                            => __( 'Daily', 'competitor-price-stock-monitor' ),
+	'hourly'                          => __( 'Hourly', 'competitor-price-stock-monitor' ),
+	'wc_competitor_monitor_six_hours' => __( 'Every 6 hours', 'competitor-price-stock-monitor' ),
+	'twicedaily'                      => __( 'Every 12 hours', 'competitor-price-stock-monitor' ),
+	'daily'                           => __( 'Daily', 'competitor-price-stock-monitor' ),
 );
 ?>
 <div class="wrap wccm-wrap">
@@ -139,8 +139,12 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 		</div>
 
 		<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
-			<div class="notice notice-warning inline">
-				<p><?php esc_html_e( 'This option is saved, but prices will only be changed automatically after a Pro license is active and Pro SaaS features are enabled.', 'competitor-price-stock-monitor' ); ?></p>
+			<div class="notice notice-info inline">
+				<p>
+					<strong><?php esc_html_e( 'Pro feature: automatic price updates require a Pro license.', 'competitor-price-stock-monitor' ); ?></strong><br>
+					<?php esc_html_e( 'With a free license you can review price suggestions and apply them manually from the competitor list.', 'competitor-price-stock-monitor' ); ?>
+					<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro', 'competitor-price-stock-monitor' ); ?></a>
+				</p>
 			</div>
 		<?php endif; ?>
 
@@ -149,7 +153,7 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 			<?php wp_nonce_field( 'wc_competitor_monitor_save_auto_pricing' ); ?>
 			<input type="hidden" name="auto_price_adjustment_mode" value="disabled">
 			<label class="wccm-toggle-row">
-				<input type="checkbox" name="auto_price_adjustment_mode" value="enabled" <?php checked( $wc_competitor_monitor_auto_price_mode, 'enabled' ); ?>>
+				<input type="checkbox" name="auto_price_adjustment_mode" value="enabled" <?php checked( $wc_competitor_monitor_auto_price_mode, 'enabled' ); ?><?php disabled( $wc_competitor_monitor_pro_is_active, false ); ?>>
 				<span>
 					<strong><?php esc_html_e( 'Apply recommended prices automatically and notify me', 'competitor-price-stock-monitor' ); ?></strong>
 					<small><?php esc_html_e( 'When enabled globally, products set to "Use global setting" can be updated after checks. Each WooCommerce product can override this in the product edit screen or Product Mapping.', 'competitor-price-stock-monitor' ); ?></small>
@@ -195,9 +199,14 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					<td>
 						<select id="wccm_auto_price_adjustment_mode" name="auto_price_adjustment_mode">
 							<option value="disabled" <?php selected( $wc_competitor_monitor_auto_price_mode, 'disabled' ); ?>><?php esc_html_e( 'Disabled', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="enabled" <?php selected( $wc_competitor_monitor_auto_price_mode, 'enabled' ); ?>><?php esc_html_e( 'Enabled: apply suggested prices and notify me', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="enabled" <?php selected( $wc_competitor_monitor_auto_price_mode, 'enabled' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Enabled: apply suggested prices and notify me (Pro)', 'competitor-price-stock-monitor' ); ?></option>
 						</select>
 						<p class="description"><?php esc_html_e( 'When enabled and the Pro license is active, checks can update WooCommerce product prices to the current suggestion. Every automatic change creates an internal alert and sends email when email alerts are enabled. Individual products can override this in the product edit screen or Product Mapping.', 'competitor-price-stock-monitor' ); ?></p>
+						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+							<p class="description">
+								<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro to enable automatic price updates.', 'competitor-price-stock-monitor' ); ?></a>
+							</p>
+						<?php endif; ?>
 					</td>
 				</tr>
 				<tr>
@@ -215,9 +224,14 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					<td>
 						<select id="wccm_original_price_restore_mode" name="original_price_restore_mode">
 							<option value="disabled" <?php selected( $wc_competitor_monitor_restore_mode, 'disabled' ); ?>><?php esc_html_e( 'Disabled', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="enabled" <?php selected( $wc_competitor_monitor_restore_mode, 'enabled' ); ?>><?php esc_html_e( 'Enabled: allow manual restore when still competitive', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="enabled" <?php selected( $wc_competitor_monitor_restore_mode, 'enabled' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Enabled: allow manual restore when still competitive (Pro)', 'competitor-price-stock-monitor' ); ?></option>
 						</select>
 						<p class="description"><?php esc_html_e( 'When enabled and the Pro license is active, users can manually restore the captured original customer price from the WooCommerce product edit screen. Restore is blocked when the original price would be above the cheapest in-stock competitor.', 'competitor-price-stock-monitor' ); ?></p>
+						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+							<p class="description">
+								<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro to enable original price restore.', 'competitor-price-stock-monitor' ); ?></a>
+							</p>
+						<?php endif; ?>
 					</td>
 				</tr>
 				<tr>
@@ -242,10 +256,18 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					<td>
 						<select id="wccm_frequency" name="check_frequency">
 							<option value="daily" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'daily' ); ?>><?php esc_html_e( 'Daily', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="twelve_hours" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'twelve_hours' ); ?>><?php esc_html_e( 'Every 12 hours', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="six_hours" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'six_hours' ); ?>><?php esc_html_e( 'Every 6 hours', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="hourly" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="twelve_hours" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'twelve_hours' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Every 12 hours (Pro)', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="six_hours" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'six_hours' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Every 6 hours (Pro)', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="hourly" <?php selected( $wc_competitor_monitor_settings['check_frequency'], 'hourly' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Hourly (Pro)', 'competitor-price-stock-monitor' ); ?></option>
 						</select>
+						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+							<div class="notice notice-info inline" style="margin:8px 0 0;">
+								<p>
+									<?php esc_html_e( 'Hourly, 6-hour and 12-hour monitoring are Pro features.', 'competitor-price-stock-monitor' ); ?>
+									<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro', 'competitor-price-stock-monitor' ); ?></a>
+								</p>
+							</div>
+						<?php endif; ?>
 						<?php if ( $wc_competitor_monitor_cron_event ) : ?>
 							<p class="description">
 								<?php

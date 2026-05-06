@@ -52,8 +52,8 @@ class WC_Competitor_Monitor_Sync {
 		WC_Competitor_Monitor_Security::require_capability();
 		check_admin_referer( 'wc_competitor_monitor_sync_mappings' );
 
-		$result = $this->sync_all_mappings();
-		$type   = empty( $result['success'] ) ? 'error' : 'updated';
+		$result  = $this->sync_all_mappings();
+		$type    = empty( $result['success'] ) ? 'error' : 'updated';
 		$message = empty( $result['success'] )
 			? (string) ( $result['error'] ?? __( 'Mapping sync failed.', 'competitor-price-stock-monitor' ) )
 			: sprintf(

@@ -53,7 +53,7 @@ class WC_Competitor_Monitor_Recommendations {
 			}
 
 			$seen_products[ $product_id ] = true;
-			$recommendation              = $this->recommend_for_product( $product_id );
+			$recommendation               = $this->recommend_for_product( $product_id );
 			if ( ! empty( $recommendation ) ) {
 				$recommendations[] = $recommendation;
 			}
@@ -106,12 +106,12 @@ class WC_Competitor_Monitor_Recommendations {
 			)
 		);
 
-		$eligible          = array();
-		$min_margin        = 0.0;
-		$competitors_seen  = 0;
+		$eligible         = array();
+		$min_margin       = 0.0;
+		$competitors_seen = 0;
 
 		foreach ( $mappings as $mapping ) {
-			$competitors_seen++;
+			++$competitors_seen;
 			$min_margin = max( $min_margin, max( 0, min( 99, (float) ( $mapping->min_margin_percentage ?? 0 ) ) ) );
 			$price      = isset( $mapping->last_price ) ? (float) $mapping->last_price : 0.0;
 
@@ -368,16 +368,16 @@ class WC_Competitor_Monitor_Recommendations {
 			$target = round( max( $target, $our_price ), wc_get_price_decimals() );
 
 			return array(
-				'type'              => 'raise_when_much_cheaper',
-				'severity'          => 'success',
-				'product_id'        => absint( $mapping->product_id ),
-				'mapping_id'        => absint( $mapping->id ),
-				'competitor_name'   => (string) $mapping->competitor_name,
-				'current_price'     => $our_price,
-				'competitor_price'  => $competitor_price,
-				'recommended_price' => $target,
+				'type'                      => 'raise_when_much_cheaper',
+				'severity'                  => 'success',
+				'product_id'                => absint( $mapping->product_id ),
+				'mapping_id'                => absint( $mapping->id ),
+				'competitor_name'           => (string) $mapping->competitor_name,
+				'current_price'             => $our_price,
+				'competitor_price'          => $competitor_price,
+				'recommended_price'         => $target,
 				'increase_limit_percentage' => $increase_limit,
-				'message'           => __( 'You are materially cheaper than the competitor. Consider a measured increase while staying competitive.', 'competitor-price-stock-monitor' ),
+				'message'                   => __( 'You are materially cheaper than the competitor. Consider a measured increase while staying competitive.', 'competitor-price-stock-monitor' ),
 			);
 		}
 

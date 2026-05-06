@@ -59,7 +59,14 @@ class WC_Competitor_Monitor_Crawler {
 
 		if ( is_wp_error( $response ) ) {
 			$message = $response->get_error_message();
-			$this->db->insert_log( 'error', __( 'Crawler request failed.', 'competitor-price-stock-monitor' ), array( 'url' => $url, 'error' => $message ) );
+			$this->db->insert_log(
+				'error',
+				__( 'Crawler request failed.', 'competitor-price-stock-monitor' ),
+				array(
+					'url'   => $url,
+					'error' => $message,
+				)
+			);
 			return array(
 				'success' => false,
 				'status'  => 'request_failed',
@@ -80,7 +87,14 @@ class WC_Competitor_Monitor_Crawler {
 		if ( $code < 200 || $code >= 400 ) {
 			$status  = $this->get_failed_status( $code, $body );
 			$message = $this->get_failed_message( $code, $body );
-			$this->db->insert_log( 'warning', $message, array( 'url' => $url, 'http_code' => $code ) );
+			$this->db->insert_log(
+				'warning',
+				$message,
+				array(
+					'url'       => $url,
+					'http_code' => $code,
+				)
+			);
 			return array(
 				'success'   => false,
 				'status'    => $status,
@@ -91,7 +105,14 @@ class WC_Competitor_Monitor_Crawler {
 
 		if ( $this->is_blocked_response( $code, $body ) ) {
 			$message = $this->get_failed_message( $code, $body );
-			$this->db->insert_log( 'warning', $message, array( 'url' => $url, 'http_code' => $code ) );
+			$this->db->insert_log(
+				'warning',
+				$message,
+				array(
+					'url'       => $url,
+					'http_code' => $code,
+				)
+			);
 			return array(
 				'success'   => false,
 				'status'    => $this->get_failed_status( $code, $body ),
@@ -372,7 +393,7 @@ class WC_Competitor_Monitor_Crawler {
 
 		if (
 			'' === $configured_user_agent
-			|| str_starts_with( $configured_user_agent, 'W' . 'C Competitor Monitor/' )
+			|| str_starts_with( $configured_user_agent, 'W' . 'C Competitor Monitor/' ) // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found -- intentional split avoids matching on literal UA string
 			|| str_starts_with( $configured_user_agent, 'Competitor Price Stock Monitor/' )
 		) {
 			return $default_agent;

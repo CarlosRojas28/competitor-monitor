@@ -27,12 +27,21 @@ class WC_Competitor_Monitor_REST_API {
 	private WC_Competitor_Monitor_DB $db;
 
 	/**
+	 * Monitor — optional, used for synchronous run-check endpoint.
+	 *
+	 * @var WC_Competitor_Monitor_Monitor|null
+	 */
+	private ?WC_Competitor_Monitor_Monitor $monitor;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param WC_Competitor_Monitor_DB $db Database layer.
+	 * @param WC_Competitor_Monitor_DB           $db      Database layer.
+	 * @param WC_Competitor_Monitor_Monitor|null $monitor Monitor (optional).
 	 */
-	public function __construct( WC_Competitor_Monitor_DB $db ) {
-		$this->db = $db;
+	public function __construct( WC_Competitor_Monitor_DB $db, ?WC_Competitor_Monitor_Monitor $monitor = null ) {
+		$this->db      = $db;
+		$this->monitor = $monitor;
 
 		add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 	}
@@ -188,11 +197,39 @@ class WC_Competitor_Monitor_REST_API {
 				'permission_callback' => array( $this, 'authorize_request' ),
 			)
 		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/run-check',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'run_check_now' ),
+				'permission_callback' => array( $this, 'authorize_request' ),
+			)
+		);
+
+		register_rest_route(
+			self::NAMESPACE,
+			'/settings',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_plugin_settings' ),
+					'permission_callback' => array( $this, 'authorize_request' ),
+				),
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'update_plugin_settings' ),
+					'permission_callback' => array( $this, 'authorize_request' ),
+				),
+			)
+		);
 	}
 
 	/**
 	 * Lists mappings for the connected site.
 	 *
+	 * @param WP_REST_Request $request REST API request.
 	 * @return WP_REST_Response
 	 */
 	public function list_mappings( WP_REST_Request $request ): WP_REST_Response {
@@ -489,19 +526,19 @@ class WC_Competitor_Monitor_REST_API {
 
 		$competitor_name = $this->competitor_name_from_params( $params, $url );
 		$this->db->capture_original_product_price( $product_id, 'rest_mapping_created' );
-		$mapping_id      = $this->db->insert_mapping(
+		$mapping_id = $this->db->insert_mapping(
 			array(
-				'product_id'             => $product_id,
-				'competitor_name'        => $competitor_name,
-				'competitor_product_title' => sanitize_text_field( (string) ( $params['competitor_product_title'] ?? $params['product_title'] ?? '' ) ),
-				'competitor_url'         => $url,
-				'price_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $params['price_selector'] ?? '' ) ),
-				'stock_selector'         => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $params['stock_selector'] ?? '' ) ),
-				'currency'               => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $params['currency'] ?? '' ) ),
-				'min_margin_percentage'  => isset( $params['min_margin_percentage'] ) ? (float) $params['min_margin_percentage'] : 20,
-				'suggested_increase_mode' => 'global',
+				'product_id'                    => $product_id,
+				'competitor_name'               => $competitor_name,
+				'competitor_product_title'      => sanitize_text_field( (string) ( $params['competitor_product_title'] ?? $params['product_title'] ?? '' ) ),
+				'competitor_url'                => $url,
+				'price_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $params['price_selector'] ?? '' ) ),
+				'stock_selector'                => WC_Competitor_Monitor_Security::sanitize_selector( (string) ( $params['stock_selector'] ?? '' ) ),
+				'currency'                      => WC_Competitor_Monitor_Security::sanitize_currency( (string) ( $params['currency'] ?? '' ) ),
+				'min_margin_percentage'         => isset( $params['min_margin_percentage'] ) ? (float) $params['min_margin_percentage'] : 20,
+				'suggested_increase_mode'       => 'global',
 				'suggested_increase_percentage' => null,
-				'active'                 => isset( $params['active'] ) ? (int) ! empty( $params['active'] ) : 1,
+				'active'                        => isset( $params['active'] ) ? (int) ! empty( $params['active'] ) : 1,
 			)
 		);
 
@@ -543,19 +580,19 @@ class WC_Competitor_Monitor_REST_API {
 		$this->db->update_mapping(
 			$mapping_id,
 			array(
-				'product_id'             => $product_id,
-				'competitor_name'        => isset( $params['competitor_name'] ) ? sanitize_text_field( (string) $params['competitor_name'] ) : (string) $mapping->competitor_name,
-				'competitor_product_title' => isset( $params['competitor_product_title'] ) || isset( $params['product_title'] ) ? sanitize_text_field( (string) ( $params['competitor_product_title'] ?? $params['product_title'] ?? '' ) ) : (string) ( $mapping->competitor_product_title ?? '' ),
-				'competitor_url'         => $url,
-				'price_selector'         => isset( $params['price_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( (string) $params['price_selector'] ) : (string) $mapping->price_selector,
-				'stock_selector'         => isset( $params['stock_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( (string) $params['stock_selector'] ) : (string) $mapping->stock_selector,
-				'browser_user_agent'     => (string) ( $mapping->browser_user_agent ?? '' ),
-				'browser_cookie_header'  => (string) ( $mapping->browser_cookie_header ?? '' ),
-				'currency'               => isset( $params['currency'] ) ? WC_Competitor_Monitor_Security::sanitize_currency( (string) $params['currency'] ) : (string) $mapping->currency,
-				'min_margin_percentage'  => isset( $params['min_margin_percentage'] ) ? (float) $params['min_margin_percentage'] : (float) $mapping->min_margin_percentage,
-				'suggested_increase_mode' => (string) ( $mapping->suggested_increase_mode ?? 'global' ),
+				'product_id'                    => $product_id,
+				'competitor_name'               => isset( $params['competitor_name'] ) ? sanitize_text_field( (string) $params['competitor_name'] ) : (string) $mapping->competitor_name,
+				'competitor_product_title'      => isset( $params['competitor_product_title'] ) || isset( $params['product_title'] ) ? sanitize_text_field( (string) ( $params['competitor_product_title'] ?? $params['product_title'] ?? '' ) ) : (string) ( $mapping->competitor_product_title ?? '' ),
+				'competitor_url'                => $url,
+				'price_selector'                => isset( $params['price_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( (string) $params['price_selector'] ) : (string) $mapping->price_selector,
+				'stock_selector'                => isset( $params['stock_selector'] ) ? WC_Competitor_Monitor_Security::sanitize_selector( (string) $params['stock_selector'] ) : (string) $mapping->stock_selector,
+				'browser_user_agent'            => (string) ( $mapping->browser_user_agent ?? '' ),
+				'browser_cookie_header'         => (string) ( $mapping->browser_cookie_header ?? '' ),
+				'currency'                      => isset( $params['currency'] ) ? WC_Competitor_Monitor_Security::sanitize_currency( (string) $params['currency'] ) : (string) $mapping->currency,
+				'min_margin_percentage'         => isset( $params['min_margin_percentage'] ) ? (float) $params['min_margin_percentage'] : (float) $mapping->min_margin_percentage,
+				'suggested_increase_mode'       => (string) ( $mapping->suggested_increase_mode ?? 'global' ),
 				'suggested_increase_percentage' => isset( $mapping->suggested_increase_percentage ) ? (float) $mapping->suggested_increase_percentage : null,
-				'active'                 => isset( $params['active'] ) ? (int) ! empty( $params['active'] ) : (int) $mapping->active,
+				'active'                        => isset( $params['active'] ) ? (int) ! empty( $params['active'] ) : (int) $mapping->active,
 			)
 		);
 
@@ -592,6 +629,102 @@ class WC_Competitor_Monitor_REST_API {
 				'id'        => $mapping_id,
 				'sync_uuid' => $sync_uuid,
 				'site_url'  => home_url( '/' ),
+			)
+		);
+	}
+
+	/**
+	 * Triggers an immediate price-and-stock check from the SaaS.
+	 * If mapping_id is provided, runs that mapping synchronously and returns results.
+	 * Otherwise schedules a one-time batch cron event (non-blocking).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function run_check_now( WP_REST_Request $request ) {
+		$params     = $this->json_params( $request );
+		$mapping_id = isset( $params['mapping_id'] ) ? absint( $params['mapping_id'] ) : 0;
+
+		if ( $mapping_id > 0 ) {
+			$mapping = $this->db->get_mapping( $mapping_id );
+			if ( ! $mapping ) {
+				return new WP_Error( 'cpsm_mapping_not_found', __( 'Mapping not found.', 'competitor-price-stock-monitor' ), array( 'status' => 404 ) );
+			}
+			if ( ! $this->monitor ) {
+				return new WP_Error( 'cpsm_monitor_unavailable', __( 'Monitor is not available in this context.', 'competitor-price-stock-monitor' ), array( 'status' => 503 ) );
+			}
+			$result = $this->monitor->check_mapping( $mapping_id );
+			$this->db->ensure_mapping_sync_uuid( $mapping_id );
+			return rest_ensure_response(
+				array(
+					'ok'       => ! empty( $result['success'] ),
+					'ran_now'  => true,
+					'mapping'  => $this->public_mapping( $this->db->get_mapping( $mapping_id ) ),
+					'site_url' => home_url( '/' ),
+					'error'    => empty( $result['success'] ) ? (string) ( $result['error'] ?? __( 'Check failed.', 'competitor-price-stock-monitor' ) ) : null,
+				)
+			);
+		}
+
+		wp_schedule_single_event( time(), WC_COMPETITOR_MONITOR_CRON_HOOK );
+		spawn_cron();
+
+		return rest_ensure_response(
+			array(
+				'ok'        => true,
+				'scheduled' => true,
+				'ran_now'   => false,
+				'site_url'  => home_url( '/' ),
+			)
+		);
+	}
+
+	/**
+	 * Returns public (non-sensitive) plugin settings for SaaS display.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function get_plugin_settings(): WP_REST_Response {
+		$settings = $this->db->get_settings();
+		return rest_ensure_response(
+			array(
+				'site_url'        => home_url( '/' ),
+				'plugin_version'  => WC_COMPETITOR_MONITOR_VERSION,
+				'check_frequency' => (string) ( $settings['check_frequency'] ?? 'daily' ),
+			)
+		);
+	}
+
+	/**
+	 * Updates plugin settings from the SaaS (check_frequency only).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function update_plugin_settings( WP_REST_Request $request ) {
+		$params   = $this->json_params( $request );
+		$settings = $this->db->get_settings();
+		$allowed  = array( 'daily', 'twelve_hours', 'six_hours', 'hourly' );
+
+		if ( isset( $params['check_frequency'] ) ) {
+			$frequency = sanitize_key( (string) $params['check_frequency'] );
+			if ( ! in_array( $frequency, $allowed, true ) ) {
+				return new WP_Error(
+					'cpsm_invalid_frequency',
+					__( 'Invalid check_frequency. Allowed: daily, twelve_hours, six_hours, hourly.', 'competitor-price-stock-monitor' ),
+					array( 'status' => 400 )
+				);
+			}
+			$settings['check_frequency'] = $frequency;
+			$this->db->update_settings( $settings );
+			WC_Competitor_Monitor_Activator::ensure_cron( $frequency );
+		}
+
+		return rest_ensure_response(
+			array(
+				'ok'              => true,
+				'check_frequency' => (string) ( $settings['check_frequency'] ?? 'daily' ),
+				'site_url'        => home_url( '/' ),
 			)
 		);
 	}
@@ -769,7 +902,7 @@ class WC_Competitor_Monitor_REST_API {
 	/**
 	 * Reads the first available product identifier from known metadata keys.
 	 *
-	 * @param int              $product_id Product ID.
+	 * @param int               $product_id Product ID.
 	 * @param array<int,string> $meta_keys Candidate metadata keys.
 	 * @return string
 	 */
