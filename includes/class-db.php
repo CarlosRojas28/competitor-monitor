@@ -187,6 +187,14 @@ class WC_Competitor_Monitor_DB {
 		delete_option( self::OPTION_KEY );
 		delete_option( self::DB_OPTION );
 		delete_option( self::CRON_OFFSET );
+
+		delete_post_meta_by_key( self::PRODUCT_AUTO_PRICE_MODE_META );
+		delete_post_meta_by_key( self::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META );
+		delete_post_meta_by_key( self::PRODUCT_ORIGINAL_PRICE_META );
+		delete_post_meta_by_key( self::PRODUCT_ORIGINAL_PRICE_CAPTURED_AT_META );
+		delete_post_meta_by_key( self::PRODUCT_ORIGINAL_PRICE_SOURCE_META );
+		delete_post_meta_by_key( self::PRODUCT_COST_META );
+		delete_post_meta_by_key( self::PRODUCT_COST_SOURCE_META );
 	}
 
 	/**
@@ -910,6 +918,10 @@ class WC_Competitor_Monitor_DB {
 			$where .= $wpdb->prepare( ' AND status = %s', sanitize_key( (string) $args['status'] ) );
 		}
 
+		if ( ! empty( $args['since_days'] ) ) {
+			$where .= $wpdb->prepare( ' AND changed_at >= DATE_SUB(NOW(), INTERVAL %d DAY)', absint( $args['since_days'] ) );
+		}
+
 		$limit = isset( $args['limit'] ) ? max( 1, absint( $args['limit'] ) ) : 500;
 		$sql   = $wpdb->prepare(
 			"SELECT * FROM {$table} {$where} ORDER BY changed_at DESC, id DESC LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -948,8 +960,9 @@ class WC_Competitor_Monitor_DB {
 		return $this->build_profit_impact(
 			$this->get_price_adjustments(
 				array(
-					'status' => 'active',
-					'limit'  => 500,
+					'status'     => 'active',
+					'since_days' => 90,
+					'limit'      => 500,
 				)
 			),
 			$top_limit

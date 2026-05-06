@@ -763,6 +763,7 @@ class WC_Competitor_Monitor_Monitor {
 		update_post_meta( absint( $mapping->product_id ), '_cpsm_last_auto_price_old', wc_format_decimal( $old_price, wc_get_price_decimals() ) );
 		update_post_meta( absint( $mapping->product_id ), '_cpsm_last_auto_price_new', wc_format_decimal( $new_price, wc_get_price_decimals() ) );
 		$this->record_daily_price_change( absint( $mapping->product_id ) );
+		$this->fire_repricing_telemetry( absint( $mapping->product_id ), $old_price, $new_price );
 
 		$message = sprintf(
 			/* translators: 1: WooCommerce product name, 2: old price, 3: new price, 4: competitor product title, 5: competitor name, 6: recommendation message. */
@@ -1101,5 +1102,53 @@ class WC_Competitor_Monitor_Monitor {
 	 */
 	private function get_product_cost( int $product_id ): ?float {
 		return $this->db->get_product_cost( $product_id );
+	}
+
+	/**
+	 * Sends a non-blocking repricing.first_applied telemetry event to the SaaS.
+	 * The SaaS deduplicates via UNIQUE (account_id, event), so firing on every adjustment is safe.
+	 *
+	 * @param int   $product_id Product ID.
+	 * @param float $old_price  Old price.
+	 * @param float $new_price  New price.
+	 * @return void
+	 */
+	private function fire_repricing_telemetry( int $product_id, float $old_price, float $new_price ): void {
+		if ( ! $this->pro_client || ! $this->pro_client->is_connected() ) {
+			return;
+		}
+
+		$settings         = $this->db->get_settings();
+		$saas_url         = (string) ( $settings['pro_saas_url'] ?? '' );
+		$site_id          = (string) ( $settings['pro_site_id'] ?? '' );
+		$key_id           = (string) ( $settings['pro_key_id'] ?? '' );
+		$secret_encrypted = (string) ( $settings['pro_plugin_to_saas_secret_encrypted'] ?? '' );
+
+		if ( '' === $saas_url || '' === $site_id || '' === $key_id || '' === $secret_encrypted ) {
+			return;
+		}
+
+		$secret = WC_Competitor_Monitor_Bridge_Auth::decrypt_secret( $secret_encrypted );
+		if ( '' === $secret ) {
+			return;
+		}
+
+		$body    = wp_json_encode( array(
+			'event'      => 'repricing.first_applied',
+			'product_id' => $product_id,
+			'old_price'  => $old_price,
+			'new_price'  => $new_price,
+			'site_url'   => home_url( '/' ),
+		) );
+		$url     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
+		$headers = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
+		$headers['Content-Type'] = 'application/json';
+
+		wp_remote_post( $url, array(
+			'headers'  => $headers,
+			'body'     => $body,
+			'timeout'  => 5,
+			'blocking' => false,
+		) );
 	}
 }

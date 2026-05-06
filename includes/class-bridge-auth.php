@@ -135,7 +135,7 @@ class WC_Competitor_Monitor_Bridge_Auth {
 		}
 
 		$timestamp_int = absint( $timestamp );
-		if ( 0 === $timestamp_int || abs( time() - $timestamp_int ) > 300 ) {
+		if ( 0 === $timestamp_int || abs( time() - $timestamp_int ) > 60 ) {
 			return new WP_Error( 'cpsm_stale_bridge_signature', __( 'Pro bridge signature has expired.', 'competitor-price-stock-monitor' ), array( 'status' => 401 ) );
 		}
 

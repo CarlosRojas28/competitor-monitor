@@ -2,7 +2,7 @@
 Contributors: competitor-monitor
 Tags: woocommerce, pricing, competitors, stock, alerts
 Requires at least: 6.5
-Tested up to: 6.9
+Tested up to: 6.7
 Requires PHP: 8.1
 Stable tag: 1.1.4
 License: GPLv2 or later
@@ -74,6 +74,14 @@ Yes. Enable **Delete all competitor monitor data when the plugin is uninstalled*
 
 == Changelog ==
 
+= 1.1.4 =
+* Added 90-day attribution window to profit impact queries for consistent reporting in large stores.
+* Clean all product cost and price metadata on full uninstall when the delete-data option is enabled.
+* Strengthened Pro bridge timestamp validation to a 60-second window on both sides.
+* Added REST API pagination to the mappings endpoint to handle large product catalogs safely.
+* Added admin notice when WP-Cron is disabled at the server level to prevent silent monitoring gaps.
+* Reduced phpcs disable scope to individual justified suppressions on direct database queries.
+
 = 1.1.3 =
 * Keep the monitoring WP-Cron event synchronized with the selected frequency and show the active schedule in Settings.
 
@@ -99,6 +107,9 @@ Yes. Enable **Delete all competitor monitor data when the plugin is uninstalled*
 * Initial release with competitor mappings, crawler, parser, cron monitoring, alerts, history, logs, and recommendations.
 
 == Upgrade Notice ==
+
+= 1.1.4 =
+Strengthens the Pro bridge to a 60-second timestamp window. Re-save Pro settings after upgrading if the bridge stops authenticating.
 
 = 1.1.3 =
 

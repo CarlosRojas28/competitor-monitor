@@ -74,6 +74,7 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'admin_notices', array( $this, 'render_product_metabox_notice' ) );
+		add_action( 'admin_notices', array( $this, 'render_cron_disabled_notice' ) );
 		add_action( 'add_meta_boxes_product', array( $this, 'register_product_metabox' ) );
 		add_action( 'save_post_product', array( $this, 'handle_save_product_metabox' ), 10, 2 );
 		add_action( 'admin_post_wc_competitor_monitor_save_mapping', array( $this, 'handle_save_mapping' ) );
@@ -1171,6 +1172,39 @@ class WC_Competitor_Monitor_Admin {
 			'<div class="%1$s"><p>%2$s</p></div>',
 			esc_attr( $class ),
 			esc_html( (string) $notice['message'] )
+		);
+	}
+
+	/**
+	 * Shows a warning when server-level WP-Cron is disabled and no external cron is configured.
+	 *
+	 * @return void
+	 */
+	public function render_cron_disabled_notice(): void {
+		if ( ! defined( 'DISABLE_WP_CRON' ) || ! DISABLE_WP_CRON ) {
+			return;
+		}
+
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || ! str_contains( (string) $screen->id, 'competitor-price-stock-monitor' ) ) {
+			return;
+		}
+
+		$settings_url = admin_url( 'admin.php?page=competitor-price-stock-monitor-settings' );
+		printf(
+			'<div class="notice notice-warning"><p>%s</p></div>',
+			wp_kses(
+				sprintf(
+					/* translators: %s: link to documentation */
+					__( '<strong>Competitor Monitor:</strong> WP-Cron is disabled on this server (<code>DISABLE_WP_CRON</code> is set). Automatic monitoring will not run until you configure a real server cron job to call <code>wp-cron.php</code>. <a href="%s">Go to Settings</a>.', 'competitor-price-stock-monitor' ),
+					esc_url( $settings_url )
+				),
+				array(
+					'strong' => array(),
+					'code'   => array(),
+					'a'      => array( 'href' => array() ),
+				)
+			)
 		);
 	}
 

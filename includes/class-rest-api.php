@@ -119,6 +119,18 @@ class WC_Competitor_Monitor_REST_API {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'list_mappings' ),
 					'permission_callback' => array( $this, 'authorize_request' ),
+					'args'                => array(
+						'per_page' => array(
+							'required'          => false,
+							'default'           => 200,
+							'sanitize_callback' => 'absint',
+						),
+						'page'     => array(
+							'required'          => false,
+							'default'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -183,22 +195,38 @@ class WC_Competitor_Monitor_REST_API {
 	 *
 	 * @return WP_REST_Response
 	 */
-	public function list_mappings(): WP_REST_Response {
-		$mappings = $this->db->get_mappings( array( 'limit' => 5000 ) );
+	public function list_mappings( WP_REST_Request $request ): WP_REST_Response {
+		$per_page = min( 500, max( 1, (int) $request->get_param( 'per_page' ) ?: 200 ) );
+		$page     = max( 1, (int) $request->get_param( 'page' ) ?: 1 );
+		$offset   = ( $page - 1 ) * $per_page;
+
+		$all_mappings = $this->db->get_mappings( array( 'limit' => 5000 ) );
+		$total        = count( $all_mappings );
+		$page_slice   = array_slice( $all_mappings, $offset, $per_page );
+
 		$payloads = array();
-		foreach ( $mappings as $mapping ) {
+		foreach ( $page_slice as $mapping ) {
 			$this->db->ensure_mapping_sync_uuid( absint( $mapping->id ) );
 			$payloads[] = $this->public_mapping( $this->db->get_mapping( absint( $mapping->id ) ) ?: $mapping );
 		}
 
-		return rest_ensure_response(
+		$response = rest_ensure_response(
 			array(
-				'site_url'  => home_url( '/' ),
+				'site_url'       => home_url( '/' ),
 				'plugin_version' => WC_COMPETITOR_MONITOR_VERSION,
-				'mappings'  => array_values( array_filter( $payloads ) ),
-				'synced_at' => current_time( 'mysql' ),
+				'mappings'       => array_values( array_filter( $payloads ) ),
+				'total'          => $total,
+				'page'           => $page,
+				'per_page'       => $per_page,
+				'total_pages'    => (int) ceil( $total / $per_page ),
+				'synced_at'      => current_time( 'mysql' ),
 			)
 		);
+
+		$response->header( 'X-WP-Total', (string) $total );
+		$response->header( 'X-WP-TotalPages', (string) (int) ceil( $total / $per_page ) );
+
+		return $response;
 	}
 
 	/**
