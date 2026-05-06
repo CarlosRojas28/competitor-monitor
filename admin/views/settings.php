@@ -285,33 +285,13 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><label for="wccm_user_agent"><?php esc_html_e( 'Crawler user-agent', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="text" class="large-text" id="wccm_user_agent" name="user_agent" value="<?php echo esc_attr( $wc_competitor_monitor_settings['user_agent'] ); ?>"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="wccm_timeout"><?php esc_html_e( 'HTTP timeout', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="number" min="3" max="30" id="wccm_timeout" name="timeout" value="<?php echo esc_attr( $wc_competitor_monitor_settings['timeout'] ); ?>"> <?php esc_html_e( 'seconds', 'competitor-price-stock-monitor' ); ?></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="wccm_max_response_size"><?php esc_html_e( 'Maximum response size', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="number" min="10240" max="5242880" step="1024" id="wccm_max_response_size" name="max_response_size" value="<?php echo esc_attr( $wc_competitor_monitor_settings['max_response_size'] ); ?>"> <?php esc_html_e( 'bytes', 'competitor-price-stock-monitor' ); ?></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="wccm_batch_size"><?php esc_html_e( 'Maximum URLs per batch', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="number" min="1" max="100" id="wccm_batch_size" name="batch_size" value="<?php echo esc_attr( $wc_competitor_monitor_settings['batch_size'] ); ?>"></td>
-				</tr>
-				<tr>
 					<th scope="row"><?php esc_html_e( 'Pro features', 'competitor-price-stock-monitor' ); ?></th>
 					<td>
 						<label>
 							<input type="checkbox" name="pro_enabled" value="1" <?php checked( (int) $wc_competitor_monitor_settings['pro_enabled'], 1 ); ?>>
-							<?php esc_html_e( 'Enable Pro SaaS features in Product Mapping', 'competitor-price-stock-monitor' ); ?>
+							<?php esc_html_e( 'Enable Pro cloud features', 'competitor-price-stock-monitor' ); ?>
 						</label>
 					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="wccm_pro_saas_url"><?php esc_html_e( 'Pro SaaS URL', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="url" class="regular-text" id="wccm_pro_saas_url" name="pro_saas_url" value="<?php echo esc_url( $wc_competitor_monitor_settings['pro_saas_url'] ); ?>"></td>
 				</tr>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Uninstall behavior', 'competitor-price-stock-monitor' ); ?></th>
@@ -323,6 +303,33 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					</td>
 				</tr>
 			</table>
+
+			<details style="margin-top:1.5rem">
+				<summary style="cursor:pointer;font-weight:600;color:#3c434a"><?php esc_html_e( 'Advanced settings', 'competitor-price-stock-monitor' ); ?></summary>
+				<p class="description" style="margin:.5rem 0 1rem"><?php esc_html_e( 'These settings control the technical behavior of the price checker. The defaults work for most stores.', 'competitor-price-stock-monitor' ); ?></p>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><label for="wccm_user_agent"><?php esc_html_e( 'Crawler user-agent', 'competitor-price-stock-monitor' ); ?></label></th>
+						<td><input type="text" class="large-text" id="wccm_user_agent" name="user_agent" value="<?php echo esc_attr( $wc_competitor_monitor_settings['user_agent'] ); ?>"></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="wccm_timeout"><?php esc_html_e( 'HTTP timeout', 'competitor-price-stock-monitor' ); ?></label></th>
+						<td><input type="number" min="3" max="30" id="wccm_timeout" name="timeout" value="<?php echo esc_attr( $wc_competitor_monitor_settings['timeout'] ); ?>"> <?php esc_html_e( 'seconds', 'competitor-price-stock-monitor' ); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="wccm_max_response_size"><?php esc_html_e( 'Maximum response size', 'competitor-price-stock-monitor' ); ?></label></th>
+						<td><input type="number" min="10240" max="5242880" step="1024" id="wccm_max_response_size" name="max_response_size" value="<?php echo esc_attr( $wc_competitor_monitor_settings['max_response_size'] ); ?>"> <?php esc_html_e( 'bytes', 'competitor-price-stock-monitor' ); ?></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="wccm_batch_size"><?php esc_html_e( 'Max competitor checks per batch', 'competitor-price-stock-monitor' ); ?></label></th>
+						<td><input type="number" min="1" max="100" id="wccm_batch_size" name="batch_size" value="<?php echo esc_attr( $wc_competitor_monitor_settings['batch_size'] ); ?>"></td>
+					</tr>
+					<tr>
+						<th scope="row"><label for="wccm_pro_saas_url"><?php esc_html_e( 'Pro SaaS URL', 'competitor-price-stock-monitor' ); ?></label></th>
+						<td><input type="url" class="regular-text" id="wccm_pro_saas_url" name="pro_saas_url" value="<?php echo esc_url( $wc_competitor_monitor_settings['pro_saas_url'] ); ?>"></td>
+					</tr>
+				</table>
+			</details>
 
 			<p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Save settings', 'competitor-price-stock-monitor' ); ?></button></p>
 		</form>

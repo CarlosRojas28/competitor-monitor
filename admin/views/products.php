@@ -84,7 +84,7 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 	</section>
 
 	<section class="wccm-panel">
-		<h2><?php echo esc_html( $wc_competitor_monitor_is_editing ? __( 'Edit competitor URL', 'competitor-price-stock-monitor' ) : __( 'Add competitor URL', 'competitor-price-stock-monitor' ) ); ?></h2>
+		<h2><?php echo esc_html( $wc_competitor_monitor_is_editing ? __( 'Edit competitor', 'competitor-price-stock-monitor' ) : __( 'Add competitor', 'competitor-price-stock-monitor' ) ); ?></h2>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="wccm-form">
 			<input type="hidden" name="action" value="wc_competitor_monitor_save_mapping">
 			<input type="hidden" name="mapping_id" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? absint( $wc_competitor_monitor_editing_mapping->id ) : 0 ); ?>">
@@ -130,38 +130,38 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 					<input type="url" name="competitor_url" value="<?php echo esc_url( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->competitor_url : '' ); ?>" required>
 				</label>
 
-				<label>
-					<span><?php esc_html_e( 'Price CSS selector', 'competitor-price-stock-monitor' ); ?></span>
-					<input type="text" name="price_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->price_selector : '' ); ?>" maxlength="255" placeholder=".price">
-				</label>
+				<details class="wccm-full" style="margin-bottom:.5rem">
+					<summary style="cursor:pointer;font-weight:600;color:#3c434a;margin-bottom:.75rem"><?php esc_html_e( 'Advanced: selectors and session headers', 'competitor-price-stock-monitor' ); ?></summary>
+					<p class="description" style="margin-bottom:1rem"><?php esc_html_e( 'Leave these empty — the plugin auto-detects price and stock on most competitor sites. Only fill them in if automatic detection fails.', 'competitor-price-stock-monitor' ); ?></p>
+					<div class="wccm-form-grid">
+						<label>
+							<span><?php esc_html_e( 'Price CSS selector', 'competitor-price-stock-monitor' ); ?></span>
+							<input type="text" name="price_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->price_selector : '' ); ?>" maxlength="255" placeholder=".price">
+						</label>
 
-				<label>
-					<span><?php esc_html_e( 'Stock CSS selector', 'competitor-price-stock-monitor' ); ?></span>
-					<input type="text" name="stock_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->stock_selector : '' ); ?>" maxlength="255" placeholder=".stock">
-				</label>
+						<label>
+							<span><?php esc_html_e( 'Stock CSS selector', 'competitor-price-stock-monitor' ); ?></span>
+							<input type="text" name="stock_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->stock_selector : '' ); ?>" maxlength="255" placeholder=".stock">
+						</label>
 
-				<label class="wccm-full">
-					<span><?php esc_html_e( 'Browser user-agent override', 'competitor-price-stock-monitor' ); ?></span>
-					<input type="text" name="browser_user_agent" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? ( $wc_competitor_monitor_editing_mapping->browser_user_agent ?? '' ) : '' ); ?>" maxlength="255">
-					<small>
-						<?php esc_html_e( 'Advanced: use the exact User-Agent request header from the browser session that can view this competitor page.', 'competitor-price-stock-monitor' ); ?>
-						<?php esc_html_e( 'Example:', 'competitor-price-stock-monitor' ); ?>
-						<code>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36</code>
-						<a href="<?php echo esc_url( 'https://developer.chrome.com/docs/devtools/network/reference' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Learn how to inspect request headers in Chrome DevTools.', 'competitor-price-stock-monitor' ); ?></a>
-					</small>
-				</label>
+						<label class="wccm-full">
+							<span><?php esc_html_e( 'Browser user-agent override', 'competitor-price-stock-monitor' ); ?></span>
+							<input type="text" name="browser_user_agent" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? ( $wc_competitor_monitor_editing_mapping->browser_user_agent ?? '' ) : '' ); ?>" maxlength="255">
+							<small>
+								<?php esc_html_e( 'Only needed if the competitor site blocks the default checker. Copy the User-Agent from Chrome DevTools → Network tab.', 'competitor-price-stock-monitor' ); ?>
+								<a href="<?php echo esc_url( 'https://developer.chrome.com/docs/devtools/network/reference' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'How to find it.', 'competitor-price-stock-monitor' ); ?></a>
+							</small>
+						</label>
 
-				<label class="wccm-full">
-					<span><?php esc_html_e( 'Browser Cookie header', 'competitor-price-stock-monitor' ); ?></span>
-					<textarea name="browser_cookie_header" rows="3" maxlength="4096"><?php echo esc_textarea( $wc_competitor_monitor_is_editing ? ( $wc_competitor_monitor_editing_mapping->browser_cookie_header ?? '' ) : '' ); ?></textarea>
-					<small>
-						<?php esc_html_e( 'Advanced: paste only the Cookie request header for this competitor domain when the site requires a browser session. Cookies can expire.', 'competitor-price-stock-monitor' ); ?>
-						<?php esc_html_e( 'Example:', 'competitor-price-stock-monitor' ); ?>
-						<code>cf_clearance=abc123; sessionid=xyz789; currency=EUR</code>
-						<?php esc_html_e( 'Copy the Cookie header from the same document request as the User-Agent, and do not paste cookies from unrelated sites.', 'competitor-price-stock-monitor' ); ?>
-						<a href="<?php echo esc_url( 'https://developer.chrome.com/docs/devtools/network/reference' ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Chrome DevTools Network documentation.', 'competitor-price-stock-monitor' ); ?></a>
-					</small>
-				</label>
+						<label class="wccm-full">
+							<span><?php esc_html_e( 'Browser Cookie header', 'competitor-price-stock-monitor' ); ?></span>
+							<textarea name="browser_cookie_header" rows="3" maxlength="4096"><?php echo esc_textarea( $wc_competitor_monitor_is_editing ? ( $wc_competitor_monitor_editing_mapping->browser_cookie_header ?? '' ) : '' ); ?></textarea>
+							<small>
+								<?php esc_html_e( 'Only needed for sites that require a login session. Copy the Cookie header from Chrome DevTools → Network tab. Cookies expire — you may need to update this periodically.', 'competitor-price-stock-monitor' ); ?>
+							</small>
+						</label>
+					</div>
+				</details>
 
 				<label>
 					<span><?php esc_html_e( 'Currency', 'competitor-price-stock-monitor' ); ?></span>
@@ -205,7 +205,7 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 			</div>
 
 			<p class="submit">
-				<button type="submit" class="button button-primary"><?php echo esc_html( $wc_competitor_monitor_is_editing ? __( 'Update mapping', 'competitor-price-stock-monitor' ) : __( 'Create mapping', 'competitor-price-stock-monitor' ) ); ?></button>
+				<button type="submit" class="button button-primary"><?php echo esc_html( $wc_competitor_monitor_is_editing ? __( 'Update competitor', 'competitor-price-stock-monitor' ) : __( 'Save competitor', 'competitor-price-stock-monitor' ) ); ?></button>
 				<?php if ( $wc_competitor_monitor_is_editing ) : ?>
 					<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=competitor-price-stock-monitor-products' ) ); ?>"><?php esc_html_e( 'Cancel', 'competitor-price-stock-monitor' ); ?></a>
 				<?php endif; ?>
@@ -214,17 +214,17 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 	</section>
 
 	<section class="wccm-panel">
-		<h2><?php esc_html_e( 'Mappings', 'competitor-price-stock-monitor' ); ?></h2>
+		<h2><?php esc_html_e( 'Competitors being monitored', 'competitor-price-stock-monitor' ); ?></h2>
 		<table class="widefat striped wccm-table">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Product', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Your product', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Last competitor price', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Our price', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Difference %', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Competitor stock', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Profit impact 30d', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Their price', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Your price', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Difference', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Their stock', 'competitor-price-stock-monitor' ); ?></th>
+					<th><?php esc_html_e( 'Extra profit (30d)', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Last check', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Status', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Actions', 'competitor-price-stock-monitor' ); ?></th>
@@ -232,7 +232,7 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 			</thead>
 			<tbody>
 				<?php if ( empty( $wc_competitor_monitor_mappings ) ) : ?>
-					<tr><td colspan="10"><?php esc_html_e( 'No mappings yet.', 'competitor-price-stock-monitor' ); ?></td></tr>
+					<tr><td colspan="10"><?php esc_html_e( 'No competitors added yet. Add one above to start monitoring prices.', 'competitor-price-stock-monitor' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $wc_competitor_monitor_mappings as $wc_competitor_monitor_mapping ) : ?>
 						<?php
