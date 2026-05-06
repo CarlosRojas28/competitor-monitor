@@ -1,0 +1,13 @@
+{
+    "name": "competitor-monitor/plugin",
+    "description": "Competitor Price Stock Monitor plugin",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
