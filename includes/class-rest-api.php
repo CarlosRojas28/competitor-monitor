@@ -237,9 +237,8 @@ class WC_Competitor_Monitor_REST_API {
 		$page     = max( 1, (int) $request->get_param( 'page' ) ?: 1 );
 		$offset   = ( $page - 1 ) * $per_page;
 
-		$all_mappings = $this->db->get_mappings( array( 'limit' => 5000 ) );
-		$total        = count( $all_mappings );
-		$page_slice   = array_slice( $all_mappings, $offset, $per_page );
+		$total      = $this->db->count_mappings();
+		$page_slice = $this->db->get_mappings( array( 'limit' => $per_page, 'offset' => $offset ) );
 
 		$payloads = array();
 		foreach ( $page_slice as $mapping ) {
@@ -688,15 +687,19 @@ class WC_Competitor_Monitor_REST_API {
 		$settings = $this->db->get_settings();
 		return rest_ensure_response(
 			array(
-				'site_url'        => home_url( '/' ),
-				'plugin_version'  => WC_COMPETITOR_MONITOR_VERSION,
-				'check_frequency' => (string) ( $settings['check_frequency'] ?? 'daily' ),
+				'site_url'                  => home_url( '/' ),
+				'plugin_version'            => WC_COMPETITOR_MONITOR_VERSION,
+				'check_frequency'           => (string) ( $settings['check_frequency'] ?? 'daily' ),
+				'auto_price_adjustment_mode' => (string) ( $settings['auto_price_adjustment_mode'] ?? 'disabled' ),
+				'auto_price_kill_switch'    => (bool) ( $settings['auto_price_kill_switch'] ?? false ),
+				'min_margin_percentage'     => (float) ( $settings['min_margin_percentage'] ?? 20.0 ),
+				'daily_change_limit'        => (int) ( $settings['daily_change_limit'] ?? 0 ),
 			)
 		);
 	}
 
 	/**
-	 * Updates plugin settings from the SaaS (check_frequency only).
+	 * Updates plugin settings from the SaaS.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return WP_REST_Response|WP_Error
@@ -704,11 +707,12 @@ class WC_Competitor_Monitor_REST_API {
 	public function update_plugin_settings( WP_REST_Request $request ) {
 		$params   = $this->json_params( $request );
 		$settings = $this->db->get_settings();
-		$allowed  = array( 'daily', 'twelve_hours', 'six_hours', 'hourly' );
+		$allowed_freq = array( 'daily', 'twelve_hours', 'six_hours', 'hourly' );
+		$allowed_modes = array( 'disabled', 'match_lowest', 'beat_5pct', 'beat_10pct', 'match_average' );
 
 		if ( isset( $params['check_frequency'] ) ) {
 			$frequency = sanitize_key( (string) $params['check_frequency'] );
-			if ( ! in_array( $frequency, $allowed, true ) ) {
+			if ( ! in_array( $frequency, $allowed_freq, true ) ) {
 				return new WP_Error(
 					'cpsm_invalid_frequency',
 					__( 'Invalid check_frequency. Allowed: daily, twelve_hours, six_hours, hourly.', 'competitor-price-stock-monitor' ),
@@ -716,15 +720,45 @@ class WC_Competitor_Monitor_REST_API {
 				);
 			}
 			$settings['check_frequency'] = $frequency;
-			$this->db->update_settings( $settings );
 			WC_Competitor_Monitor_Activator::ensure_cron( $frequency );
 		}
 
+		if ( isset( $params['auto_price_adjustment_mode'] ) ) {
+			$mode = sanitize_key( (string) $params['auto_price_adjustment_mode'] );
+			if ( ! in_array( $mode, $allowed_modes, true ) ) {
+				return new WP_Error(
+					'cpsm_invalid_mode',
+					__( 'Invalid auto_price_adjustment_mode.', 'competitor-price-stock-monitor' ),
+					array( 'status' => 400 )
+				);
+			}
+			$settings['auto_price_adjustment_mode'] = $mode;
+		}
+
+		if ( array_key_exists( 'auto_price_kill_switch', $params ) ) {
+			$settings['auto_price_kill_switch'] = $params['auto_price_kill_switch'] ? 1 : 0;
+		}
+
+		if ( isset( $params['min_margin_percentage'] ) ) {
+			$margin = (float) $params['min_margin_percentage'];
+			$settings['min_margin_percentage'] = max( 0.0, min( 99.0, $margin ) );
+		}
+
+		if ( isset( $params['daily_change_limit'] ) ) {
+			$settings['daily_change_limit'] = max( 0, (int) $params['daily_change_limit'] );
+		}
+
+		$this->db->update_settings( $settings );
+
 		return rest_ensure_response(
 			array(
-				'ok'              => true,
-				'check_frequency' => (string) ( $settings['check_frequency'] ?? 'daily' ),
-				'site_url'        => home_url( '/' ),
+				'ok'                        => true,
+				'site_url'                  => home_url( '/' ),
+				'check_frequency'           => (string) ( $settings['check_frequency'] ?? 'daily' ),
+				'auto_price_adjustment_mode' => (string) ( $settings['auto_price_adjustment_mode'] ?? 'disabled' ),
+				'auto_price_kill_switch'    => (bool) ( $settings['auto_price_kill_switch'] ?? false ),
+				'min_margin_percentage'     => (float) ( $settings['min_margin_percentage'] ?? 20.0 ),
+				'daily_change_limit'        => (int) ( $settings['daily_change_limit'] ?? 0 ),
 			)
 		);
 	}

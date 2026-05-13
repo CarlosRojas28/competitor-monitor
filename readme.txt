@@ -1,6 +1,6 @@
 === Competitor Price & Stock Monitor for WooCommerce ===
 Contributors: competitor-monitor
-Tags: woocommerce, pricing, competitors, stock, price monitoring
+Tags: woocommerce, price monitor, competitor pricing, stock monitor, repricing
 Requires at least: 6.5
 Tested up to: 6.9
 Requires PHP: 8.1
@@ -8,7 +8,7 @@ Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Know when a competitor changes their price or goes out of stock — and act on it before your customers do.
+Know when a competitor changes their price or goes out of stock — and reprice safely before your customers notice.
 
 == Description ==
 

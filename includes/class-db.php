@@ -211,6 +211,8 @@ class WC_Competitor_Monitor_DB {
 			'suggested_increase_limit_percentage' => 5.0,
 			'auto_price_adjustment_mode'          => 'disabled',
 			'auto_price_kill_switch'              => 0,
+			'min_margin_percentage'               => 20.0,
+			'daily_change_limit'                  => 0,
 			'original_price_restore_mode'         => 'disabled',
 			'check_frequency'                     => 'daily',
 			'user_agent'                          => 'Competitor Price Stock Monitor/' . WC_COMPETITOR_MONITOR_VERSION . ' (' . home_url( '/' ) . ')',
@@ -701,13 +703,40 @@ class WC_Competitor_Monitor_DB {
 			$where .= $wpdb->prepare( ' AND product_id = %d', absint( $args['product_id'] ) );
 		}
 
-		$limit = isset( $args['limit'] ) ? max( 1, absint( $args['limit'] ) ) : 100;
-		$sql   = $wpdb->prepare(
-			"SELECT * FROM {$table} {$where} ORDER BY updated_at DESC, id DESC LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$limit
+		$limit  = isset( $args['limit'] ) ? max( 1, absint( $args['limit'] ) ) : 100;
+		$offset = isset( $args['offset'] ) ? max( 0, absint( $args['offset'] ) ) : 0;
+		$sql    = $wpdb->prepare(
+			"SELECT * FROM {$table} {$where} ORDER BY updated_at DESC, id DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$limit,
+			$offset
 		);
 
 		return $wpdb->get_results( $sql );
+	}
+
+	/**
+	 * Returns the total number of mappings matching the given filters.
+	 *
+	 * @param array<string,mixed> $args Same filters as get_mappings() — active, product_id.
+	 * @return int
+	 */
+	public function count_mappings( array $args = array() ): int {
+		global $wpdb;
+
+		$table = $this->tables()['mappings'];
+		$where = 'WHERE 1=1';
+
+		if ( array_key_exists( 'active', $args ) && null !== $args['active'] ) {
+			$where .= $wpdb->prepare( ' AND active = %d', absint( $args['active'] ) );
+		}
+
+		if ( ! empty( $args['product_id'] ) ) {
+			$where .= $wpdb->prepare( ' AND product_id = %d', absint( $args['product_id'] ) );
+		}
+
+		$sql = "SELECT COUNT(*) FROM {$table} {$where}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return (int) $wpdb->get_var( $sql );
 	}
 
 	/**
@@ -981,6 +1010,7 @@ class WC_Competitor_Monitor_DB {
 				array(
 					'product_id' => absint( $product_id ),
 					'status'     => 'active',
+					'since_days' => 90,
 					'limit'      => 200,
 				)
 			),
@@ -1004,6 +1034,7 @@ class WC_Competitor_Monitor_DB {
 				array(
 					'mapping_id' => absint( $mapping_id ),
 					'status'     => 'active',
+					'since_days' => 90,
 					'limit'      => 200,
 				)
 			),
