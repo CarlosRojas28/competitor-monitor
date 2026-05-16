@@ -23,11 +23,11 @@ if ( ! in_array( $wc_competitor_monitor_restore_mode, array( 'disabled', 'enable
 	$wc_competitor_monitor_restore_mode = 'disabled';
 }
 $wc_competitor_monitor_pro_is_active = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
-$wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'http://127.0.0.1:8788' ) ) );
+$wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'https://competitor-monitor-pro-production.up.railway.app' ) ) );
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
-	$wc_competitor_monitor_saas_base_url = 'http://127.0.0.1:8788';
+	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url          = $wc_competitor_monitor_saas_base_url . '/app/checkout';
+$wc_competitor_monitor_upgrade_url          = $wc_competitor_monitor_saas_base_url . '/pricing';
 $wc_competitor_monitor_sites_url            = $wc_competitor_monitor_saas_base_url . '/app/sites';
 $wc_competitor_monitor_cron_event           = WC_Competitor_Monitor_Activator::scheduled_event();
 $wc_competitor_monitor_cron_schedule_labels = array(
@@ -42,10 +42,21 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 
 	<section class="wccm-panel">
 		<h2><?php esc_html_e( 'Pro license', 'competitor-price-stock-monitor' ); ?></h2>
-		<p>
-			<?php esc_html_e( 'Use the SaaS Sites screen to generate a one-time plugin registration key for this exact site, then activate it here.', 'competitor-price-stock-monitor' ); ?>
-			<a href="<?php echo esc_url( $wc_competitor_monitor_sites_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open SaaS Sites', 'competitor-price-stock-monitor' ); ?></a>
-		</p>
+		<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+			<p>
+				<?php esc_html_e( "Don't have a Pro account yet?", 'competitor-price-stock-monitor' ); ?>
+				<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Sign up at Competitor Monitor Pro', 'competitor-price-stock-monitor' ); ?></a>
+			</p>
+			<p>
+				<?php esc_html_e( 'Already have a Pro account? Open the SaaS Sites screen, register this site, copy the one-time key, and paste it below.', 'competitor-price-stock-monitor' ); ?>
+				<a href="<?php echo esc_url( $wc_competitor_monitor_sites_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open SaaS Sites', 'competitor-price-stock-monitor' ); ?></a>
+			</p>
+		<?php else : ?>
+			<p>
+				<?php esc_html_e( 'Use the SaaS Sites screen to generate a one-time plugin registration key for this exact site.', 'competitor-price-stock-monitor' ); ?>
+				<a href="<?php echo esc_url( $wc_competitor_monitor_sites_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open SaaS Sites', 'competitor-price-stock-monitor' ); ?></a>
+			</p>
+		<?php endif; ?>
 		<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
 			<div class="notice notice-info inline">
 				<p><strong><?php esc_html_e( 'Unlock Pro: AI competitor discovery and profit impact', 'competitor-price-stock-monitor' ); ?></strong></p>
@@ -70,10 +81,6 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 			<input type="hidden" name="action" value="wc_competitor_monitor_activate_pro_license">
 			<?php wp_nonce_field( 'wc_competitor_monitor_activate_pro_license' ); ?>
 			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="wccm_pro_saas_url_activation"><?php esc_html_e( 'SaaS URL', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td><input type="url" class="regular-text" id="wccm_pro_saas_url_activation" name="pro_saas_url" value="<?php echo esc_url( $wc_competitor_monitor_settings['pro_saas_url'] ); ?>"></td>
-				</tr>
 				<tr>
 					<th scope="row"><label for="wccm_pro_license_key"><?php esc_html_e( 'Plugin registration key', 'competitor-price-stock-monitor' ); ?></label></th>
 					<td>
@@ -288,9 +295,12 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					<th scope="row"><?php esc_html_e( 'Pro features', 'competitor-price-stock-monitor' ); ?></th>
 					<td>
 						<label>
-							<input type="checkbox" name="pro_enabled" value="1" <?php checked( (int) $wc_competitor_monitor_settings['pro_enabled'], 1 ); ?>>
+							<input type="checkbox" name="pro_enabled" value="1" <?php checked( (int) $wc_competitor_monitor_settings['pro_enabled'], 1 ); ?><?php disabled( $wc_competitor_monitor_pro_is_active, false ); ?>>
 							<?php esc_html_e( 'Enable Pro cloud features', 'competitor-price-stock-monitor' ); ?>
 						</label>
+						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+							<p class="description"><?php esc_html_e( 'Activate a Pro license above to enable this option.', 'competitor-price-stock-monitor' ); ?></p>
+						<?php endif; ?>
 					</td>
 				</tr>
 				<tr>
@@ -323,10 +333,6 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					<tr>
 						<th scope="row"><label for="wccm_batch_size"><?php esc_html_e( 'Max competitor checks per batch', 'competitor-price-stock-monitor' ); ?></label></th>
 						<td><input type="number" min="1" max="100" id="wccm_batch_size" name="batch_size" value="<?php echo esc_attr( $wc_competitor_monitor_settings['batch_size'] ); ?>"></td>
-					</tr>
-					<tr>
-						<th scope="row"><label for="wccm_pro_saas_url"><?php esc_html_e( 'Pro SaaS URL', 'competitor-price-stock-monitor' ); ?></label></th>
-						<td><input type="url" class="regular-text" id="wccm_pro_saas_url" name="pro_saas_url" value="<?php echo esc_url( $wc_competitor_monitor_settings['pro_saas_url'] ); ?>"></td>
 					</tr>
 				</table>
 			</details>

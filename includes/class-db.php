@@ -168,7 +168,7 @@ class WC_Competitor_Monitor_DB {
 		dbDelta( $sql_price_adjustments );
 
 		update_option( self::DB_OPTION, self::DB_VERSION );
-		add_option( self::OPTION_KEY, $this->default_settings() );
+		add_option( self::OPTION_KEY, $this->default_settings(), '', 'no' );
 	}
 
 	/**
@@ -211,8 +211,6 @@ class WC_Competitor_Monitor_DB {
 			'suggested_increase_limit_percentage' => 5.0,
 			'auto_price_adjustment_mode'          => 'disabled',
 			'auto_price_kill_switch'              => 0,
-			'min_margin_percentage'               => 20.0,
-			'daily_change_limit'                  => 0,
 			'original_price_restore_mode'         => 'disabled',
 			'check_frequency'                     => 'daily',
 			'user_agent'                          => 'Competitor Price Stock Monitor/' . WC_COMPETITOR_MONITOR_VERSION . ' (' . home_url( '/' ) . ')',
@@ -221,7 +219,7 @@ class WC_Competitor_Monitor_DB {
 			'batch_size'                          => 10,
 			'delete_data_on_uninstall'            => 0,
 			'pro_enabled'                         => 0,
-			'pro_saas_url'                        => 'http://127.0.0.1:8788',
+			'pro_saas_url'                        => 'https://competitor-monitor-pro-production.up.railway.app',
 			'pro_license_key'                     => '',
 			'pro_license_key_encrypted'           => '',
 			'pro_license_key_preview'             => '',

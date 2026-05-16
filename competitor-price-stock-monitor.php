@@ -1,11 +1,13 @@
 <?php
 /**
  * Plugin Name: Competitor Price & Stock Monitor for WooCommerce
+ * Plugin URI: https://competitor-monitor-pro-production.up.railway.app
  * Description: Monitor competitor prices and stock for WooCommerce products, generate alerts, and show margin-aware pricing recommendations.
  * Version: 1.1.4
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Author: Competitor Monitor
+ * Author URI: https://competitor-monitor-pro-production.up.railway.app
  * Text Domain: competitor-price-stock-monitor
  * Domain Path: /languages
  * License: GPLv2 or later
@@ -53,6 +55,12 @@ register_deactivation_hook( __FILE__, array( 'WC_Competitor_Monitor_Deactivator'
  * @return void
  */
 function wc_competitor_monitor_bootstrap() {
+	load_plugin_textdomain(
+		'competitor-price-stock-monitor',
+		false,
+		dirname( plugin_basename( WC_COMPETITOR_MONITOR_FILE ) ) . '/languages/'
+	);
+
 	$plugin = new WC_Competitor_Monitor_Plugin();
 	$plugin->run();
 }

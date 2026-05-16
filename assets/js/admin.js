@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
 	'use strict';
 
 	document.addEventListener('submit', function (event) {
@@ -18,6 +18,7 @@
 		bindSuggestedIncreaseControls();
 		initWooCommerceProductSearch();
 		bindCopyableSecrets();
+		bindMetaboxQuickAdd();
 	});
 
 	function wccmAdminConfirmMessage() {
@@ -133,7 +134,7 @@
 				form.addEventListener('submit', function (event) {
 					if (!hidden.value) {
 						event.preventDefault();
-						input.setCustomValidity('Select a WooCommerce product from the search results.');
+						input.setCustomValidity(adminConfig.labelSelectProduct || 'Select a WooCommerce product from the search results.');
 						input.reportValidity();
 					}
 				});
@@ -150,7 +151,7 @@
 		});
 
 		results.hidden = false;
-		results.innerHTML = '<div class="wccm-native-product-search-message">Searching...</div>';
+		results.innerHTML = '<div class="wccm-native-product-search-message">' + (adminConfig.labelSearching || 'Searching...') + '</div>';
 
 		window.fetch((adminConfig.ajaxUrl || window.ajaxurl) + '?' + params.toString(), {
 			credentials: 'same-origin',
@@ -165,7 +166,7 @@
 				var products = normalizeProductSearchResults(data);
 
 				if (!products.length) {
-					results.innerHTML = '<div class="wccm-native-product-search-message">No products found.</div>';
+					results.innerHTML = '<div class="wccm-native-product-search-message">' + (adminConfig.labelNoProducts || 'No products found.') + '</div>';
 					return;
 				}
 
@@ -182,7 +183,7 @@
 				});
 			})
 			.catch(function () {
-				results.innerHTML = '<div class="wccm-native-product-search-message">Product search failed.</div>';
+				results.innerHTML = '<div class="wccm-native-product-search-message">' + (adminConfig.labelSearchFailed || 'Product search failed.') + '</div>';
 			});
 	}
 
@@ -207,6 +208,105 @@
 		}).filter(function (item) {
 			return item.id && item.text;
 		});
+	}
+
+	function bindMetaboxQuickAdd() {
+		var section = document.getElementById('wccm-quick-add-section');
+		if (!section) {
+			return;
+		}
+
+		var btn       = document.getElementById('wccm-quick-add-btn');
+		var msgEl     = document.getElementById('wccm-quick-add-message');
+		var noMapEl   = document.getElementById('wccm-no-mappings');
+		var tableEl   = document.getElementById('wccm-mappings-table');
+		var tbodyEl   = document.getElementById('wccm-mappings-tbody');
+		var adminConfig = window.wccmAdmin || {};
+
+		btn.addEventListener('click', function () {
+			var urlInput    = section.querySelector('[name="wccm_product_mapping_competitor_url"]');
+			var nameInput   = section.querySelector('[name="wccm_product_mapping_competitor_name"]');
+			var currInput   = section.querySelector('[name="wccm_product_mapping_currency"]');
+			var marginInput = section.querySelector('[name="wccm_product_mapping_min_margin_percentage"]');
+			var activeEl    = section.querySelector('[name="wccm_product_mapping_active"]');
+
+			var url = urlInput ? urlInput.value.trim() : '';
+			if (!url) {
+				showQuickAddMsg(msgEl, 'error', adminConfig.labelEnterUrl || 'Enter a competitor product URL.');
+				if (urlInput) { urlInput.focus(); }
+				return;
+			}
+
+			if (tbodyEl) {
+				var existingLinks = tbodyEl.querySelectorAll('a[href]');
+				for (var i = 0; i < existingLinks.length; i++) {
+					if (existingLinks[i].href === url || existingLinks[i].getAttribute('href') === url) {
+						showQuickAddMsg(msgEl, 'error', adminConfig.labelDuplicateUrl || 'This competitor URL is already mapped to this product.');
+						if (urlInput) { urlInput.focus(); }
+						return;
+					}
+				}
+			}
+
+			btn.disabled    = true;
+			btn.textContent = adminConfig.labelAdding || 'Adding...';
+			showQuickAddMsg(msgEl, '', '');
+
+			var body = new URLSearchParams({
+				action:                  'wccm_quick_add_mapping',
+				_ajax_nonce:             section.dataset.nonce || '',
+				product_id:              section.dataset.productId || '',
+				competitor_url:          url,
+				competitor_name:         nameInput   ? nameInput.value.trim()   : '',
+				currency:                currInput   ? currInput.value.trim()   : '',
+				min_margin_percentage:   marginInput ? marginInput.value        : '20',
+				active:                  activeEl    ? activeEl.value           : '1'
+			});
+
+			window.fetch(adminConfig.ajaxUrl || window.ajaxurl, {
+				method:      'POST',
+				credentials: 'same-origin',
+				headers:     { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body:        body.toString()
+			})
+				.then(function (r) { return r.json(); })
+				.then(function (data) {
+					if (!data.success) {
+						showQuickAddMsg(msgEl, 'error', (typeof data.data === 'string' ? data.data : '') || (adminConfig.labelRequestFailed || 'Request failed.'));
+						return;
+					}
+
+					if (tbodyEl && data.data.row_html) {
+						var parser = new DOMParser();
+						var parsed = parser.parseFromString(data.data.row_html, 'text/html');
+						var newRow = parsed.querySelector('tr');
+						if (newRow) {
+							tbodyEl.appendChild(document.adoptNode(newRow));
+						}
+					}
+					if (tableEl)  { tableEl.hidden  = false; }
+					if (noMapEl)  { noMapEl.hidden   = true;  }
+
+					if (urlInput)  { urlInput.value  = ''; }
+					if (nameInput) { nameInput.value = ''; }
+
+					showQuickAddMsg(msgEl, 'success', data.data.message || (adminConfig.labelAdded || 'Competitor added.'));
+				})
+				.catch(function () {
+					showQuickAddMsg(msgEl, 'error', adminConfig.labelRequestFailed || 'Request failed.');
+				})
+				.finally(function () {
+					btn.disabled    = false;
+					btn.textContent = adminConfig.labelAddCompetitor || 'Add competitor';
+				});
+		});
+	}
+
+	function showQuickAddMsg(el, type, text) {
+		if (!el) { return; }
+		el.textContent = text;
+		el.style.color  = type === 'error' ? '#cc1818' : (type === 'success' ? '#00a32a' : '');
+		el.hidden       = !text;
 	}
 
 	function bindCopyableSecrets() {

@@ -17,3 +17,4 @@ vendor              export-ignore
 composer.json       export-ignore
 composer.lock       export-ignore
 phpunit.xml         export-ignore
+build.sh            export-ignore

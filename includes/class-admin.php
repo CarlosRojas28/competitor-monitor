@@ -73,8 +73,10 @@ class WC_Competitor_Monitor_Admin {
 
 		add_action( 'admin_menu', array( $this, 'register_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'admin_notices', array( $this, 'render_welcome_notice' ) );
 		add_action( 'admin_notices', array( $this, 'render_product_metabox_notice' ) );
 		add_action( 'admin_notices', array( $this, 'render_cron_disabled_notice' ) );
+		add_action( 'admin_post_wc_competitor_monitor_dismiss_welcome', array( $this, 'handle_dismiss_welcome' ) );
 		add_action( 'add_meta_boxes_product', array( $this, 'register_product_metabox' ) );
 		add_action( 'save_post_product', array( $this, 'handle_save_product_metabox' ), 10, 2 );
 		add_action( 'admin_post_wc_competitor_monitor_save_mapping', array( $this, 'handle_save_mapping' ) );
@@ -89,6 +91,7 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_post_wc_competitor_monitor_mark_alert_read', array( $this, 'handle_mark_alert_read' ) );
 		add_action( 'admin_post_wc_competitor_monitor_delete_alert', array( $this, 'handle_delete_alert' ) );
 		add_action( 'admin_post_wc_competitor_monitor_clear_logs', array( $this, 'handle_clear_logs' ) );
+		add_action( 'wp_ajax_wccm_quick_add_mapping', array( $this, 'handle_ajax_quick_add_mapping' ) );
 	}
 
 	/**
@@ -222,6 +225,16 @@ class WC_Competitor_Monitor_Admin {
 				'confirmDelete'             => __( 'This action cannot be undone. Continue?', 'competitor-price-stock-monitor' ),
 				'searchProductsNonce'       => wp_create_nonce( 'search-products' ),
 				'searchProductsPlaceholder' => __( 'Search product by name or SKU...', 'competitor-price-stock-monitor' ),
+				'labelSearching'            => __( 'Searching...', 'competitor-price-stock-monitor' ),
+				'labelNoProducts'           => __( 'No products found.', 'competitor-price-stock-monitor' ),
+				'labelSearchFailed'         => __( 'Product search failed.', 'competitor-price-stock-monitor' ),
+				'labelSelectProduct'        => __( 'Select a WooCommerce product from the search results.', 'competitor-price-stock-monitor' ),
+				'labelAdding'               => __( 'Adding...', 'competitor-price-stock-monitor' ),
+				'labelAddCompetitor'        => __( 'Add competitor', 'competitor-price-stock-monitor' ),
+				'labelEnterUrl'             => __( 'Enter a competitor product URL.', 'competitor-price-stock-monitor' ),
+				'labelAdded'                => __( 'Competitor mapping added.', 'competitor-price-stock-monitor' ),
+				'labelRequestFailed'        => __( 'Request failed. Please try again.', 'competitor-price-stock-monitor' ),
+				'labelDuplicateUrl'         => __( 'This competitor URL is already mapped to this product.', 'competitor-price-stock-monitor' ),
 			)
 		);
 	}
@@ -381,6 +394,8 @@ class WC_Competitor_Monitor_Admin {
 		$restore_status       = $this->monitor->get_original_price_restore_status( $product_id );
 		$product_cost_data    = $this->db->get_product_cost_data( $product_id );
 		$manual_cost          = get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_COST_META, true );
+		$pro_is_active        = ! empty( $settings['pro_enabled'] ) && 'active' === sanitize_key( (string) ( $settings['pro_license_status'] ?? '' ) );
+		$settings_url         = admin_url( 'admin.php?page=competitor-price-stock-monitor-settings' );
 
 		wp_nonce_field( 'wc_competitor_monitor_product_metabox_' . $product_id, 'wc_competitor_monitor_product_metabox_nonce' );
 		?>
@@ -388,21 +403,27 @@ class WC_Competitor_Monitor_Admin {
 			<div class="wccm-product-grid">
 				<div>
 					<label for="wccm_product_auto_price_mode"><strong><?php esc_html_e( 'Apply recommended prices automatically', 'competitor-price-stock-monitor' ); ?></strong></label>
-					<select id="wccm_product_auto_price_mode" name="wccm_product_auto_price_mode">
+					<select id="wccm_product_auto_price_mode" name="wccm_product_auto_price_mode"<?php disabled( $pro_is_active, false ); ?>>
 						<option value="global" <?php selected( $product_mode, 'global' ); ?>><?php echo esc_html( $global_mode_label ); ?></option>
 						<option value="enabled" <?php selected( $product_mode, 'enabled' ); ?>><?php esc_html_e( 'Yes, apply recommended prices for this product', 'competitor-price-stock-monitor' ); ?></option>
 						<option value="disabled" <?php selected( $product_mode, 'disabled' ); ?>><?php esc_html_e( 'No, never change this product price automatically', 'competitor-price-stock-monitor' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'When allowed and a Pro license is active, competitor checks can update this WooCommerce product to the margin-aware recommended price. Every automatic change creates an alert and can send email.', 'competitor-price-stock-monitor' ); ?></p>
+					<?php if ( ! $pro_is_active ) : ?>
+						<p class="description"><a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Requires an active Pro license.', 'competitor-price-stock-monitor' ); ?></a></p>
+					<?php endif; ?>
 				</div>
 				<div>
 					<label for="wccm_product_original_price_restore_mode"><strong><?php esc_html_e( 'Allow original price restore', 'competitor-price-stock-monitor' ); ?></strong></label>
-					<select id="wccm_product_original_price_restore_mode" name="wccm_product_original_price_restore_mode">
+					<select id="wccm_product_original_price_restore_mode" name="wccm_product_original_price_restore_mode"<?php disabled( $pro_is_active, false ); ?>>
 						<option value="global" <?php selected( $restore_mode, 'global' ); ?>><?php echo esc_html( $global_restore_label ); ?></option>
 						<option value="enabled" <?php selected( $restore_mode, 'enabled' ); ?>><?php esc_html_e( 'Allow restore for this product', 'competitor-price-stock-monitor' ); ?></option>
 						<option value="disabled" <?php selected( $restore_mode, 'disabled' ); ?>><?php esc_html_e( 'Never restore this product', 'competitor-price-stock-monitor' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'When allowed, Pro users can manually restore the captured original price if it is still competitive against in-stock competitors.', 'competitor-price-stock-monitor' ); ?></p>
+					<?php if ( ! $pro_is_active ) : ?>
+						<p class="description"><a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Requires an active Pro license.', 'competitor-price-stock-monitor' ); ?></a></p>
+					<?php endif; ?>
 				</div>
 				<div>
 					<label for="wccm_product_cost"><strong><?php esc_html_e( 'Product cost for margin checks', 'competitor-price-stock-monitor' ); ?></strong></label>
@@ -497,6 +518,7 @@ class WC_Competitor_Monitor_Admin {
 						<p class="description"><?php esc_html_e( 'No automatic price change has been applied yet.', 'competitor-price-stock-monitor' ); ?></p>
 					<?php endif; ?>
 				</div>
+				<?php if ( $pro_is_active ) : ?>
 				<div class="wccm-product-summary">
 					<strong><?php esc_html_e( 'Profit impact 30d', 'competitor-price-stock-monitor' ); ?></strong>
 					<p>
@@ -526,58 +548,32 @@ class WC_Competitor_Monitor_Admin {
 						<p class="description"><?php esc_html_e( 'Some automatic pricing events are excluded from gross profit because product cost was missing at the time of change.', 'competitor-price-stock-monitor' ); ?></p>
 					<?php endif; ?>
 				</div>
+				<?php endif; ?>
 			</div>
 
 			<h4><?php esc_html_e( 'Mapped competitors for this product', 'competitor-price-stock-monitor' ); ?></h4>
-			<?php if ( empty( $mappings ) ) : ?>
-				<p class="description"><?php esc_html_e( 'No competitor URLs are mapped to this product yet.', 'competitor-price-stock-monitor' ); ?></p>
-			<?php else : ?>
-				<table class="widefat striped wccm-product-mappings">
-					<thead>
-						<tr>
-							<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
-							<th><?php esc_html_e( 'Last price', 'competitor-price-stock-monitor' ); ?></th>
-							<th><?php esc_html_e( 'Stock', 'competitor-price-stock-monitor' ); ?></th>
-							<th><?php esc_html_e( 'Last check', 'competitor-price-stock-monitor' ); ?></th>
-							<th><?php esc_html_e( 'Actions', 'competitor-price-stock-monitor' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ( $mappings as $mapping ) : ?>
-							<?php
-							$competitor_product_title = $this->truncate_competitor_product_title( $this->competitor_product_title( $mapping ) );
-							$competitor_store_name    = $this->competitor_store_name( $mapping );
-							?>
-							<tr>
-								<td>
-									<strong><?php echo esc_html( $competitor_product_title ); ?></strong><br>
-									<span class="wccm-muted-line"><?php echo esc_html( $competitor_store_name ); ?></span><br>
-									<a href="<?php echo esc_url( $mapping->competitor_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Visitar', 'competitor-price-stock-monitor' ); ?></a>
-								</td>
-								<td><?php echo $this->format_price( null !== $mapping->last_price ? (float) $mapping->last_price : null ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-								<td><span class="wccm-badge wccm-badge-<?php echo esc_attr( $mapping->last_stock_status ?: 'unknown' ); ?>"><?php echo esc_html( $mapping->last_stock_status ?: __( 'unknown', 'competitor-price-stock-monitor' ) ); ?></span></td>
-								<td><?php echo $mapping->last_checked_at ? esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $mapping->last_checked_at ) ) : '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-								<td><a class="button button-small" href="
-								<?php
-								echo esc_url(
-									add_query_arg(
-										array(
-											'page'       => 'competitor-price-stock-monitor-products',
-											'mapping_id' => absint( $mapping->id ),
-										),
-										admin_url( 'admin.php' )
-									)
-								);
-								?>
-																			"><?php esc_html_e( 'Edit mapping', 'competitor-price-stock-monitor' ); ?></a></td>
-							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-			<?php endif; ?>
+			<p class="description" id="wccm-no-mappings"<?php echo empty( $mappings ) ? '' : ' hidden'; ?>><?php esc_html_e( 'No competitor URLs are mapped to this product yet.', 'competitor-price-stock-monitor' ); ?></p>
+			<table class="widefat striped wccm-product-mappings" id="wccm-mappings-table"<?php echo empty( $mappings ) ? ' hidden' : ''; ?>>
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Last price', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Stock', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Last check', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Actions', 'competitor-price-stock-monitor' ); ?></th>
+					</tr>
+				</thead>
+				<tbody id="wccm-mappings-tbody">
+					<?php foreach ( $mappings as $mapping ) : ?>
+						<?php echo $this->render_mapping_row_html( $mapping ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
 
 			<h4><?php esc_html_e( 'Add competitor URL', 'competitor-price-stock-monitor' ); ?></h4>
-			<div class="wccm-product-grid">
+			<div class="wccm-product-grid" id="wccm-quick-add-section"
+				data-product-id="<?php echo esc_attr( (string) $product_id ); ?>"
+				data-nonce="<?php echo esc_attr( wp_create_nonce( 'wccm_quick_add_mapping' ) ); ?>">
 				<label>
 					<span><?php esc_html_e( 'Competitor name', 'competitor-price-stock-monitor' ); ?></span>
 					<input type="text" name="wccm_product_mapping_competitor_name" maxlength="190" placeholder="<?php echo esc_attr_x( 'Amazon', 'competitor name example', 'competitor-price-stock-monitor' ); ?>">
@@ -601,8 +597,12 @@ class WC_Competitor_Monitor_Admin {
 						<option value="0"><?php esc_html_e( 'Inactive', 'competitor-price-stock-monitor' ); ?></option>
 					</select>
 				</label>
+				<div class="wccm-product-full">
+					<button type="button" id="wccm-quick-add-btn" class="button"><?php esc_html_e( 'Add competitor', 'competitor-price-stock-monitor' ); ?></button>
+					<p class="description" id="wccm-quick-add-message" hidden></p>
+				</div>
 			</div>
-			<p class="description"><?php esc_html_e( 'Save or update the product to create the competitor mapping. Advanced selectors can be edited later from Competitor Monitor > Product Mapping.', 'competitor-price-stock-monitor' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Advanced selectors can be edited later from Competitor Monitor > Product Mapping.', 'competitor-price-stock-monitor' ); ?></p>
 		</div>
 		<?php
 	}
@@ -730,6 +730,10 @@ class WC_Competitor_Monitor_Admin {
 
 		if ( '' === $data['competitor_name'] ) {
 			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', __( 'Please enter a competitor name.', 'competitor-price-stock-monitor' ) );
+		}
+
+		if ( $this->product_mapping_url_exists( $data['product_id'], $url, $mapping_id ) ) {
+			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', __( 'This competitor URL is already mapped to this product.', 'competitor-price-stock-monitor' ) );
 		}
 
 		$this->db->capture_original_product_price( absint( $data['product_id'] ), $mapping_id > 0 ? 'mapping_updated' : 'mapping_created' );
@@ -884,7 +888,7 @@ class WC_Competitor_Monitor_Admin {
 			'batch_size'                          => isset( $_POST['batch_size'] ) ? max( 1, min( 100, absint( wp_unslash( $_POST['batch_size'] ) ) ) ) : 10,
 			'delete_data_on_uninstall'            => isset( $_POST['delete_data_on_uninstall'] ) ? 1 : 0,
 			'pro_enabled'                         => isset( $_POST['pro_enabled'] ) ? 1 : 0,
-			'pro_saas_url'                        => isset( $_POST['pro_saas_url'] ) ? esc_url_raw( wp_unslash( $_POST['pro_saas_url'] ) ) : 'http://127.0.0.1:8788',
+			'pro_saas_url'                        => 'https://competitor-monitor-pro-production.up.railway.app',
 		);
 
 		if ( ! in_array( $settings['check_frequency'], array( 'daily', 'twelve_hours', 'six_hours', 'hourly' ), true ) ) {
@@ -963,7 +967,7 @@ class WC_Competitor_Monitor_Admin {
 		WC_Competitor_Monitor_Security::require_capability();
 		check_admin_referer( 'wc_competitor_monitor_activate_pro_license' );
 
-		$saas_url    = isset( $_POST['pro_saas_url'] ) ? esc_url_raw( wp_unslash( $_POST['pro_saas_url'] ) ) : '';
+		$saas_url    = 'https://competitor-monitor-pro-production.up.railway.app';
 		$license_key = isset( $_POST['pro_license_key'] ) ? sanitize_text_field( wp_unslash( $_POST['pro_license_key'] ) ) : '';
 		$result      = $this->pro_client->activate_license( $saas_url, $license_key );
 
@@ -1149,9 +1153,10 @@ class WC_Competitor_Monitor_Admin {
 	 *
 	 * @param int    $product_id Product ID.
 	 * @param string $url Competitor URL.
+	 * @param int    $exclude_mapping_id Mapping ID to exclude (used when editing an existing mapping).
 	 * @return bool
 	 */
-	private function product_mapping_url_exists( int $product_id, string $url ): bool {
+	private function product_mapping_url_exists( int $product_id, string $url, int $exclude_mapping_id = 0 ): bool {
 		$url      = esc_url_raw( $url );
 		$mappings = $this->db->get_mappings(
 			array(
@@ -1161,6 +1166,9 @@ class WC_Competitor_Monitor_Admin {
 		);
 
 		foreach ( $mappings as $mapping ) {
+			if ( $exclude_mapping_id > 0 && absint( $mapping->id ) === $exclude_mapping_id ) {
+				continue;
+			}
 			if ( untrailingslashit( (string) $mapping->competitor_url ) === untrailingslashit( $url ) ) {
 				return true;
 			}
@@ -1721,5 +1729,159 @@ class WC_Competitor_Monitor_Admin {
 	 */
 	public function product_edit_link( int $product_id ): string {
 		return get_edit_post_link( $product_id, '' ) ?: '';
+	}
+
+	/**
+	 * Shows a one-time welcome notice after plugin activation.
+	 *
+	 * @return void
+	 */
+	public function render_welcome_notice(): void {
+		if ( ! get_transient( 'wc_competitor_monitor_welcome' ) ) {
+			return;
+		}
+		if ( ! WC_Competitor_Monitor_Security::current_user_can_manage() ) {
+			return;
+		}
+		$dismiss_url = wp_nonce_url(
+			admin_url( 'admin-post.php?action=wc_competitor_monitor_dismiss_welcome' ),
+			'wc_competitor_monitor_dismiss_welcome'
+		);
+		?>
+		<div class="notice notice-success">
+			<p><strong><?php esc_html_e( 'Competitor Price & Stock Monitor is active.', 'competitor-price-stock-monitor' ); ?></strong></p>
+			<p>
+				<strong><?php esc_html_e( 'Step 1:', 'competitor-price-stock-monitor' ); ?></strong>
+				<?php esc_html_e( 'Go to Product Mapping and add a competitor URL for your first product.', 'competitor-price-stock-monitor' ); ?>
+				&nbsp;
+				<strong><?php esc_html_e( 'Step 2:', 'competitor-price-stock-monitor' ); ?></strong>
+				<?php esc_html_e( 'Click "Run check now" to see the competitor price immediately.', 'competitor-price-stock-monitor' ); ?>
+				&nbsp;
+				<strong><?php esc_html_e( 'Step 3:', 'competitor-price-stock-monitor' ); ?></strong>
+				<?php esc_html_e( 'Set up email alerts in Settings so you\'re notified of every change.', 'competitor-price-stock-monitor' ); ?>
+			</p>
+			<p>
+				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=competitor-price-stock-monitor-products' ) ); ?>"><?php esc_html_e( 'Get started →', 'competitor-price-stock-monitor' ); ?></a>
+				&nbsp;
+				<a href="<?php echo esc_url( $dismiss_url ); ?>"><?php esc_html_e( 'Dismiss', 'competitor-price-stock-monitor' ); ?></a>
+			</p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Deletes the welcome notice transient.
+	 *
+	 * @return void
+	 */
+	public function handle_dismiss_welcome(): void {
+		WC_Competitor_Monitor_Security::require_capability();
+		check_admin_referer( 'wc_competitor_monitor_dismiss_welcome' );
+		delete_transient( 'wc_competitor_monitor_welcome' );
+		wp_safe_redirect( wp_get_referer() ?: admin_url() );
+		exit;
+	}
+
+	/**
+	 * Renders a single mapping table row as an HTML string.
+	 *
+	 * @param object $mapping Mapping row object.
+	 * @return string
+	 */
+	private function render_mapping_row_html( object $mapping ): string {
+		$competitor_product_title = $this->truncate_competitor_product_title( $this->competitor_product_title( $mapping ) );
+		$competitor_store_name    = $this->competitor_store_name( $mapping );
+		$edit_url                 = add_query_arg(
+			array(
+				'page'       => 'competitor-price-stock-monitor-products',
+				'mapping_id' => absint( $mapping->id ),
+			),
+			admin_url( 'admin.php' )
+		);
+
+		ob_start();
+		?>
+		<tr>
+			<td>
+				<strong><?php echo esc_html( $competitor_product_title ); ?></strong><br>
+				<span class="wccm-muted-line"><?php echo esc_html( $competitor_store_name ); ?></span><br>
+				<a href="<?php echo esc_url( $mapping->competitor_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Visit', 'competitor-price-stock-monitor' ); ?></a>
+			</td>
+			<td><?php echo $this->format_price( null !== $mapping->last_price ? (float) $mapping->last_price : null ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+			<td><span class="wccm-badge wccm-badge-<?php echo esc_attr( $mapping->last_stock_status ?: 'unknown' ); ?>"><?php echo esc_html( $mapping->last_stock_status ?: __( 'unknown', 'competitor-price-stock-monitor' ) ); ?></span></td>
+			<td><?php echo $mapping->last_checked_at ? esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $mapping->last_checked_at ) ) : '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+			<td><a class="button button-small" href="<?php echo esc_url( $edit_url ); ?>"><?php esc_html_e( 'Edit mapping', 'competitor-price-stock-monitor' ); ?></a></td>
+		</tr>
+		<?php
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * AJAX handler: quick-add competitor mapping from product metabox.
+	 *
+	 * @return void
+	 */
+	public function handle_ajax_quick_add_mapping(): void {
+		check_ajax_referer( 'wccm_quick_add_mapping' );
+
+		if ( ! WC_Competitor_Monitor_Security::current_user_can_manage() ) {
+			wp_send_json_error( __( 'Insufficient permissions.', 'competitor-price-stock-monitor' ), 403 );
+		}
+
+		$product_id = isset( $_POST['product_id'] ) ? absint( wp_unslash( $_POST['product_id'] ) ) : 0;
+
+		if ( ! $product_id || ! current_user_can( 'edit_post', $product_id ) ) {
+			wp_send_json_error( __( 'Invalid product.', 'competitor-price-stock-monitor' ), 400 );
+		}
+
+		$url        = isset( $_POST['competitor_url'] ) ? esc_url_raw( wp_unslash( $_POST['competitor_url'] ) ) : '';
+		$validation = WC_Competitor_Monitor_Security::validate_competitor_url( $url );
+
+		if ( is_wp_error( $validation ) ) {
+			wp_send_json_error( $validation->get_error_message() );
+		}
+
+		if ( $this->product_mapping_url_exists( $product_id, $url ) ) {
+			wp_send_json_error( __( 'This competitor URL is already mapped to the product.', 'competitor-price-stock-monitor' ) );
+		}
+
+		$host            = (string) wp_parse_url( $url, PHP_URL_HOST );
+		$competitor_name = isset( $_POST['competitor_name'] ) ? sanitize_text_field( wp_unslash( $_POST['competitor_name'] ) ) : '';
+		$competitor_name = '' !== $competitor_name ? $competitor_name : preg_replace( '/^www\./', '', $host );
+		$currency        = isset( $_POST['currency'] ) ? WC_Competitor_Monitor_Security::sanitize_currency( sanitize_text_field( wp_unslash( $_POST['currency'] ) ) ) : '';
+		$margin          = isset( $_POST['min_margin_percentage'] ) ? max( 0.0, min( 99.0, (float) sanitize_text_field( wp_unslash( $_POST['min_margin_percentage'] ) ) ) ) : 20.0;
+		$active          = isset( $_POST['active'] ) ? absint( wp_unslash( $_POST['active'] ) ) : 1;
+
+		$this->db->capture_original_product_price( $product_id, 'product_metabox_mapping_created' );
+
+		$mapping_id = $this->db->insert_mapping(
+			array(
+				'product_id'                    => $product_id,
+				'competitor_name'               => $competitor_name,
+				'competitor_product_title'      => $this->competitor_product_title_from_url( $url, $competitor_name ),
+				'competitor_url'                => $url,
+				'price_selector'                => '',
+				'stock_selector'                => '',
+				'currency'                      => $currency,
+				'min_margin_percentage'         => $margin,
+				'suggested_increase_mode'       => 'global',
+				'suggested_increase_percentage' => null,
+				'active'                        => $active ? 1 : 0,
+			)
+		);
+
+		if ( $mapping_id <= 0 ) {
+			wp_send_json_error( __( 'Could not save the mapping.', 'competitor-price-stock-monitor' ) );
+		}
+
+		$this->sync->sync_mapping( $mapping_id, 'product_metabox_created' );
+
+		$mapping = $this->db->get_mapping( $mapping_id );
+		wp_send_json_success(
+			array(
+				'row_html' => $this->render_mapping_row_html( $mapping ),
+				'message'  => __( 'Competitor mapping added.', 'competitor-price-stock-monitor' ),
+			)
+		);
 	}
 }

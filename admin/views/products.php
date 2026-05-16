@@ -45,11 +45,11 @@ $wc_competitor_monitor_product_search_nonce   = wp_create_nonce( 'search-product
 $wc_competitor_monitor_edit_product_id        = $wc_competitor_monitor_is_editing ? absint( $wc_competitor_monitor_editing_mapping->product_id ) : 0;
 $wc_competitor_monitor_edit_product_label     = $wc_competitor_monitor_edit_product_id > 0 ? $this->product_title( $wc_competitor_monitor_edit_product_id ) : '';
 $wc_competitor_monitor_pro_is_active          = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
-$wc_competitor_monitor_saas_base_url          = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'http://127.0.0.1:8788' ) ) );
+$wc_competitor_monitor_saas_base_url          = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'https://competitor-monitor-pro-production.up.railway.app' ) ) );
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
-	$wc_competitor_monitor_saas_base_url = 'http://127.0.0.1:8788';
+	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url   = $wc_competitor_monitor_saas_base_url . '/app/checkout';
+$wc_competitor_monitor_upgrade_url   = $wc_competitor_monitor_saas_base_url . '/pricing';
 $wc_competitor_monitor_discovery_url = add_query_arg(
 	array(
 		'site_url' => home_url(),

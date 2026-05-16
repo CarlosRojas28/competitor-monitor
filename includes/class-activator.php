@@ -26,57 +26,7 @@ class WC_Competitor_Monitor_Activator {
 		$settings = $db->get_settings();
 		self::schedule_cron( (string) $settings['check_frequency'] );
 
-		self::send_activation_telemetry( $settings );
-	}
-
-	/**
-	 * Fires a plugin.installed telemetry event to the Pro SaaS if connected.
-	 *
-	 * @param array<string,mixed> $settings Plugin settings.
-	 * @return void
-	 */
-	private static function send_activation_telemetry( array $settings ): void {
-		$saas_url = (string) ( $settings['pro_saas_url'] ?? '' );
-		if ( empty( $settings['pro_enabled'] ) || '' === $saas_url ) {
-			return;
-		}
-
-		$site_id          = (string) ( $settings['pro_site_id'] ?? '' );
-		$key_id           = (string) ( $settings['pro_key_id'] ?? '' );
-		$secret_encrypted = (string) ( $settings['pro_plugin_to_saas_secret_encrypted'] ?? '' );
-
-		if ( '' === $site_id || '' === $key_id || '' === $secret_encrypted ) {
-			return;
-		}
-
-		$secret = WC_Competitor_Monitor_Bridge_Auth::decrypt_secret( $secret_encrypted );
-		if ( '' === $secret ) {
-			return;
-		}
-
-		$body                    = wp_json_encode(
-			array(
-				'event'       => 'plugin.installed',
-				'version'     => WC_COMPETITOR_MONITOR_VERSION,
-				'php_version' => PHP_VERSION,
-				'wp_version'  => get_bloginfo( 'version' ),
-				'wc_version'  => defined( 'WC_VERSION' ) ? WC_VERSION : '',
-				'site_url'    => home_url( '/' ),
-			)
-		);
-		$url                     = rtrim( $saas_url, '/' ) . '/v1/plugin/telemetry';
-		$headers                 = WC_Competitor_Monitor_Bridge_Auth::sign_headers( 'POST', $url, (string) $body, $site_id, $key_id, $secret );
-		$headers['Content-Type'] = 'application/json';
-
-		wp_remote_post(
-			$url,
-			array(
-				'headers'  => $headers,
-				'body'     => $body,
-				'timeout'  => 5,
-				'blocking' => false,
-			)
-		);
+		set_transient( 'wc_competitor_monitor_welcome', 1, DAY_IN_SECONDS * 7 );
 	}
 
 	/**

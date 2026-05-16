@@ -10,11 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $wc_competitor_monitor_pro_is_active = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
-$wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'http://127.0.0.1:8788' ) ) );
+$wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'https://competitor-monitor-pro-production.up.railway.app' ) ) );
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
-	$wc_competitor_monitor_saas_base_url = 'http://127.0.0.1:8788';
+	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/app/checkout';
+$wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/pricing';
 ?>
 <div class="wrap wccm-wrap">
 	<h1><?php esc_html_e( 'Competitor Monitor', 'competitor-price-stock-monitor' ); ?></h1>
@@ -78,9 +78,12 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/ap
 			<span class="wccm-card-label"><?php esc_html_e( 'Unread alerts', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['unread_alerts'] ) ); ?></strong>
 		</div>
-		<div class="wccm-card">
+		<div class="wccm-card <?php echo ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) ? 'wccm-card-highlight' : ''; ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'We charge more', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['more_expensive'] ) ); ?></strong>
+			<?php if ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) : ?>
+				<small><a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Reprice automatically with Pro', 'competitor-price-stock-monitor' ); ?></a></small>
+			<?php endif; ?>
 		</div>
 		<div class="wccm-card">
 			<span class="wccm-card-label"><?php esc_html_e( 'We charge less', 'competitor-price-stock-monitor' ); ?></span>
@@ -192,6 +195,11 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/ap
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+			<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+				<p style="margin-top:12px">
+					<a class="button button-primary" href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Apply these automatically with Pro', 'competitor-price-stock-monitor' ); ?></a>
+				</p>
+			<?php endif; ?>
 		</section>
 	<?php endif; ?>
 </div>

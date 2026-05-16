@@ -2,68 +2,1791 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Competitor Price & Stock Monitor for WooCommerce 1.1.3\n"
+"Project-Id-Version: Competitor Price & Stock Monitor for WooCommerce 1.1.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/competitor-price-stock-monitor\n"
-"POT-Creation-Date: 2026-05-02 00:00+0000\n"
+"POT-Creation-Date: 2026-05-14 20:53+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Codex\n"
+"X-Generator: Custom PHP extractor\n"
 "X-Domain: competitor-price-stock-monitor\n"
 
-msgid "Competitor Monitor"
+#: admin/views/alerts.php:13
+msgid "Price drop"
 msgstr ""
 
-msgid "Dashboard"
+#: admin/views/alerts.php:14
+msgid "Price increase"
 msgstr ""
 
-msgid "Product Mapping"
+#: admin/views/alerts.php:15
+msgid "Out of stock"
 msgstr ""
 
-msgid "Competitor URLs"
+#: admin/views/alerts.php:16
+msgid "Back in stock"
 msgstr ""
 
+#: admin/views/alerts.php:17
+msgid "Price updated"
+msgstr ""
+
+#: admin/views/alerts.php:18
+msgid "Update blocked (margin)"
+msgstr ""
+
+#: admin/views/alerts.php:19
+msgid "Alert"
+msgstr ""
+
+#: admin/views/alerts.php:23
+#: admin/views/dashboard.php:142
+#: includes/class-admin.php:143
+#: includes/class-admin.php:144
 msgid "Alerts"
 msgstr ""
 
-msgid "Settings"
+#: admin/views/alerts.php:27
+msgid "No alerts yet. You'll see notifications here when competitors change price, go out of stock, or when automatic repricing is applied or blocked."
 msgstr ""
 
-msgid "Logs"
+#: admin/views/alerts.php:32
+msgid "What happened"
 msgstr ""
 
-msgid "Add competitor URL"
+#: admin/views/alerts.php:33
+#: admin/views/competitors.php:53
+#: admin/views/products.php:221
+msgid "Your product"
 msgstr ""
 
-msgid "Run check now"
+#: admin/views/alerts.php:34
+#: admin/views/competitors.php:52
+#: admin/views/dashboard.php:172
+#: admin/views/products.php:222
+#: includes/class-admin.php:544
+#: includes/class-admin.php:1394
+#: includes/class-alerts.php:89
+#: includes/class-alerts.php:213
+#: includes/class-monitor.php:775
+#: includes/class-rest-api.php:1070
+msgid "Competitor"
 msgstr ""
 
-msgid "Products monitored"
+#: admin/views/alerts.php:35
+#: admin/views/logs.php:27
+msgid "Date"
 msgstr ""
 
-msgid "Active competitor URLs"
+#: admin/views/alerts.php:36
+#: admin/views/products.php:229
+#: admin/views/products.php:363
+#: includes/class-admin.php:604
+msgid "Status"
 msgstr ""
 
-msgid "Unread alerts"
+#: admin/views/alerts.php:37
+#: admin/views/competitors.php:57
+#: admin/views/products.php:230
+#: includes/class-admin.php:548
+msgid "Actions"
 msgstr ""
 
-msgid "Latest Changes"
+#: admin/views/alerts.php:58
+msgid "View"
 msgstr ""
 
-msgid "Recent Recommendations"
+#: admin/views/alerts.php:64
+msgid "Unread"
 msgstr ""
 
-msgid "Create mapping"
+#: admin/views/alerts.php:66
+msgid "Read"
 msgstr ""
 
-msgid "Update mapping"
+#: admin/views/alerts.php:75
+msgid "Mark read"
 msgstr ""
 
+#: admin/views/alerts.php:82
+#: admin/views/competitors.php:110
+#: admin/views/products.php:342
 msgid "Delete"
 msgstr ""
 
+#: admin/views/competitors.php:13
+msgid "Competitor Prices"
+msgstr ""
+
+#: admin/views/competitors.php:16
+#: admin/views/products.php:87
+msgid "Add competitor"
+msgstr ""
+
+#: admin/views/competitors.php:20
+msgid "Sync with cloud"
+msgstr ""
+
+#: admin/views/competitors.php:27
+msgid "Last cloud sync:"
+msgstr ""
+
+#: admin/views/competitors.php:31
+msgid "Not synced yet"
+msgstr ""
+
+#: admin/views/competitors.php:35
+msgid "synced"
+msgstr ""
+
+#: admin/views/competitors.php:47
+msgid "No competitors added yet."
+msgstr ""
+
+#: admin/views/competitors.php:47
+msgid "Add your first competitor to start monitoring."
+msgstr ""
+
+#: admin/views/competitors.php:54
+#: admin/views/dashboard.php:174
+#: admin/views/products.php:223
+msgid "Their price"
+msgstr ""
+
+#: admin/views/competitors.php:55
+#: admin/views/products.php:360
+#: includes/class-admin.php:546
+msgid "Stock"
+msgstr ""
+
+#: admin/views/competitors.php:56
+msgid "Monitoring"
+msgstr ""
+
+#: admin/views/competitors.php:69
+msgid "Sync pending"
+msgstr ""
+
+#: admin/views/competitors.php:74
+#: admin/views/dashboard.php:132
+#: admin/views/products.php:265
+#: admin/views/products.php:372
+#: includes/class-admin.php:564
+msgid "unknown"
+msgstr ""
+
+#: admin/views/competitors.php:77
+msgid "Paused"
+msgstr ""
+
+#: admin/views/competitors.php:77
+#: admin/views/products.php:203
+#: admin/views/products.php:291
+#: includes/class-admin.php:606
+msgid "Active"
+msgstr ""
+
+#: admin/views/competitors.php:90
+#: admin/views/products.php:307
+msgid "Edit"
+msgstr ""
+
+#: admin/views/competitors.php:96
+msgid "Run check"
+msgstr ""
+
+#: admin/views/competitors.php:103
+msgid "Resume"
+msgstr ""
+
+#: admin/views/competitors.php:103
+msgid "Pause"
+msgstr ""
+
+#: admin/views/dashboard.php:20
+#: includes/class-admin.php:105
+#: includes/class-admin.php:106
+msgid "Competitor Monitor"
+msgstr ""
+
+#: admin/views/dashboard.php:25
+msgid "Get AI competitor discovery and automatic repricing with Pro"
+msgstr ""
+
+#: admin/views/dashboard.php:26
+msgid "Find competitors automatically, apply safe price changes and measure the extra profit."
+msgstr ""
+
+#: admin/views/dashboard.php:27
+#: admin/views/products.php:80
+#: admin/views/settings.php:65
+#: admin/views/settings.php:157
+#: admin/views/settings.php:278
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: admin/views/dashboard.php:34
+msgid "Monitor a new competitor"
+msgstr ""
+
+#: admin/views/dashboard.php:40
+msgid "Check prices now"
+msgstr ""
+
+#: admin/views/dashboard.php:47
+msgid "Extra profit from smart pricing (last 30 days)"
+msgstr ""
+
+#: admin/views/dashboard.php:49
+msgid "Calculated from WooCommerce orders placed after automatic price adjustments. Requires product costs in WooCommerce."
+msgstr ""
+
+#: admin/views/dashboard.php:52
+msgid "Products repriced"
+msgstr ""
+
+#: admin/views/dashboard.php:56
+msgid "Units sold after repricing"
+msgstr ""
+
+#: admin/views/dashboard.php:61
+msgid "Extra revenue (add product costs for full tracking)"
+msgstr ""
+
+#: admin/views/dashboard.php:70
+msgid "Products monitored"
+msgstr ""
+
+#: admin/views/dashboard.php:74
+msgid "Competitors tracked"
+msgstr ""
+
+#: admin/views/dashboard.php:78
+msgid "Unread alerts"
+msgstr ""
+
+#: admin/views/dashboard.php:82
+msgid "We charge more"
+msgstr ""
+
+#: admin/views/dashboard.php:85
+msgid "Reprice automatically with Pro"
+msgstr ""
+
+#: admin/views/dashboard.php:89
+msgid "We charge less"
+msgstr ""
+
+#: admin/views/dashboard.php:93
+msgid "Competitor out of stock"
+msgstr ""
+
+#: admin/views/dashboard.php:100
+msgid "Recent price movements"
+msgstr ""
+
+#: admin/views/dashboard.php:104
+#: admin/views/dashboard.php:171
+msgid "Product"
+msgstr ""
+
+#: admin/views/dashboard.php:105
+#: admin/views/products.php:359
+msgid "Competitor price"
+msgstr ""
+
+#: admin/views/dashboard.php:106
+#: admin/views/dashboard.php:173
+#: admin/views/products.php:224
+msgid "Your price"
+msgstr ""
+
+#: admin/views/dashboard.php:107
+#: admin/views/products.php:225
+#: admin/views/products.php:362
+msgid "Difference"
+msgstr ""
+
+#: admin/views/dashboard.php:108
+#: admin/views/products.php:226
+msgid "Their stock"
+msgstr ""
+
+#: admin/views/dashboard.php:109
+#: admin/views/products.php:358
+msgid "Checked"
+msgstr ""
+
+#: admin/views/dashboard.php:116
+msgid "No price checks yet. Click \"Check prices now\" above or wait for the next automatic check."
+msgstr ""
+
+#: admin/views/dashboard.php:144
+msgid "No unread alerts. You'll be notified here when a competitor changes price or goes out of stock."
+msgstr ""
+
+#: admin/views/dashboard.php:160
+msgid "View all alerts"
+msgstr ""
+
+#: admin/views/dashboard.php:167
+msgid "Pricing suggestions"
+msgstr ""
+
+#: admin/views/dashboard.php:175
+msgid "Suggestion"
+msgstr ""
+
+#: admin/views/dashboard.php:176
+msgid "Suggested price"
+msgstr ""
+
+#: admin/views/dashboard.php:200
+msgid "Apply these automatically with Pro"
+msgstr ""
+
+#: admin/views/logs.php:13
+#: includes/class-admin.php:161
+#: includes/class-admin.php:162
+msgid "Logs"
+msgstr ""
+
+#: admin/views/logs.php:19
+msgid "Clear logs"
+msgstr ""
+
+#: admin/views/logs.php:28
+msgid "Level"
+msgstr ""
+
+#: admin/views/logs.php:29
+msgid "Message"
+msgstr ""
+
+#: admin/views/logs.php:30
+msgid "Context"
+msgstr ""
+
+#: admin/views/logs.php:35
+msgid "No logs yet."
+msgstr ""
+
+#: admin/views/products.php:16
+msgid "Global setting: no increase limit."
+msgstr ""
+
+#. translators: %s: configured percentage.
+#: admin/views/products.php:19
+msgid "Global setting: limit suggested increases to %s%%."
+msgstr ""
+
+#: admin/views/products.php:34
+msgid "Use global setting: apply recommended prices automatically."
+msgstr ""
+
+#: admin/views/products.php:35
+msgid "Use global setting: do not change prices automatically."
+msgstr ""
+
+#: admin/views/products.php:62
+#: includes/class-admin.php:125
+#: includes/class-admin.php:126
+msgid "Product Mapping"
+msgstr ""
+
+#: admin/views/products.php:65
+msgid "WooCommerce is not active. You can keep the plugin enabled, but mappings require WooCommerce products."
+msgstr ""
+
+#: admin/views/products.php:70
+msgid "AI competitor discovery lives in the SaaS"
+msgstr ""
+
+#: admin/views/products.php:71
+msgid "Use the SaaS to discover competitors with AI, review matches and sync mappings back to this store. Manual mapping remains available below as a fallback."
+msgstr ""
+
+#: admin/views/products.php:73
+msgid "Open AI Discovery"
+msgstr ""
+
+#: admin/views/products.php:74
+msgid "Manage Pro bridge"
+msgstr ""
+
+#: admin/views/products.php:77
+#: admin/views/settings.php:62
+msgid "Unlock Pro: AI competitor discovery and profit impact"
+msgstr ""
+
+#: admin/views/products.php:78
+msgid "Upgrade to use the SaaS for AI competitor discovery, automatic price updates and gross profit impact reporting. Manual mapping remains available below in the free plugin."
+msgstr ""
+
+#: admin/views/products.php:81
+#: admin/views/settings.php:66
+msgid "Connect existing Pro license"
+msgstr ""
+
+#: admin/views/products.php:87
+msgid "Edit competitor"
+msgstr ""
+
+#: admin/views/products.php:95
+msgid "WooCommerce product"
+msgstr ""
+
+#: admin/views/products.php:101
+#: includes/class-admin.php:226
+msgid "Search product by name or SKU..."
+msgstr ""
+
+#: admin/views/products.php:116
+msgid "Type at least 3 characters to search products."
+msgstr ""
+
+#: admin/views/products.php:119
+msgid "WooCommerce product search is unavailable. Enter the product ID."
+msgstr ""
+
+#: admin/views/products.php:124
+#: includes/class-admin.php:588
+msgid "Competitor name"
+msgstr ""
+
+#: admin/views/products.php:129
+msgid "Competitor URL"
+msgstr ""
+
+#: admin/views/products.php:134
+msgid "Advanced: selectors and session headers"
+msgstr ""
+
+#: admin/views/products.php:135
+msgid "Leave these empty — the plugin auto-detects price and stock on most competitor sites. Only fill them in if automatic detection fails."
+msgstr ""
+
+#: admin/views/products.php:138
+msgid "Price CSS selector"
+msgstr ""
+
+#: admin/views/products.php:143
+msgid "Stock CSS selector"
+msgstr ""
+
+#: admin/views/products.php:148
+msgid "Browser user-agent override"
+msgstr ""
+
+#: admin/views/products.php:151
+msgid "Only needed if the competitor site blocks the default checker. Copy the User-Agent from Chrome DevTools → Network tab."
+msgstr ""
+
+#: admin/views/products.php:152
+msgid "How to find it."
+msgstr ""
+
+#: admin/views/products.php:157
+msgid "Browser Cookie header"
+msgstr ""
+
+#: admin/views/products.php:160
+msgid "Only needed for sites that require a login session. Copy the Cookie header from Chrome DevTools → Network tab. Cookies expire — you may need to update this periodically."
+msgstr ""
+
+#: admin/views/products.php:167
+#: includes/class-admin.php:592
+msgid "Currency"
+msgstr ""
+
+#: admin/views/products.php:172
+#: includes/class-admin.php:600
+msgid "Minimum margin %"
+msgstr ""
+
+#: admin/views/products.php:177
+#: admin/views/settings.php:249
+msgid "Suggested price increase limit"
+msgstr ""
+
+#: admin/views/products.php:180
+msgid "Use custom percentage limit"
+msgstr ""
+
+#: admin/views/products.php:181
+#: admin/views/settings.php:253
+msgid "No limit"
+msgstr ""
+
+#: admin/views/products.php:186
+msgid "Custom increase %"
+msgstr ""
+
+#: admin/views/products.php:188
+msgid "Used only when the custom percentage option is selected."
+msgstr ""
+
+#: admin/views/products.php:192
+#: includes/class-admin.php:396
+msgid "Apply recommended prices automatically"
+msgstr ""
+
+#: admin/views/products.php:195
+#: includes/class-admin.php:399
+msgid "Yes, apply recommended prices for this product"
+msgstr ""
+
+#: admin/views/products.php:196
+#: includes/class-admin.php:400
+msgid "No, never change this product price automatically"
+msgstr ""
+
+#: admin/views/products.php:198
+msgid "This Pro override is saved on the WooCommerce product and applies to all competitor URLs mapped to it."
+msgstr ""
+
+#: admin/views/products.php:208
+msgid "Update competitor"
+msgstr ""
+
+#: admin/views/products.php:208
+msgid "Save competitor"
+msgstr ""
+
+#: admin/views/products.php:210
+msgid "Cancel"
+msgstr ""
+
+#: admin/views/products.php:217
+msgid "Competitors being monitored"
+msgstr ""
+
+#: admin/views/products.php:227
+msgid "Extra profit (30d)"
+msgstr ""
+
+#: admin/views/products.php:228
+#: includes/class-admin.php:547
+msgid "Last check"
+msgstr ""
+
+#: admin/views/products.php:235
+msgid "No competitors added yet. Add one above to start monitoring prices."
+msgstr ""
+
+#. translators: %s: revenue uplift amount.
+#: admin/views/products.php:274
+msgid "%s unverified uplift"
+msgstr ""
+
+#: admin/views/products.php:291
+#: includes/class-admin.php:607
+msgid "Inactive"
+msgstr ""
+
+#: admin/views/products.php:313
+msgid "Run check now"
+msgstr ""
+
+#: admin/views/products.php:329
+msgid "View history"
+msgstr ""
+
+#: admin/views/products.php:335
+msgid "Activate"
+msgstr ""
+
+#: admin/views/products.php:335
+msgid "Deactivate"
+msgstr ""
+
+#: admin/views/products.php:354
+msgid "History"
+msgstr ""
+
+#: admin/views/products.php:361
+msgid "Our price"
+msgstr ""
+
+#: admin/views/products.php:364
+msgid "Error"
+msgstr ""
+
+#: admin/views/settings.php:34
+msgid "Hourly"
+msgstr ""
+
+#: admin/views/settings.php:35
+#: includes/class-activator.php:41
+msgid "Every 6 hours"
+msgstr ""
+
+#: admin/views/settings.php:36
+msgid "Every 12 hours"
+msgstr ""
+
+#: admin/views/settings.php:37
+#: admin/views/settings.php:269
+msgid "Daily"
+msgstr ""
+
+#: admin/views/settings.php:41
+#: includes/class-admin.php:152
+#: includes/class-admin.php:153
+msgid "Settings"
+msgstr ""
+
+#: admin/views/settings.php:44
+msgid "Pro license"
+msgstr ""
+
+#: admin/views/settings.php:47
+msgid "Don't have a Pro account yet?"
+msgstr ""
+
+#: admin/views/settings.php:48
+msgid "Sign up at Competitor Monitor Pro"
+msgstr ""
+
+#: admin/views/settings.php:51
+msgid "Already have a Pro account? Open the SaaS Sites screen, register this site, copy the one-time key, and paste it below."
+msgstr ""
+
+#: admin/views/settings.php:52
+#: admin/views/settings.php:57
+msgid "Open SaaS Sites"
+msgstr ""
+
+#: admin/views/settings.php:56
+msgid "Use the SaaS Sites screen to generate a one-time plugin registration key for this exact site."
+msgstr ""
+
+#: admin/views/settings.php:63
+msgid "Upgrade to use the SaaS for AI competitor discovery, automatic price updates and gross profit impact reporting."
+msgstr ""
+
+#: admin/views/settings.php:71
+msgid "Status:"
+msgstr ""
+
+#: admin/views/settings.php:72
+msgid "inactive"
+msgstr ""
+
+#: admin/views/settings.php:85
+msgid "SaaS URL"
+msgstr ""
+
+#: admin/views/settings.php:89
+msgid "Plugin registration key"
+msgstr ""
+
+#: admin/views/settings.php:91
+msgid "Stored securely. Enter a new key to reactivate."
+msgstr ""
+
+#: admin/views/settings.php:91
+msgid "CPSM-REG-..."
+msgstr ""
+
+#: admin/views/settings.php:92
+msgid "Registration keys are generated in the SaaS, are scoped to one site URL, can be used once, and expire automatically."
+msgstr ""
+
+#: admin/views/settings.php:94
+msgid "The full registration key is not displayed after activation."
+msgstr ""
+
+#. translators: %s: registration key preview.
+#: admin/views/settings.php:100
+msgid "Stored registration key preview: %s"
+msgstr ""
+
+#: admin/views/settings.php:110
+msgid "Secure bridge"
+msgstr ""
+
+#. translators: 1: plugin-to-SaaS secret preview, 2: SaaS-to-plugin secret preview.
+#: admin/views/settings.php:118
+msgid "Bridge secrets are stored encrypted and are not displayed again. Previews: plugin to SaaS %1$s, SaaS to plugin %2$s."
+msgstr ""
+
+#: admin/views/settings.php:125
+msgid "Not issued yet"
+msgstr ""
+
+#: admin/views/settings.php:130
+msgid "Activate Pro bridge"
+msgstr ""
+
+#: admin/views/settings.php:136
+msgid "Rotate Pro bridge keys"
+msgstr ""
+
+#: admin/views/settings.php:144
+msgid "Pro automatic price updates"
+msgstr ""
+
+#: admin/views/settings.php:145
+msgid "Allow the plugin to apply the recommended WooCommerce price after a competitor check. Recommendations still respect product cost and minimum margin rules."
+msgstr ""
+
+#: admin/views/settings.php:148
+msgid "Automatic updates enabled"
+msgstr ""
+
+#: admin/views/settings.php:148
+msgid "Automatic updates disabled"
+msgstr ""
+
+#: admin/views/settings.php:155
+msgid "Pro feature: automatic price updates require a Pro license."
+msgstr ""
+
+#: admin/views/settings.php:156
+msgid "With a free license you can review price suggestions and apply them manually from the competitor list."
+msgstr ""
+
+#: admin/views/settings.php:169
+msgid "Apply recommended prices automatically and notify me"
+msgstr ""
+
+#: admin/views/settings.php:170
+msgid "When enabled globally, products set to \"Use global setting\" can be updated after checks. Each WooCommerce product can override this in the product edit screen or Product Mapping."
+msgstr ""
+
+#: admin/views/settings.php:175
+msgid "The plugin does not apply a recommendation when it would break the configured minimum margin."
+msgstr ""
+
+#: admin/views/settings.php:176
+msgid "Every automatic price change creates an internal alert. Email is sent when Email alerts are enabled below."
+msgstr ""
+
+#: admin/views/settings.php:177
+msgid "No prices are changed when automatic updates are disabled globally or disabled for the individual product."
+msgstr ""
+
+#: admin/views/settings.php:178
+msgid "Attributed gross profit is calculated from completed and processing WooCommerce orders during the 30 days after each automatic change. Product cost is required for events to count as gross profit; otherwise the amount is shown separately as revenue uplift without cost data."
+msgstr ""
+
+#: admin/views/settings.php:181
+msgid "Save automatic pricing"
+msgstr ""
+
+#: admin/views/settings.php:192
+msgid "Alert email"
+msgstr ""
+
+#: admin/views/settings.php:196
+msgid "Email alerts"
+msgstr ""
+
+#: admin/views/settings.php:200
+msgid "Send alert emails"
+msgstr ""
+
+#: admin/views/settings.php:205
+msgid "Minimum price difference for alerts"
+msgstr ""
+
+#: admin/views/settings.php:209
+msgid "Apply suggested prices automatically (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:212
+#: admin/views/settings.php:237
+msgid "Disabled"
+msgstr ""
+
+#: admin/views/settings.php:213
+msgid "Enabled: apply suggested prices and notify me (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:215
+msgid "When enabled and the Pro license is active, checks can update WooCommerce product prices to the current suggestion. Every automatic change creates an internal alert and sends email when email alerts are enabled. Individual products can override this in the product edit screen or Product Mapping."
+msgstr ""
+
+#: admin/views/settings.php:218
+msgid "Upgrade to Pro to enable automatic price updates."
+msgstr ""
+
+#: admin/views/settings.php:224
+msgid "Automatic pricing kill switch"
+msgstr ""
+
+#: admin/views/settings.php:228
+msgid "Immediately block every automatic price change"
+msgstr ""
+
+#: admin/views/settings.php:230
+msgid "Use this emergency control if you suspect bad competitor data, compromised credentials, or unexpected pricing behavior. Recommendations and alerts still work."
+msgstr ""
+
+#: admin/views/settings.php:234
+msgid "Allow original price restore (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:238
+msgid "Enabled: allow manual restore when still competitive (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:240
+msgid "When enabled and the Pro license is active, users can manually restore the captured original customer price from the WooCommerce product edit screen. Restore is blocked when the original price would be above the cheapest in-stock competitor."
+msgstr ""
+
+#: admin/views/settings.php:243
+msgid "Upgrade to Pro to enable original price restore."
+msgstr ""
+
+#: admin/views/settings.php:252
+msgid "Limit by percentage"
+msgstr ""
+
+#: admin/views/settings.php:255
+msgid "Controls how far recommendations may raise your current WooCommerce price when you are much cheaper than a competitor. Individual mappings can override this."
+msgstr ""
+
+#: admin/views/settings.php:259
+msgid "Suggested increase %"
+msgstr ""
+
+#: admin/views/settings.php:262
+msgid "Default is 5%. Set the mode above to No limit if recommendations may rise up to just below the competitor price."
+msgstr ""
+
+#: admin/views/settings.php:266
+msgid "Monitoring frequency"
+msgstr ""
+
+#: admin/views/settings.php:270
+msgid "Every 12 hours (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:271
+msgid "Every 6 hours (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:272
+msgid "Hourly (Pro)"
+msgstr ""
+
+#: admin/views/settings.php:277
+msgid "Hourly, 6-hour and 12-hour monitoring are Pro features."
+msgstr ""
+
+#. translators: 1: current WP-Cron schedule, 2: next run date.
+#: admin/views/settings.php:287
+msgid "Current WP-Cron schedule: %1$s. Next run: %2$s."
+msgstr ""
+
+#: admin/views/settings.php:294
+msgid "The monitoring event will be scheduled automatically when settings are saved or the admin reloads."
+msgstr ""
+
+#: admin/views/settings.php:299
+msgid "Pro features"
+msgstr ""
+
+#: admin/views/settings.php:303
+msgid "Enable Pro cloud features"
+msgstr ""
+
+#: admin/views/settings.php:308
+msgid "Uninstall behavior"
+msgstr ""
+
+#: admin/views/settings.php:312
+msgid "Delete all competitor monitor data when the plugin is uninstalled"
+msgstr ""
+
+#: admin/views/settings.php:319
+msgid "Advanced settings"
+msgstr ""
+
+#: admin/views/settings.php:320
+msgid "These settings control the technical behavior of the price checker. The defaults work for most stores."
+msgstr ""
+
+#: admin/views/settings.php:323
+msgid "Crawler user-agent"
+msgstr ""
+
+#: admin/views/settings.php:327
+msgid "HTTP timeout"
+msgstr ""
+
+#: admin/views/settings.php:328
+msgid "seconds"
+msgstr ""
+
+#: admin/views/settings.php:331
+msgid "Maximum response size"
+msgstr ""
+
+#: admin/views/settings.php:332
+msgid "bytes"
+msgstr ""
+
+#: admin/views/settings.php:335
+msgid "Max competitor checks per batch"
+msgstr ""
+
+#: admin/views/settings.php:339
+msgid "Pro SaaS URL"
+msgstr ""
+
+#: admin/views/settings.php:345
 msgid "Save settings"
 msgstr ""
 
+#: includes/class-admin.php:116
+#: includes/class-admin.php:117
+msgid "Dashboard"
+msgstr ""
+
+#: includes/class-admin.php:134
+#: includes/class-admin.php:135
+msgid "Competitor URLs"
+msgstr ""
+
+#: includes/class-admin.php:224
+msgid "This action cannot be undone. Continue?"
+msgstr ""
+
+#: includes/class-admin.php:227
+msgid "Searching..."
+msgstr ""
+
+#: includes/class-admin.php:228
+msgid "No products found."
+msgstr ""
+
+#: includes/class-admin.php:229
+msgid "Product search failed."
+msgstr ""
+
+#: includes/class-admin.php:230
+msgid "Select a WooCommerce product from the search results."
+msgstr ""
+
+#: includes/class-admin.php:339
+msgid "Competitor Monitor Pro"
+msgstr ""
+
+#: includes/class-admin.php:370
+#: includes/class-admin.php:376
+msgid "Use global setting: enabled"
+msgstr ""
+
+#: includes/class-admin.php:371
+#: includes/class-admin.php:377
+msgid "Use global setting: disabled"
+msgstr ""
+
+#: includes/class-admin.php:402
+msgid "When allowed and a Pro license is active, competitor checks can update this WooCommerce product to the margin-aware recommended price. Every automatic change creates an alert and can send email."
+msgstr ""
+
+#: includes/class-admin.php:405
+msgid "Allow original price restore"
+msgstr ""
+
+#: includes/class-admin.php:408
+msgid "Allow restore for this product"
+msgstr ""
+
+#: includes/class-admin.php:409
+msgid "Never restore this product"
+msgstr ""
+
+#: includes/class-admin.php:411
+msgid "When allowed, Pro users can manually restore the captured original price if it is still competitive against in-stock competitors."
+msgstr ""
+
+#: includes/class-admin.php:414
+msgid "Product cost for margin checks"
+msgstr ""
+
+#: includes/class-admin.php:416
+msgid "Used as a fallback when no supported cost-of-goods plugin value exists. Automatic price drops are blocked until the plugin can verify the minimum margin."
+msgstr ""
+
+#. translators: 1: product cost, 2: cost source label, 3: meta key.
+#: includes/class-admin.php:423
+msgid "Current cost used: %1$s. Source: %2$s (%3$s)."
+msgstr ""
+
+#: includes/class-admin.php:432
+msgid "No product cost is available yet, so automatic price reductions will stay blocked for safety."
+msgstr ""
+
+#: includes/class-admin.php:436
+msgid "Original customer price"
+msgstr ""
+
+#. translators: %s: current price.
+#: includes/class-admin.php:444
+msgid "Current price: %s."
+msgstr ""
+
+#. translators: 1: date, 2: source.
+#: includes/class-admin.php:455
+msgid "Captured on %1$s. Source: %2$s."
+msgstr ""
+
+#: includes/class-admin.php:457
+msgid "mapping"
+msgstr ""
+
+#: includes/class-admin.php:479
+msgid "Restore original price"
+msgstr ""
+
+#: includes/class-admin.php:485
+msgid "This price will be captured once before the first competitor mapping or automatic Pro adjustment."
+msgstr ""
+
+#: includes/class-admin.php:489
+msgid "Last automatic price change"
+msgstr ""
+
+#. translators: 1: old price, 2: new price, 3: date.
+#: includes/class-admin.php:495
+msgid "%1$s to %2$s on %3$s"
+msgstr ""
+
+#: includes/class-admin.php:503
+msgid "No automatic price change has been applied yet."
+msgstr ""
+
+#: includes/class-admin.php:507
+msgid "Profit impact 30d"
+msgstr ""
+
+#. translators: 1: money amount, 2: units sold.
+#: includes/class-admin.php:512
+msgid "%1$s attributed gross profit from %2$s units."
+msgstr ""
+
+#. translators: 1: old price, 2: new price, 3: date.
+#: includes/class-admin.php:523
+msgid "Latest event: %1$s to %2$s on %3$s."
+msgstr ""
+
+#: includes/class-admin.php:532
+msgid "Some automatic pricing events are excluded from gross profit because product cost was missing at the time of change."
+msgstr ""
+
+#: includes/class-admin.php:537
+msgid "Mapped competitors for this product"
+msgstr ""
+
+#: includes/class-admin.php:539
+msgid "No competitor URLs are mapped to this product yet."
+msgstr ""
+
+#: includes/class-admin.php:545
+msgid "Last price"
+msgstr ""
+
+#: includes/class-admin.php:561
+msgid "Visit"
+msgstr ""
+
+#: includes/class-admin.php:578
+msgid "Edit mapping"
+msgstr ""
+
+#: includes/class-admin.php:585
+msgid "Add competitor URL"
+msgstr ""
+
+#: includes/class-admin.php:596
+msgid "Competitor product URL"
+msgstr ""
+
+#: includes/class-admin.php:611
+msgid "Save or update the product to create the competitor mapping. Advanced selectors can be edited later from Competitor Monitor > Product Mapping."
+msgstr ""
+
+#: includes/class-admin.php:666
+msgid "This competitor URL is already mapped to the product."
+msgstr ""
+
+#: includes/class-admin.php:697
+msgid "Competitor mapping added to this product."
+msgstr ""
+
+#: includes/class-admin.php:734
+msgid "Please select a WooCommerce product."
+msgstr ""
+
+#: includes/class-admin.php:738
+msgid "Please enter a competitor name."
+msgstr ""
+
+#: includes/class-admin.php:750
+msgid "Mapping updated."
+msgstr ""
+
+#: includes/class-admin.php:754
+msgid "Mapping created."
+msgstr ""
+
+#: includes/class-admin.php:776
+msgid "You do not have permission to restore this product price."
+msgstr ""
+
+#: includes/class-admin.php:783
+#: includes/class-monitor.php:242
+msgid "Original price restore was blocked."
+msgstr ""
+
+#: includes/class-admin.php:788
+msgid "Original customer price restored."
+msgstr ""
+
+#: includes/class-admin.php:814
+msgid "Mapping deleted."
+msgstr ""
+
+#: includes/class-admin.php:833
+msgid "Mapping status updated."
+msgstr ""
+
+#: includes/class-admin.php:849
+#: includes/class-rest-api.php:663
+msgid "Check failed."
+msgstr ""
+
+#: includes/class-admin.php:853
+msgid "Manual check completed."
+msgstr ""
+
+#: includes/class-admin.php:864
+msgid "Batch check completed."
+msgstr ""
+
+#: includes/class-admin.php:927
+msgid "Settings saved."
+msgstr ""
+
+#: includes/class-admin.php:957
+msgid "Automatic recommended price updates are enabled for products that use the global setting."
+msgstr ""
+
+#: includes/class-admin.php:958
+msgid "Automatic recommended price updates are disabled globally."
+msgstr ""
+
+#: includes/class-admin.php:977
+msgid "License activation failed."
+msgstr ""
+
+#. translators: %s: sync error.
+#: includes/class-admin.php:984
+msgid "Pro bridge activated. Mapping sync needs attention: %s"
+msgstr ""
+
+#: includes/class-admin.php:1007
+msgid "Bridge credential rotation failed."
+msgstr ""
+
+#: includes/class-admin.php:1010
+msgid "Pro bridge credentials rotated."
+msgstr ""
+
+#: includes/class-admin.php:1027
+msgid "Alert marked as read."
+msgstr ""
+
+#: includes/class-admin.php:1044
+msgid "Alert deleted."
+msgstr ""
+
+#: includes/class-admin.php:1057
+msgid "Logs cleared."
+msgstr ""
+
+#: includes/class-admin.php:1146
+msgid "Product cost must be a positive number or empty."
+msgstr ""
+
+#. translators: %s: link to documentation
+#: includes/class-admin.php:1245
+msgid "<strong>Competitor Monitor:</strong> WP-Cron is disabled on this server (<code>DISABLE_WP_CRON</code> is set). Automatic monitoring will not run until you configure a real server cron job to call <code>wp-cron.php</code>. <a href=\"%s\">Go to Settings</a>."
+msgstr ""
+
+#. translators: %d: product ID.
+#: includes/class-admin.php:1532
+#: includes/class-alerts.php:284
+#: includes/class-db.php:1792
+#: includes/class-monitor.php:1055
+msgid "Product #%d"
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: WooCommerce product name.
+#: includes/class-admin.php:1577
+msgid "%1$s dropped the competitor price for \"%2$s\". Mapped WooCommerce product: %3$s."
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: WooCommerce product name.
+#: includes/class-admin.php:1587
+msgid "%1$s increased the competitor price for \"%2$s\". Mapped WooCommerce product: %3$s."
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: WooCommerce product name.
+#: includes/class-admin.php:1597
+#: includes/class-alerts.php:144
+msgid "%1$s is out of stock for competitor product \"%2$s\". Mapped WooCommerce product: %3$s."
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: WooCommerce product name.
+#: includes/class-admin.php:1606
+#: includes/class-alerts.php:160
+msgid "%1$s is back in stock for competitor product \"%2$s\". Mapped WooCommerce product: %3$s."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: competitor product title, 3: competitor name.
+#: includes/class-admin.php:1615
+msgid "WooCommerce product \"%1$s\" is more expensive than competitor product \"%2$s\" at %3$s."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: competitor product title, 3: competitor name.
+#: includes/class-admin.php:1624
+msgid "WooCommerce product \"%1$s\" is cheaper than competitor product \"%2$s\" at %3$s."
+msgstr ""
+
+#. translators: 1: competitor product title, 2: competitor name, 3: WooCommerce product name.
+#: includes/class-admin.php:1633
+msgid "Crawler failed for competitor product \"%1$s\" at %2$s. Mapped WooCommerce product: %3$s."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: competitor product title, 3: competitor name.
+#: includes/class-admin.php:1642
+msgid "Automatic Pro pricing updated WooCommerce product \"%1$s\" after checking competitor product \"%2$s\" at %3$s."
+msgstr ""
+
+#. translators: %s: WooCommerce product name.
+#: includes/class-admin.php:1651
+msgid "Original customer price was restored for WooCommerce product \"%s\"."
+msgstr ""
+
+#. translators: 1: old price, 2: new price.
+#: includes/class-admin.php:1669
+msgid "Price changed from %1$s to %2$s."
+msgstr ""
+
+#: includes/class-admin.php:1750
+msgid "Competitor Price & Stock Monitor is active."
+msgstr ""
+
+#: includes/class-admin.php:1752
+msgid "Step 1:"
+msgstr ""
+
+#: includes/class-admin.php:1753
+msgid "Go to Product Mapping and add a competitor URL for your first product."
+msgstr ""
+
+#: includes/class-admin.php:1755
+msgid "Step 2:"
+msgstr ""
+
+#: includes/class-admin.php:1756
+msgid "Click \"Run check now\" to see the competitor price immediately."
+msgstr ""
+
+#: includes/class-admin.php:1758
+msgid "Step 3:"
+msgstr ""
+
+#: includes/class-admin.php:1759
+msgid "Set up email alerts in Settings so you're notified of every change."
+msgstr ""
+
+#: includes/class-admin.php:1762
+msgid "Get started →"
+msgstr ""
+
+#: includes/class-admin.php:1764
+msgid "Dismiss"
+msgstr ""
+
+#: includes/class-admin.php:989
+msgid "Pro bridge activated. %d mapping synchronized with SaaS."
+msgid_plural "Pro bridge activated. %d mappings synchronized with SaaS."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-admin.php:415
+msgctxt "product cost example"
+msgid "Example: 42.50"
+msgstr ""
+
+#: includes/class-admin.php:589
+msgctxt "competitor name example"
+msgid "Amazon"
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: old price, 4: new price, 5: WooCommerce product name.
+#: includes/class-alerts.php:109
+msgid "%1$s dropped the competitor price for \"%2$s\" from %3$s to %4$s. Mapped WooCommerce product: %5$s."
+msgstr ""
+
+#. translators: 1: competitor name, 2: competitor product title, 3: old price, 4: new price, 5: WooCommerce product name.
+#: includes/class-alerts.php:125
+msgid "%1$s increased the competitor price for \"%2$s\" from %3$s to %4$s. Mapped WooCommerce product: %5$s."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: percentage, 3: competitor product title, 4: competitor name.
+#: includes/class-alerts.php:176
+msgid "Your WooCommerce product \"%1$s\" is %2$s%% higher than competitor product \"%3$s\" at %4$s."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: percentage, 3: competitor product title, 4: competitor name.
+#: includes/class-alerts.php:193
+msgid "Your WooCommerce product \"%1$s\" is %2$s%% below competitor product \"%3$s\" at %4$s."
+msgstr ""
+
+#. translators: 1: competitor product title, 2: competitor name, 3: WooCommerce product name, 4: error message.
+#: includes/class-alerts.php:222
+msgid "Crawl failed for competitor product \"%1$s\" at %2$s. Mapped WooCommerce product: %3$s. Error: %4$s"
+msgstr ""
+
+#. translators: %s: alert type.
+#: includes/class-alerts.php:253
+msgid "[Competitor Monitor] %s"
+msgstr ""
+
+#. translators: %s: alert type.
+#: includes/class-alerts.php:259
+msgid "Severity: %1$snn%2$s"
+msgstr ""
+
+#: includes/class-alerts.php:314
+#: includes/class-monitor.php:1072
+msgid "Competitor product"
+msgstr ""
+
+#: includes/class-bridge-auth.php:130
+msgid "Missing Pro bridge signature headers."
+msgstr ""
+
+#: includes/class-bridge-auth.php:134
+msgid "Pro bridge site or key does not match this store."
+msgstr ""
+
+#: includes/class-bridge-auth.php:139
+msgid "Pro bridge signature has expired."
+msgstr ""
+
+#: includes/class-bridge-auth.php:143
+msgid "Pro bridge nonce has already been used."
+msgstr ""
+
+#: includes/class-bridge-auth.php:148
+msgid "Pro bridge body hash does not match."
+msgstr ""
+
+#: includes/class-bridge-auth.php:153
+msgid "Pro bridge secret is not configured."
+msgstr ""
+
+#: includes/class-bridge-auth.php:165
+msgid "Invalid Pro bridge signature."
+msgstr ""
+
+#: includes/class-crawler.php:64
+msgid "Crawler request failed."
+msgstr ""
+
+#: includes/class-crawler.php:308
+msgid "Retrying crawler request with same-origin browser session."
+msgstr ""
+
+#: includes/class-crawler.php:354
+msgid "The remote site requires a JavaScript and cookie browser challenge before the product HTML is available."
+msgstr ""
+
+#: includes/class-crawler.php:358
+msgid "The remote page appears to block automated requests."
+msgstr ""
+
+#. translators: %d: HTTP status code.
+#: includes/class-crawler.php:363
+msgid "Crawler received HTTP %d."
+msgstr ""
+
+#: includes/class-db.php:434
+msgid "No product cost found"
+msgstr ""
+
+#: includes/class-db.php:446
+#: includes/class-db.php:447
+#: includes/class-db.php:448
+#: includes/class-db.php:449
+msgid "WooCommerce cost of goods"
+msgstr ""
+
+#: includes/class-db.php:450
+msgid "Cost of Goods for WooCommerce"
+msgstr ""
+
+#: includes/class-db.php:451
+#: includes/class-db.php:452
+msgid "Booster purchase price"
+msgstr ""
+
+#: includes/class-db.php:453
+#: includes/class-db.php:454
+msgid "YITH cost of goods"
+msgstr ""
+
+#: includes/class-db.php:455
+msgid "ATUM purchase price"
+msgstr ""
+
+#: includes/class-db.php:456
+#: includes/class-db.php:457
+msgid "Product cost metadata"
+msgstr ""
+
+#: includes/class-db.php:458
+#: includes/class-db.php:484
+msgid "Competitor Monitor product cost"
+msgstr ""
+
+#: includes/class-db.php:1493
+msgid "WooCommerce is not active, so order attribution cannot be calculated."
+msgstr ""
+
+#: includes/class-monitor.php:92
+msgid "Scheduled check skipped because WooCommerce is not active."
+msgstr ""
+
+#: includes/class-monitor.php:124
+msgid "Could not sync Pro pricing impact to the SaaS."
+msgstr ""
+
+#: includes/class-monitor.php:158
+#: includes/class-monitor.php:349
+#: includes/class-rest-api.php:330
+#: includes/class-rest-api.php:382
+#: includes/class-rest-api.php:481
+#: includes/class-rest-api.php:806
 msgid "WooCommerce is not active."
 msgstr ""
+
+#: includes/class-monitor.php:165
+#: includes/class-monitor.php:252
+msgid "WooCommerce product was not found."
+msgstr ""
+
+#: includes/class-monitor.php:172
+msgid "Original price restore requires an active Pro license."
+msgstr ""
+
+#: includes/class-monitor.php:178
+msgid "Original price restore is disabled for this product."
+msgstr ""
+
+#: includes/class-monitor.php:190
+msgid "No original customer price has been captured for this product yet."
+msgstr ""
+
+#: includes/class-monitor.php:196
+msgid "The current WooCommerce product price is not valid."
+msgstr ""
+
+#: includes/class-monitor.php:203
+msgid "The product is already using the original customer price."
+msgstr ""
+
+#: includes/class-monitor.php:216
+msgid "Original price is above the cheapest in-stock competitor, so restore was blocked."
+msgstr ""
+
+#: includes/class-monitor.php:223
+msgid "Original customer price can be restored for this product."
+msgstr ""
+
+#: includes/class-monitor.php:259
+msgid "Original price restore failed."
+msgstr ""
+
+#. translators: 1: product name, 2: old price, 3: restored price.
+#: includes/class-monitor.php:294
+msgid "Original customer price was restored for \"%1$s\" from %2$s to %3$s."
+msgstr ""
+
+#: includes/class-monitor.php:303
+msgid "Original customer price restored for a WooCommerce product."
+msgstr ""
+
+#: includes/class-monitor.php:344
+#: includes/class-rest-api.php:566
+#: includes/class-rest-api.php:619
+#: includes/class-rest-api.php:650
+msgid "Mapping not found."
+msgstr ""
+
+#: includes/class-monitor.php:359
+msgid "Mapped WooCommerce product could not be found."
+msgstr ""
+
+#: includes/class-monitor.php:380
+msgid "Pro SaaS check failed. Falling back to local crawler."
+msgstr ""
+
+#: includes/class-monitor.php:394
+msgid "Unknown crawler error."
+msgstr ""
+
+#: includes/class-monitor.php:433
+msgid "Price could not be extracted."
+msgstr ""
+
+#: includes/class-monitor.php:460
+msgid "Mapping checked successfully."
+msgstr ""
+
+#: includes/class-monitor.php:496
+msgid "Pro client is not available."
+msgstr ""
+
+#: includes/class-monitor.php:517
+msgid "The SaaS did not return a mapping suggestion."
+msgstr ""
+
+#: includes/class-monitor.php:546
+msgid "Price could not be extracted by Pro SaaS."
+msgstr ""
+
+#: includes/class-monitor.php:591
+msgid "Mapping checked successfully through Pro SaaS."
+msgstr ""
+
+#: includes/class-monitor.php:667
+msgid "Automatic Pro pricing could not lower the price without breaking the configured margin floor."
+msgstr ""
+
+#: includes/class-monitor.php:706
+msgid "Automatic Pro pricing was blocked because this product reached the daily automatic price-change limit."
+msgstr ""
+
+#. translators: 1: product name, 2: failure reason.
+#: includes/class-monitor.php:724
+msgid "Automatic Pro pricing could not update %1$s: %2$s"
+msgstr ""
+
+#. translators: 1: product name, 2: failure reason.
+#: includes/class-monitor.php:726
+msgid "Unknown error."
+msgstr ""
+
+#. translators: 1: WooCommerce product name, 2: old price, 3: new price, 4: competitor product title, 5: competitor name, 6: recommendation message.
+#: includes/class-monitor.php:770
+msgid "Automatic Pro pricing updated WooCommerce product \"%1$s\" from %2$s to %3$s after checking competitor product \"%4$s\" at %5$s. Recommendation: %6$s"
+msgstr ""
+
+#: includes/class-monitor.php:789
+msgid "Automatic Pro pricing updated a WooCommerce product price."
+msgstr ""
+
+#: includes/class-monitor.php:942
+msgid "Variable and grouped products must be adjusted at variation or child-product level."
+msgstr ""
+
+#: includes/class-plugin.php:124
+msgid "Competitor Price & Stock Monitor for WooCommerce is active, but WooCommerce is not active. Monitoring is paused until WooCommerce is enabled."
+msgstr ""
+
+#: includes/class-pro-client.php:72
+msgid "SaaS URL and plugin registration key are required."
+msgstr ""
+
+#: includes/class-pro-client.php:100
+#: includes/class-pro-client.php:103
+msgid "License activation response was incomplete."
+msgstr ""
+
+#: includes/class-pro-client.php:107
+msgid "License active."
+msgstr ""
+
+#: includes/class-pro-client.php:125
+#: includes/class-pro-client.php:178
+#: includes/class-pro-client.php:231
+#: includes/class-pro-client.php:310
+msgid "Pro license is not active."
+msgstr ""
+
+#: includes/class-pro-client.php:149
+msgid "The SaaS did not return complete bridge credentials."
+msgstr ""
+
+#: includes/class-pro-client.php:159
+msgid "Bridge credentials rotated."
+msgstr ""
+
+#: includes/class-pro-client.php:214
+msgid "The SaaS did not return a job ID."
+msgstr ""
+
+#: includes/class-pro-client.php:260
+msgid "A signed Pro bridge is required before syncing store location."
+msgstr ""
+
+#: includes/class-pro-client.php:289
+msgid "Store location profile synchronized with SaaS."
+msgstr ""
+
+#: includes/class-pro-client.php:368
+msgid "The SaaS could not complete the mapping job."
+msgstr ""
+
+#: includes/class-pro-client.php:381
+msgid "The SaaS mapping job timed out."
+msgstr ""
+
+#: includes/class-pro-client.php:477
+msgid "The SaaS returned an invalid JSON response."
+msgstr ""
+
+#: includes/class-pro-client.php:482
+msgid "The SaaS request failed."
+msgstr ""
+
+#: includes/class-recommendations.php:97
+msgid "Price recommendation is conservative because the WooCommerce product price is missing."
+msgstr ""
+
+#: includes/class-recommendations.php:136
+msgid "No active in-stock competitor with a valid latest price is available for this product."
+msgstr ""
+
+#: includes/class-recommendations.php:184
+msgid "The lowest in-stock competitor price is not usable for a price recommendation."
+msgstr ""
+
+#: includes/class-recommendations.php:196
+msgid "The lowest in-stock competitor is cheaper, but no product cost is available. Add cost data before lowering prices automatically."
+msgstr ""
+
+#: includes/class-recommendations.php:207
+msgid "The lowest in-stock competitor is cheaper, but matching them would break the configured minimum margin."
+msgstr ""
+
+#: includes/class-recommendations.php:218
+msgid "Lower price just below the cheapest in-stock competitor while respecting the configured margin floor."
+msgstr ""
+
+#: includes/class-recommendations.php:237
+msgid "Raise price toward the cheapest in-stock competitor without exceeding the configured increase limit."
+msgstr ""
+
+#: includes/class-recommendations.php:248
+msgid "Current pricing is already aligned with the cheapest in-stock competitor."
+msgstr ""
+
+#: includes/class-recommendations.php:288
+msgid "Price recommendation is conservative because the latest competitor or product price is missing."
+msgstr ""
+
+#: includes/class-recommendations.php:313
+msgid "Competitor is out of stock. Consider holding price or testing a small increase while availability is in your favor."
+msgstr ""
+
+#: includes/class-recommendations.php:328
+msgid "Competitor is cheaper, but no product cost is available. Keep pricing conservative until cost data is added."
+msgstr ""
+
+#: includes/class-recommendations.php:345
+msgid "Competitor is cheaper and the margin floor allows a controlled price reduction."
+msgstr ""
+
+#: includes/class-recommendations.php:358
+msgid "Competitor is cheaper, but matching them would break the configured minimum margin."
+msgstr ""
+
+#: includes/class-recommendations.php:380
+msgid "You are materially cheaper than the competitor. Consider a measured increase while staying competitive."
+msgstr ""
+
+#: includes/class-recommendations.php:393
+msgid "Current pricing is close to the competitor. No automatic change is recommended."
+msgstr ""
+
+#: includes/class-rest-api.php:283
+msgid "Pro license is not active on this site."
+msgstr ""
+
+#: includes/class-rest-api.php:486
+#: includes/class-rest-api.php:810
+msgid "A valid WooCommerce product is required."
+msgstr ""
+
+#: includes/class-rest-api.php:491
+msgid "WooCommerce product not found."
+msgstr ""
+
+#: includes/class-rest-api.php:653
+msgid "Monitor is not available in this context."
+msgstr ""
+
+#: includes/class-rest-api.php:713
+msgid "Invalid check_frequency. Allowed: daily, twelve_hours, six_hours, hourly."
+msgstr ""
+
+#: includes/class-rest-api.php:1106
+msgid "Too many Pro bridge requests. Please try again shortly."
+msgstr ""
+
+#: includes/class-security.php:33
+msgid "You do not have permission to manage competitor monitoring."
+msgstr ""
+
+#: includes/class-security.php:47
+msgid "The competitor URL is required."
+msgstr ""
+
+#: includes/class-security.php:52
+msgid "The competitor URL must include a valid host."
+msgstr ""
+
+#: includes/class-security.php:57
+msgid "Only HTTP and HTTPS competitor URLs are allowed."
+msgstr ""
+
+#: includes/class-security.php:62
+msgid "Local, private, and reserved hosts cannot be monitored."
+msgstr ""
+
+#: includes/class-security.php:66
+msgid "WordPress rejected this URL as unsafe."
+msgstr ""
+
+#: includes/class-sync.php:58
+msgid "Mapping sync failed."
+msgstr ""
+
+#: includes/class-sync.php:85
+msgid "Pro bridge is not active. Activate Pro before syncing mappings."
+msgstr ""
+
+#: includes/class-sync.php:100
+msgid "The SaaS rejected the mapping sync."
+msgstr ""
+
+#: includes/class-sync.php:111
+msgid "Mappings synchronized with SaaS."
+msgstr ""
+
+#: includes/class-sync.php:61
+msgid "%d mapping synchronized with SaaS."
+msgid_plural "%d mappings synchronized with SaaS."
+msgstr[0] ""
+msgstr[1] ""
