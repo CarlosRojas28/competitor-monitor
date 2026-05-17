@@ -18,11 +18,7 @@ $wc_competitor_monitor_auto_price_mode           = sanitize_key( (string) ( $wc_
 if ( ! in_array( $wc_competitor_monitor_auto_price_mode, array( 'disabled', 'enabled' ), true ) ) {
 	$wc_competitor_monitor_auto_price_mode = 'disabled';
 }
-$wc_competitor_monitor_restore_mode = sanitize_key( (string) ( $wc_competitor_monitor_settings['original_price_restore_mode'] ?? 'disabled' ) );
-if ( ! in_array( $wc_competitor_monitor_restore_mode, array( 'disabled', 'enabled' ), true ) ) {
-	$wc_competitor_monitor_restore_mode = 'disabled';
-}
-$wc_competitor_monitor_pro_is_active  = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
+$wc_competitor_monitor_pro_is_active  =! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
 $wc_competitor_monitor_key_preview   = (string) ( $wc_competitor_monitor_settings['pro_license_key_preview'] ?? '' );
 $wc_competitor_monitor_key_last4     = $wc_competitor_monitor_key_preview !== '' ? substr( $wc_competitor_monitor_key_preview, -4 ) : '';
 $wc_competitor_monitor_show_masked   = $wc_competitor_monitor_pro_is_active && '' !== $wc_competitor_monitor_key_last4;
@@ -219,18 +215,6 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 							<?php esc_html_e( 'Immediately block every automatic price change', 'competitor-price-stock-monitor' ); ?>
 						</label>
 						<p class="description"><?php esc_html_e( 'Use this emergency control if you suspect bad competitor data, compromised credentials, or unexpected pricing behavior. Recommendations and alerts still work.', 'competitor-price-stock-monitor' ); ?></p>
-					</td>
-				</tr>
-				<?php endif; ?>
-				<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
-				<tr>
-					<th scope="row"><label for="wccm_original_price_restore_mode"><?php esc_html_e( 'Allow original price restore', 'competitor-price-stock-monitor' ); ?></label></th>
-					<td>
-						<select id="wccm_original_price_restore_mode" name="original_price_restore_mode">
-							<option value="disabled" <?php selected( $wc_competitor_monitor_restore_mode, 'disabled' ); ?>><?php esc_html_e( 'Disabled', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="enabled" <?php selected( $wc_competitor_monitor_restore_mode, 'enabled' ); ?>><?php esc_html_e( 'Enabled: allow manual restore when still competitive', 'competitor-price-stock-monitor' ); ?></option>
-						</select>
-						<p class="description"><?php esc_html_e( 'When enabled, users can manually restore the captured original customer price from the WooCommerce product edit screen. Restore is blocked when the original price would be above the cheapest in-stock competitor.', 'competitor-price-stock-monitor' ); ?></p>
 					</td>
 				</tr>
 				<?php endif; ?>

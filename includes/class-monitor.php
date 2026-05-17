@@ -141,7 +141,6 @@ class WC_Competitor_Monitor_Monitor {
 		$product_id = absint( $product_id );
 		$status     = array(
 			'pro_active'                => $this->pro_client && $this->pro_client->is_connected(),
-			'enabled'                   => false,
 			'has_original_price'        => false,
 			'current_price'             => null,
 			'original_price'            => null,
@@ -166,16 +165,9 @@ class WC_Competitor_Monitor_Monitor {
 			return $status;
 		}
 
-		$status['enabled'] = $this->is_original_price_restore_enabled( $product_id );
 		if ( ! $status['pro_active'] ) {
 			$status['reason']  = 'pro_inactive';
 			$status['message'] = __( 'Original price restore requires an active Pro license.', 'competitor-price-stock-monitor' );
-			return $status;
-		}
-
-		if ( ! $status['enabled'] ) {
-			$status['reason']  = 'disabled';
-			$status['message'] = __( 'Original price restore is disabled for this product.', 'competitor-price-stock-monitor' );
 			return $status;
 		}
 
@@ -846,26 +838,6 @@ class WC_Competitor_Monitor_Monitor {
 		}
 
 		return 'enabled' === sanitize_key( (string) ( $settings['auto_price_adjustment_mode'] ?? 'disabled' ) );
-	}
-
-	/**
-	 * Determines whether original price restore is enabled for a product.
-	 *
-	 * @param int $product_id Product ID.
-	 * @return bool
-	 */
-	private function is_original_price_restore_enabled( int $product_id ): bool {
-		$product_mode = sanitize_key( (string) get_post_meta( absint( $product_id ), WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META, true ) );
-		if ( 'enabled' === $product_mode ) {
-			return true;
-		}
-
-		if ( 'disabled' === $product_mode ) {
-			return false;
-		}
-
-		$settings = $this->db->get_settings();
-		return 'enabled' === sanitize_key( (string) ( $settings['original_price_restore_mode'] ?? 'disabled' ) );
 	}
 
 	/**

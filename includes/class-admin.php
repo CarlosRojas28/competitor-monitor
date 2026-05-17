@@ -80,7 +80,6 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'add_meta_boxes_product', array( $this, 'register_product_metabox' ) );
 		add_action( 'save_post_product', array( $this, 'handle_save_product_metabox' ), 10, 2 );
 		add_action( 'admin_post_wc_competitor_monitor_save_mapping', array( $this, 'handle_save_mapping' ) );
-		add_action( 'admin_post_wc_competitor_monitor_restore_original_price', array( $this, 'handle_restore_original_price' ) );
 		add_action( 'admin_post_wc_competitor_monitor_delete_mapping', array( $this, 'handle_delete_mapping' ) );
 		add_action( 'admin_post_wc_competitor_monitor_toggle_mapping', array( $this, 'handle_toggle_mapping' ) );
 		add_action( 'admin_post_wc_competitor_monitor_run_check', array( $this, 'handle_run_check' ) );
@@ -380,12 +379,6 @@ class WC_Competitor_Monitor_Admin {
 		$global_mode_label    = $global_auto_mode
 			? __( 'Use global setting: enabled', 'competitor-price-stock-monitor' )
 			: __( 'Use global setting: disabled', 'competitor-price-stock-monitor' );
-		$restore_mode         = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META, true ) );
-		$restore_mode         = in_array( $restore_mode, array( 'enabled', 'disabled' ), true ) ? $restore_mode : 'global';
-		$global_restore_mode  = 'enabled' === sanitize_key( (string) ( $settings['original_price_restore_mode'] ?? 'disabled' ) );
-		$global_restore_label = $global_restore_mode
-			? __( 'Use global setting: enabled', 'competitor-price-stock-monitor' )
-			: __( 'Use global setting: disabled', 'competitor-price-stock-monitor' );
 		$currency             = function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD';
 		$last_adjusted_at     = get_post_meta( $product_id, '_cpsm_last_auto_price_adjusted_at', true );
 		$last_old_price       = get_post_meta( $product_id, '_cpsm_last_auto_price_old', true );
@@ -395,8 +388,8 @@ class WC_Competitor_Monitor_Admin {
 		$original_source      = sanitize_key( (string) get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_SOURCE_META, true ) );
 		$profit_impact        = $this->db->get_profit_impact_for_product( $product_id );
 		$latest_adjustment    = is_array( $profit_impact['latest_adjustment'] ?? null ) ? $profit_impact['latest_adjustment'] : null;
-		$restore_status       = $this->monitor->get_original_price_restore_status( $product_id );
-		$product_cost_data    = $this->db->get_product_cost_data( $product_id );
+		$metabox_current_price = $this->product_price( $product_id );
+		$product_cost_data     = $this->db->get_product_cost_data( $product_id );
 		$manual_cost          = get_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_COST_META, true );
 		$pro_is_active        = ! empty( $settings['pro_enabled'] ) && 'active' === sanitize_key( (string) ( $settings['pro_license_status'] ?? '' ) );
 		$settings_url         = admin_url( 'admin.php?page=competitor-price-stock-monitor-settings' );
@@ -413,18 +406,6 @@ class WC_Competitor_Monitor_Admin {
 						<option value="disabled" <?php selected( $product_mode, 'disabled' ); ?>><?php esc_html_e( 'No, never change this product price automatically', 'competitor-price-stock-monitor' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'When allowed and a Pro license is active, competitor checks can update this WooCommerce product to the margin-aware recommended price. Every automatic change creates an alert and can send email.', 'competitor-price-stock-monitor' ); ?></p>
-					<?php if ( ! $pro_is_active ) : ?>
-						<p class="description"><a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Requires an active Pro license.', 'competitor-price-stock-monitor' ); ?></a></p>
-					<?php endif; ?>
-				</div>
-				<div>
-					<label for="wccm_product_original_price_restore_mode"><strong><?php esc_html_e( 'Allow original price restore', 'competitor-price-stock-monitor' ); ?></strong></label>
-					<select id="wccm_product_original_price_restore_mode" name="wccm_product_original_price_restore_mode"<?php disabled( $pro_is_active, false ); ?>>
-						<option value="global" <?php selected( $restore_mode, 'global' ); ?>><?php echo esc_html( $global_restore_label ); ?></option>
-						<option value="enabled" <?php selected( $restore_mode, 'enabled' ); ?>><?php esc_html_e( 'Allow restore for this product', 'competitor-price-stock-monitor' ); ?></option>
-						<option value="disabled" <?php selected( $restore_mode, 'disabled' ); ?>><?php esc_html_e( 'Never restore this product', 'competitor-price-stock-monitor' ); ?></option>
-					</select>
-					<p class="description"><?php esc_html_e( 'When allowed, Pro users can manually restore the captured original price if it is still competitive against in-stock competitors.', 'competitor-price-stock-monitor' ); ?></p>
 					<?php if ( ! $pro_is_active ) : ?>
 						<p class="description"><a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Requires an active Pro license.', 'competitor-price-stock-monitor' ); ?></a></p>
 					<?php endif; ?>
@@ -455,13 +436,13 @@ class WC_Competitor_Monitor_Admin {
 					<strong><?php esc_html_e( 'Original customer price', 'competitor-price-stock-monitor' ); ?></strong>
 					<?php if ( null !== $original_price ) : ?>
 						<p><?php echo $this->format_money( (float) $original_price ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-						<?php if ( isset( $restore_status['current_price'] ) && null !== $restore_status['current_price'] ) : ?>
+						<?php if ( null !== $metabox_current_price ) : ?>
 							<p class="description">
 								<?php
 								printf(
 									/* translators: %s: current price. */
 									esc_html__( 'Current price: %s.', 'competitor-price-stock-monitor' ),
-									wp_kses_post( $this->format_money( (float) $restore_status['current_price'] ) )
+									wp_kses_post( $this->format_money( $metabox_current_price ) )
 								);
 								?>
 							</p>
@@ -477,28 +458,6 @@ class WC_Competitor_Monitor_Admin {
 								);
 								?>
 							</p>
-						<?php endif; ?>
-						<?php if ( ! empty( $restore_status['can_restore'] ) ) : ?>
-							<p>
-								<a class="button" href="
-								<?php
-								echo esc_url(
-									wp_nonce_url(
-										add_query_arg(
-											array(
-												'action' => 'wc_competitor_monitor_restore_original_price',
-												'product_id' => $product_id,
-											),
-											admin_url( 'admin-post.php' )
-										),
-										'wc_competitor_monitor_restore_original_price_' . $product_id
-									)
-								);
-								?>
-														"><?php esc_html_e( 'Restore original price', 'competitor-price-stock-monitor' ); ?></a>
-							</p>
-						<?php elseif ( ! empty( $restore_status['message'] ) ) : ?>
-							<p class="description"><?php echo esc_html( (string) $restore_status['message'] ); ?></p>
 						<?php endif; ?>
 					<?php else : ?>
 						<p class="description"><?php esc_html_e( 'This price will be captured once before the first competitor mapping or automatic Pro adjustment.', 'competitor-price-stock-monitor' ); ?></p>
@@ -640,10 +599,6 @@ class WC_Competitor_Monitor_Admin {
 			absint( $post_id ),
 			isset( $_POST['wccm_product_auto_price_mode'] ) ? sanitize_key( wp_unslash( $_POST['wccm_product_auto_price_mode'] ) ) : 'global'
 		);
-		$this->update_product_original_price_restore_mode(
-			absint( $post_id ),
-			isset( $_POST['wccm_product_original_price_restore_mode'] ) ? sanitize_key( wp_unslash( $_POST['wccm_product_original_price_restore_mode'] ) ) : 'global'
-		);
 		$this->save_product_cost_from_request(
 			absint( $post_id ),
 			isset( $_POST['wccm_product_cost'] ) ? sanitize_text_field( wp_unslash( $_POST['wccm_product_cost'] ) ) : null
@@ -770,38 +725,6 @@ class WC_Competitor_Monitor_Admin {
 	}
 
 	/**
-	 * Handles manual Pro original price restore from the product edit screen.
-	 *
-	 * @return void
-	 */
-	public function handle_restore_original_price(): void {
-		WC_Competitor_Monitor_Security::require_capability();
-
-		$product_id = isset( $_REQUEST['product_id'] ) ? absint( wp_unslash( $_REQUEST['product_id'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified below before mutation.
-		check_admin_referer( 'wc_competitor_monitor_restore_original_price_' . $product_id );
-
-		if ( $product_id <= 0 || ! current_user_can( 'edit_post', $product_id ) ) {
-			wp_die( esc_html__( 'You do not have permission to restore this product price.', 'competitor-price-stock-monitor' ) );
-		}
-
-		$result = $this->monitor->restore_original_product_price( $product_id, get_current_user_id() );
-		if ( empty( $result['success'] ) ) {
-			$this->add_product_metabox_notice(
-				'error',
-				(string) ( $result['message'] ?? __( 'Original price restore was blocked.', 'competitor-price-stock-monitor' ) )
-			);
-		} else {
-			$this->add_product_metabox_notice(
-				'success',
-				__( 'Original customer price restored.', 'competitor-price-stock-monitor' )
-			);
-		}
-
-		wp_safe_redirect( get_edit_post_link( $product_id, 'raw' ) ?: admin_url( 'edit.php?post_type=product' ) );
-		exit;
-	}
-
-	/**
 	 * Handles mapping delete.
 	 *
 	 * @return void
@@ -890,7 +813,6 @@ class WC_Competitor_Monitor_Admin {
 			'suggested_increase_limit_percentage' => isset( $_POST['suggested_increase_limit_percentage'] ) ? max( 0, min( 999.99, (float) sanitize_text_field( wp_unslash( $_POST['suggested_increase_limit_percentage'] ) ) ) ) : 5.0,
 			'auto_price_adjustment_mode'          => isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : (string) ( $previous['auto_price_adjustment_mode'] ?? 'disabled' ),
 			'auto_price_kill_switch'              => isset( $_POST['auto_price_kill_switch'] ) ? 1 : 0,
-			'original_price_restore_mode'         => isset( $_POST['original_price_restore_mode'] ) ? sanitize_key( wp_unslash( $_POST['original_price_restore_mode'] ) ) : (string) ( $previous['original_price_restore_mode'] ?? 'disabled' ),
 			'check_frequency'                     => isset( $_POST['check_frequency'] ) ? sanitize_key( wp_unslash( $_POST['check_frequency'] ) ) : 'daily',
 			'user_agent'                          => isset( $_POST['user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['user_agent'] ) ) : '',
 			'timeout'                             => isset( $_POST['timeout'] ) ? max( 3, min( 30, absint( wp_unslash( $_POST['timeout'] ) ) ) ) : 10,
@@ -913,15 +835,10 @@ class WC_Competitor_Monitor_Admin {
 			$settings['auto_price_adjustment_mode'] = 'disabled';
 		}
 
-		if ( ! in_array( $settings['original_price_restore_mode'], array( 'disabled', 'enabled' ), true ) ) {
-			$settings['original_price_restore_mode'] = 'disabled';
-		}
-
 		$pro_is_active = ! empty( $previous['pro_enabled'] ) && 'active' === (string) ( $previous['pro_license_status'] ?? '' );
 		if ( ! $pro_is_active ) {
-			$settings['check_frequency']             = 'daily';
-			$settings['auto_price_adjustment_mode']  = 'disabled';
-			$settings['original_price_restore_mode'] = 'disabled';
+			$settings['check_frequency']            = 'daily';
+			$settings['auto_price_adjustment_mode'] = 'disabled';
 		}
 
 		if ( '' === $settings['user_agent'] ) {
@@ -1107,28 +1024,6 @@ class WC_Competitor_Monitor_Admin {
 	}
 
 	/**
-	 * Stores the per-product Pro original price restore override.
-	 *
-	 * @param int    $product_id Product ID.
-	 * @param string $mode Override mode.
-	 * @return void
-	 */
-	private function update_product_original_price_restore_mode( int $product_id, string $mode ): void {
-		$product_id = absint( $product_id );
-		if ( $product_id <= 0 ) {
-			return;
-		}
-
-		$mode = $this->sanitize_product_original_price_restore_mode( $mode );
-		if ( 'global' === $mode ) {
-			delete_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META );
-			return;
-		}
-
-		update_post_meta( $product_id, WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_RESTORE_MODE_META, $mode );
-	}
-
-	/**
 	 * Saves the product cost fallback from the product metabox.
 	 *
 	 * @param int         $product_id Product ID.
@@ -1273,17 +1168,6 @@ class WC_Competitor_Monitor_Admin {
 	 * @return string
 	 */
 	private function sanitize_product_auto_price_mode( string $mode ): string {
-		$mode = sanitize_key( $mode );
-		return in_array( $mode, array( 'global', 'enabled', 'disabled' ), true ) ? $mode : 'global';
-	}
-
-	/**
-	 * Sanitizes the per-product original price restore mode.
-	 *
-	 * @param string $mode Mode.
-	 * @return string
-	 */
-	private function sanitize_product_original_price_restore_mode( string $mode ): string {
 		$mode = sanitize_key( $mode );
 		return in_array( $mode, array( 'global', 'enabled', 'disabled' ), true ) ? $mode : 'global';
 	}
