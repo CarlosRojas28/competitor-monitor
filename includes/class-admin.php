@@ -819,7 +819,7 @@ class WC_Competitor_Monitor_Admin {
 			'max_response_size'                   => isset( $_POST['max_response_size'] ) ? max( 10240, min( 5242880, absint( wp_unslash( $_POST['max_response_size'] ) ) ) ) : 1048576,
 			'batch_size'                          => isset( $_POST['batch_size'] ) ? max( 1, min( 100, absint( wp_unslash( $_POST['batch_size'] ) ) ) ) : 10,
 			'delete_data_on_uninstall'            => isset( $_POST['delete_data_on_uninstall'] ) ? 1 : 0,
-			'pro_enabled'                         => isset( $_POST['pro_enabled'] ) ? 1 : 0,
+			'pro_enabled'                         => (int) ( $previous['pro_enabled'] ?? 0 ),
 			'pro_saas_url'                        => 'https://competitor-monitor-pro-production.up.railway.app',
 		);
 

@@ -269,18 +269,6 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Pro features', 'competitor-price-stock-monitor' ); ?></th>
-					<td>
-						<label>
-							<input type="checkbox" name="pro_enabled" value="1" <?php checked( (int) $wc_competitor_monitor_settings['pro_enabled'], 1 ); ?><?php disabled( $wc_competitor_monitor_pro_is_active, false ); ?>>
-							<?php esc_html_e( 'Enable Pro cloud features', 'competitor-price-stock-monitor' ); ?>
-						</label>
-						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
-							<p class="description"><?php esc_html_e( 'Activate a Pro license above to enable this option.', 'competitor-price-stock-monitor' ); ?></p>
-						<?php endif; ?>
-					</td>
-				</tr>
-				<tr>
 					<th scope="row"><?php esc_html_e( 'Uninstall behavior', 'competitor-price-stock-monitor' ); ?></th>
 					<td>
 						<label>
