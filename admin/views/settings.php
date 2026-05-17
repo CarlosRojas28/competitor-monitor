@@ -222,21 +222,18 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					</td>
 				</tr>
 				<?php endif; ?>
+				<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
 				<tr>
-					<th scope="row"><label for="wccm_original_price_restore_mode"><?php esc_html_e( 'Allow original price restore (Pro)', 'competitor-price-stock-monitor' ); ?></label></th>
+					<th scope="row"><label for="wccm_original_price_restore_mode"><?php esc_html_e( 'Allow original price restore', 'competitor-price-stock-monitor' ); ?></label></th>
 					<td>
 						<select id="wccm_original_price_restore_mode" name="original_price_restore_mode">
 							<option value="disabled" <?php selected( $wc_competitor_monitor_restore_mode, 'disabled' ); ?>><?php esc_html_e( 'Disabled', 'competitor-price-stock-monitor' ); ?></option>
-							<option value="enabled" <?php selected( $wc_competitor_monitor_restore_mode, 'enabled' ); ?><?php echo $wc_competitor_monitor_pro_is_active ? '' : ' disabled'; ?>><?php esc_html_e( 'Enabled: allow manual restore when still competitive (Pro)', 'competitor-price-stock-monitor' ); ?></option>
+							<option value="enabled" <?php selected( $wc_competitor_monitor_restore_mode, 'enabled' ); ?>><?php esc_html_e( 'Enabled: allow manual restore when still competitive', 'competitor-price-stock-monitor' ); ?></option>
 						</select>
-						<p class="description"><?php esc_html_e( 'When enabled and the Pro license is active, users can manually restore the captured original customer price from the WooCommerce product edit screen. Restore is blocked when the original price would be above the cheapest in-stock competitor.', 'competitor-price-stock-monitor' ); ?></p>
-						<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
-							<p class="description">
-								<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro to enable original price restore.', 'competitor-price-stock-monitor' ); ?></a>
-							</p>
-						<?php endif; ?>
+						<p class="description"><?php esc_html_e( 'When enabled, users can manually restore the captured original customer price from the WooCommerce product edit screen. Restore is blocked when the original price would be above the cheapest in-stock competitor.', 'competitor-price-stock-monitor' ); ?></p>
 					</td>
 				</tr>
+				<?php endif; ?>
 				<tr>
 					<th scope="row"><label for="wccm_suggested_increase_limit_mode"><?php esc_html_e( 'Suggested price increase limit', 'competitor-price-stock-monitor' ); ?></label></th>
 					<td>
