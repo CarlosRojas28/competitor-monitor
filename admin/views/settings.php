@@ -30,7 +30,7 @@ $wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) 
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
 	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url          = $wc_competitor_monitor_saas_base_url . '/pricing';
+$wc_competitor_monitor_upgrade_url          = $wc_competitor_monitor_saas_base_url . '/#pricing';
 $wc_competitor_monitor_sites_url            = $wc_competitor_monitor_saas_base_url . '/app/sites';
 $wc_competitor_monitor_cron_event           = WC_Competitor_Monitor_Activator::scheduled_event();
 $wc_competitor_monitor_cron_schedule_labels = array(

@@ -49,7 +49,7 @@ $wc_competitor_monitor_saas_base_url          = untrailingslashit( esc_url_raw( 
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
 	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url   = $wc_competitor_monitor_saas_base_url . '/pricing';
+$wc_competitor_monitor_upgrade_url   = $wc_competitor_monitor_saas_base_url . '/#pricing';
 $wc_competitor_monitor_discovery_url = add_query_arg(
 	array(
 		'site_url' => home_url(),

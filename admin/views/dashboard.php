@@ -14,7 +14,7 @@ $wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) 
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
 	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
 }
-$wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/pricing';
+$wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#pricing';
 ?>
 <div class="wrap wccm-wrap">
 	<h1><?php esc_html_e( 'Competitor Monitor', 'competitor-price-stock-monitor' ); ?></h1>
