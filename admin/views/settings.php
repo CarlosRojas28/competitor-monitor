@@ -22,7 +22,10 @@ $wc_competitor_monitor_restore_mode = sanitize_key( (string) ( $wc_competitor_mo
 if ( ! in_array( $wc_competitor_monitor_restore_mode, array( 'disabled', 'enabled' ), true ) ) {
 	$wc_competitor_monitor_restore_mode = 'disabled';
 }
-$wc_competitor_monitor_pro_is_active = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
+$wc_competitor_monitor_pro_is_active  = ! empty( $wc_competitor_monitor_settings['pro_enabled'] ) && 'active' === (string) ( $wc_competitor_monitor_settings['pro_license_status'] ?? '' );
+$wc_competitor_monitor_key_preview   = (string) ( $wc_competitor_monitor_settings['pro_license_key_preview'] ?? '' );
+$wc_competitor_monitor_key_last4     = $wc_competitor_monitor_key_preview !== '' ? substr( $wc_competitor_monitor_key_preview, -4 ) : '';
+$wc_competitor_monitor_show_masked   = $wc_competitor_monitor_pro_is_active && '' !== $wc_competitor_monitor_key_last4;
 $wc_competitor_monitor_saas_base_url = untrailingslashit( esc_url_raw( (string) ( $wc_competitor_monitor_settings['pro_saas_url'] ?? 'https://competitor-monitor-pro-production.up.railway.app' ) ) );
 if ( '' === $wc_competitor_monitor_saas_base_url ) {
 	$wc_competitor_monitor_saas_base_url = 'https://competitor-monitor-pro-production.up.railway.app';
@@ -84,22 +87,13 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 				<tr>
 					<th scope="row"><label for="wccm_pro_license_key"><?php esc_html_e( 'Plugin registration key', 'competitor-price-stock-monitor' ); ?></label></th>
 					<td>
-						<input type="password" class="regular-text" id="wccm_pro_license_key" name="pro_license_key" value="" autocomplete="off" placeholder="<?php echo esc_attr( $wc_competitor_monitor_pro_is_active ? __( 'Stored securely. Enter a new key to reactivate.', 'competitor-price-stock-monitor' ) : __( 'CPSM-REG-...', 'competitor-price-stock-monitor' ) ); ?>">
-						<p class="description"><?php esc_html_e( 'Registration keys are generated in the SaaS, are scoped to one site URL, can be used once, and expire automatically.', 'competitor-price-stock-monitor' ); ?></p>
-						<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
-							<p class="description"><?php esc_html_e( 'The full registration key is not displayed after activation.', 'competitor-price-stock-monitor' ); ?></p>
-							<?php if ( ! empty( $wc_competitor_monitor_settings['pro_license_key_preview'] ) ) : ?>
-								<p class="description">
-									<?php
-									printf(
-										/* translators: %s: registration key preview. */
-										esc_html__( 'Stored registration key preview: %s', 'competitor-price-stock-monitor' ),
-										esc_html( (string) $wc_competitor_monitor_settings['pro_license_key_preview'] )
-									);
-									?>
-								</p>
-							<?php endif; ?>
+						<?php if ( $wc_competitor_monitor_show_masked ) : ?>
+							<input type="text" class="regular-text" id="wccm_pro_license_key" value="<?php echo esc_attr( str_repeat( '•', 12 ) . $wc_competitor_monitor_key_last4 ); ?>" readonly autocomplete="off">
+							<input type="hidden" name="pro_license_key" value="">
+						<?php else : ?>
+							<input type="password" class="regular-text" id="wccm_pro_license_key" name="pro_license_key" value="" autocomplete="off" placeholder="<?php echo esc_attr( $wc_competitor_monitor_pro_is_active ? __( 'Stored securely. Enter a new key to reactivate.', 'competitor-price-stock-monitor' ) : __( 'CPSM-REG-...', 'competitor-price-stock-monitor' ) ); ?>">
 						<?php endif; ?>
+						<p class="description"><?php esc_html_e( 'Registration keys are generated in the SaaS, are scoped to one site URL, can be used once, and expire automatically.', 'competitor-price-stock-monitor' ); ?></p>
 					</td>
 				</tr>
 				<tr>
@@ -123,7 +117,7 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 					</td>
 				</tr>
 			</table>
-			<p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Activate Pro bridge', 'competitor-price-stock-monitor' ); ?></button></p>
+			<p class="submit"><button type="submit" class="button button-primary"<?php disabled( $wc_competitor_monitor_pro_is_active, true ); ?>><?php esc_html_e( 'Activate Pro bridge', 'competitor-price-stock-monitor' ); ?></button></p>
 		</form>
 		<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
