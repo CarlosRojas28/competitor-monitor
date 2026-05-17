@@ -92,6 +92,7 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_post_wc_competitor_monitor_clear_logs', array( $this, 'handle_clear_logs' ) );
 		add_action( 'admin_post_wc_competitor_monitor_bulk_restore', array( $this, 'handle_bulk_restore_original_prices' ) );
 		add_action( 'wp_ajax_wccm_quick_add_mapping', array( $this, 'handle_ajax_quick_add_mapping' ) );
+		add_action( 'wp_ajax_wc_competitor_monitor_run_check', array( $this, 'handle_ajax_run_check' ) );
 	}
 
 	/**
@@ -237,6 +238,10 @@ class WC_Competitor_Monitor_Admin {
 				'labelDuplicateUrl'         => __( 'This competitor URL is already mapped to this product.', 'competitor-price-stock-monitor' ),
 				'labelInvalidUrl'           => __( 'Enter a full URL starting with https:// or http://', 'competitor-price-stock-monitor' ),
 				'labelInvalidSelector'      => __( 'Invalid CSS selector syntax.', 'competitor-price-stock-monitor' ),
+				'runCheckNonce'             => wp_create_nonce( 'wc_competitor_monitor_run_check_0' ),
+				'labelCheckingPrices'       => __( 'Checking…', 'competitor-price-stock-monitor' ),
+				'labelCheckPrices'          => __( 'Check prices now', 'competitor-price-stock-monitor' ),
+				'labelCheckFailed'          => __( 'Check failed. Please try again.', 'competitor-price-stock-monitor' ),
 			)
 		);
 	}
@@ -1711,6 +1716,39 @@ class WC_Competitor_Monitor_Admin {
 		</tr>
 		<?php
 		return (string) ob_get_clean();
+	}
+
+	/**
+	 * AJAX handler: run a full batch price check.
+	 *
+	 * @return void
+	 */
+	public function handle_ajax_run_check(): void {
+		WC_Competitor_Monitor_Security::require_capability();
+		check_ajax_referer( 'wc_competitor_monitor_run_check_0' );
+
+		$settings = $this->db->get_settings();
+		$mappings = $this->db->get_active_mappings_for_check( max( 1, absint( $settings['batch_size'] ) ) );
+		$checked  = 0;
+		foreach ( $mappings as $mapping ) {
+			$this->monitor->check_mapping( $mapping );
+			++$checked;
+		}
+		$this->monitor->sync_profit_impact();
+		$this->sync->sync_all_mappings();
+
+		wp_send_json_success(
+			array(
+				'checked' => $checked,
+				'message' => $checked > 0
+					? sprintf(
+						/* translators: %d: number of competitor checks run. */
+						_n( 'Checked %d competitor.', 'Checked %d competitors.', $checked, 'competitor-price-stock-monitor' ),
+						$checked
+					)
+					: __( 'No active mappings to check.', 'competitor-price-stock-monitor' ),
+			)
+		);
 	}
 
 	/**

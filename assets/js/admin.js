@@ -22,6 +22,7 @@
 		maybeScrollToMappings();
 		initFieldValidation();
 		bindBulkRestoreTrigger();
+		bindCheckPricesNow();
 	});
 
 	function wccmAdminConfirmMessage() {
@@ -417,6 +418,50 @@
 				trigger.hidden = false;
 			});
 		}
+	}
+
+	function bindCheckPricesNow() {
+		var btn    = document.getElementById('wccm-run-check-btn');
+		var status = document.getElementById('wccm-run-check-status');
+		if (!btn) { return; }
+
+		btn.addEventListener('click', function () {
+			var adminConfig = window.wccmAdmin || {};
+			btn.disabled    = true;
+			btn.textContent = adminConfig.labelCheckingPrices || 'Checking…';
+			if (status) { status.hidden = false; status.textContent = ''; status.style.color = ''; }
+
+			var body = new URLSearchParams({
+				action:      'wc_competitor_monitor_run_check',
+				_ajax_nonce: adminConfig.runCheckNonce || ''
+			});
+
+			window.fetch(adminConfig.ajaxUrl || window.ajaxurl, {
+				method:      'POST',
+				credentials: 'same-origin',
+				headers:     { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body:        body.toString()
+			})
+				.then(function (r) { return r.json(); })
+				.then(function (data) {
+					if (status) {
+						status.textContent = (data.data && data.data.message) ? data.data.message : (adminConfig.labelCheckFailed || 'Done.');
+						status.style.color = data.success ? '#00a32a' : '#d63638';
+						status.hidden = false;
+					}
+				})
+				.catch(function () {
+					if (status) {
+						status.textContent = adminConfig.labelCheckFailed || 'Check failed.';
+						status.style.color = '#d63638';
+						status.hidden = false;
+					}
+				})
+				.finally(function () {
+					btn.disabled    = false;
+					btn.textContent = adminConfig.labelCheckPrices || 'Check prices now';
+				});
+		});
 	}
 
 	function bindCopyableSecrets() {

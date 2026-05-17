@@ -122,6 +122,36 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 				<p><button type="submit" class="button"><?php esc_html_e( 'Rotate Pro bridge keys', 'competitor-price-stock-monitor' ); ?></button></p>
 			</form>
 		<?php endif; ?>
+
+		<?php
+		$wc_competitor_monitor_step_license  = $wc_competitor_monitor_pro_is_active;
+		$wc_competitor_monitor_step_bridge   = ! empty( $wc_competitor_monitor_settings['pro_site_id'] );
+		$wc_competitor_monitor_step_cron     = (bool) $wc_competitor_monitor_cron_event;
+		?>
+		<h3 style="margin:16px 0 8px"><?php esc_html_e( 'Setup status', 'competitor-price-stock-monitor' ); ?></h3>
+		<ul class="wccm-setup-checklist">
+			<li>
+				<span class="<?php echo $wc_competitor_monitor_step_license ? 'wccm-setup-check' : 'wccm-setup-pending'; ?>"><?php echo $wc_competitor_monitor_step_license ? '✓' : '✗'; ?></span>
+				<?php esc_html_e( 'Pro license active', 'competitor-price-stock-monitor' ); ?>
+				<?php if ( ! $wc_competitor_monitor_step_license ) : ?>
+					&mdash; <span class="description"><?php esc_html_e( 'Enter a registration key above and click Activate Pro bridge.', 'competitor-price-stock-monitor' ); ?></span>
+				<?php endif; ?>
+			</li>
+			<li>
+				<span class="<?php echo $wc_competitor_monitor_step_bridge ? 'wccm-setup-check' : 'wccm-setup-pending'; ?>"><?php echo $wc_competitor_monitor_step_bridge ? '✓' : '✗'; ?></span>
+				<?php esc_html_e( 'Secure bridge connected', 'competitor-price-stock-monitor' ); ?>
+				<?php if ( ! $wc_competitor_monitor_step_bridge ) : ?>
+					&mdash; <span class="description"><?php esc_html_e( 'Bridge is issued when you activate a valid license key.', 'competitor-price-stock-monitor' ); ?></span>
+				<?php endif; ?>
+			</li>
+			<li>
+				<span class="<?php echo $wc_competitor_monitor_step_cron ? 'wccm-setup-check' : 'wccm-setup-pending'; ?>"><?php echo $wc_competitor_monitor_step_cron ? '✓' : '✗'; ?></span>
+				<?php esc_html_e( 'Price checks scheduled', 'competitor-price-stock-monitor' ); ?>
+				<?php if ( ! $wc_competitor_monitor_step_cron ) : ?>
+					&mdash; <span class="description"><?php esc_html_e( 'Save settings to reschedule the price check cron.', 'competitor-price-stock-monitor' ); ?></span>
+				<?php endif; ?>
+			</li>
+		</ul>
 	</section>
 
 	<section class="wccm-panel wccm-pro-automation-panel">

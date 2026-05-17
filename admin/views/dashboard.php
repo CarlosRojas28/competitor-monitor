@@ -76,12 +76,8 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=competitor-price-stock-monitor-products' ) ); ?>">
 			<?php esc_html_e( 'Monitor a new competitor', 'competitor-price-stock-monitor' ); ?>
 		</a>
-		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline-block;margin-left:8px">
-			<input type="hidden" name="action" value="wc_competitor_monitor_run_check">
-			<input type="hidden" name="mapping_id" value="0">
-			<?php wp_nonce_field( 'wc_competitor_monitor_run_check_0' ); ?>
-			<button type="submit" class="button"><?php esc_html_e( 'Check prices now', 'competitor-price-stock-monitor' ); ?></button>
-		</form>
+		<button type="button" class="button" id="wccm-run-check-btn"><?php esc_html_e( 'Check prices now', 'competitor-price-stock-monitor' ); ?></button>
+		<span id="wccm-run-check-status" hidden style="font-size:13px"></span>
 	</div>
 
 	<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
@@ -108,35 +104,87 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 		</div>
 	<?php endif; ?>
 
+	<?php
+	$wc_competitor_monitor_products_url = admin_url( 'admin.php?page=competitor-price-stock-monitor-products' );
+	$wc_competitor_monitor_alerts_url   = admin_url( 'admin.php?page=competitor-price-stock-monitor-alerts' );
+	?>
 	<div class="wccm-card-grid">
-		<div class="wccm-card">
-			<span class="wccm-card-label"><?php esc_html_e( 'Products monitored', 'competitor-price-stock-monitor' ); ?></span>
-			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['monitored_products'] ) ); ?></strong>
-		</div>
-		<div class="wccm-card">
-			<span class="wccm-card-label"><?php esc_html_e( 'Competitors tracked', 'competitor-price-stock-monitor' ); ?></span>
-			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['active_urls'] ) ); ?></strong>
-		</div>
-		<div class="wccm-card">
-			<span class="wccm-card-label"><?php esc_html_e( 'Unread alerts', 'competitor-price-stock-monitor' ); ?></span>
-			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['unread_alerts'] ) ); ?></strong>
-		</div>
-		<div class="wccm-card <?php echo ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) ? 'wccm-card-highlight' : ''; ?>">
+		<a class="wccm-card wccm-card-link <?php echo ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) ? 'wccm-card-highlight' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'more_expensive', $wc_competitor_monitor_products_url ) ); ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'We charge more', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['more_expensive'] ) ); ?></strong>
 			<?php if ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) : ?>
-				<small><a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Reprice automatically with Pro', 'competitor-price-stock-monitor' ); ?></a></small>
+				<small><?php esc_html_e( 'Reprice automatically with Pro', 'competitor-price-stock-monitor' ); ?></small>
 			<?php endif; ?>
-		</div>
-		<div class="wccm-card">
+		</a>
+		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'cheaper', $wc_competitor_monitor_products_url ) ); ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'We charge less', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['cheaper'] ) ); ?></strong>
-		</div>
-		<div class="wccm-card">
+		</a>
+		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'out_of_stock', $wc_competitor_monitor_products_url ) ); ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'Competitor out of stock', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['out_of_stock'] ) ); ?></strong>
-		</div>
+		</a>
+		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( $wc_competitor_monitor_alerts_url ); ?>">
+			<span class="wccm-card-label"><?php esc_html_e( 'Unread alerts', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['unread_alerts'] ) ); ?></strong>
+		</a>
+		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( $wc_competitor_monitor_products_url ); ?>">
+			<span class="wccm-card-label"><?php esc_html_e( 'Products monitored', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['monitored_products'] ) ); ?></strong>
+		</a>
+		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( $wc_competitor_monitor_products_url ); ?>">
+			<span class="wccm-card-label"><?php esc_html_e( 'Competitors tracked', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['active_urls'] ) ); ?></strong>
+		</a>
 	</div>
+
+	<?php if ( ! empty( $wc_competitor_monitor_recommendations ) ) : ?>
+		<section class="wccm-panel">
+			<h2><?php esc_html_e( 'Pricing suggestions', 'competitor-price-stock-monitor' ); ?></h2>
+			<table class="widefat striped">
+				<thead>
+					<tr>
+						<th><?php esc_html_e( 'Product', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Your price', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Their price', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Suggestion', 'competitor-price-stock-monitor' ); ?></th>
+						<th><?php esc_html_e( 'Suggested price', 'competitor-price-stock-monitor' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php foreach ( $wc_competitor_monitor_recommendations as $wc_competitor_monitor_recommendation ) : ?>
+						<tr>
+							<td><?php echo esc_html( $this->product_title( absint( $wc_competitor_monitor_recommendation['product_id'] ) ) ); ?></td>
+							<td><?php echo esc_html( $wc_competitor_monitor_recommendation['competitor_name'] ); ?></td>
+							<td><?php echo $this->format_price( (float) $wc_competitor_monitor_recommendation['current_price'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+							<td><?php echo $this->format_price( (float) $wc_competitor_monitor_recommendation['competitor_price'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+							<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
+								<td><?php echo esc_html( $wc_competitor_monitor_recommendation['message'] ); ?></td>
+								<td>
+									<?php
+									echo isset( $wc_competitor_monitor_recommendation['recommended_price'] ) && null !== $wc_competitor_monitor_recommendation['recommended_price']
+										? $this->format_price( (float) $wc_competitor_monitor_recommendation['recommended_price'] ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+										: '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+									?>
+								</td>
+							<?php else : ?>
+								<td class="wccm-suggestion-locked" colspan="2">
+									<span>&#128274;</span>
+									<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro to see the suggestion and recommended price', 'competitor-price-stock-monitor' ); ?></a>
+								</td>
+							<?php endif; ?>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+				<p style="margin-top:12px">
+					<a class="button button-primary" href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Unlock suggestions and auto-repricing with Pro', 'competitor-price-stock-monitor' ); ?></a>
+				</p>
+			<?php endif; ?>
+		</section>
+	<?php endif; ?>
 
 	<div class="wccm-two-column">
 		<section class="wccm-panel">
@@ -204,47 +252,6 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 			<?php endif; ?>
 		</section>
 	</div>
-
-	<?php if ( ! empty( $wc_competitor_monitor_recommendations ) ) : ?>
-		<section class="wccm-panel">
-			<h2><?php esc_html_e( 'Pricing suggestions', 'competitor-price-stock-monitor' ); ?></h2>
-			<table class="widefat striped">
-				<thead>
-					<tr>
-						<th><?php esc_html_e( 'Product', 'competitor-price-stock-monitor' ); ?></th>
-						<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
-						<th><?php esc_html_e( 'Your price', 'competitor-price-stock-monitor' ); ?></th>
-						<th><?php esc_html_e( 'Their price', 'competitor-price-stock-monitor' ); ?></th>
-						<th><?php esc_html_e( 'Suggestion', 'competitor-price-stock-monitor' ); ?></th>
-						<th><?php esc_html_e( 'Suggested price', 'competitor-price-stock-monitor' ); ?></th>
-					</tr>
-				</thead>
-				<tbody>
-					<?php foreach ( $wc_competitor_monitor_recommendations as $wc_competitor_monitor_recommendation ) : ?>
-						<tr>
-							<td><?php echo esc_html( $this->product_title( absint( $wc_competitor_monitor_recommendation['product_id'] ) ) ); ?></td>
-							<td><?php echo esc_html( $wc_competitor_monitor_recommendation['competitor_name'] ); ?></td>
-							<td><?php echo $this->format_price( (float) $wc_competitor_monitor_recommendation['current_price'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-							<td><?php echo $this->format_price( (float) $wc_competitor_monitor_recommendation['competitor_price'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-							<td><?php echo esc_html( $wc_competitor_monitor_recommendation['message'] ); ?></td>
-							<td>
-								<?php
-								echo isset( $wc_competitor_monitor_recommendation['recommended_price'] ) && null !== $wc_competitor_monitor_recommendation['recommended_price']
-									? $this->format_price( (float) $wc_competitor_monitor_recommendation['recommended_price'] ) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-									: '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								?>
-							</td>
-						</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
-			<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
-				<p style="margin-top:12px">
-					<a class="button button-primary" href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Apply these automatically with Pro', 'competitor-price-stock-monitor' ); ?></a>
-				</p>
-			<?php endif; ?>
-		</section>
-	<?php endif; ?>
 
 	<?php endif; /* end else (has mappings) */ ?>
 </div>
