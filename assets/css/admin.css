@@ -482,3 +482,15 @@ input[aria-invalid="true"] {
 		grid-column: auto;
 	}
 }
+
+@media (max-width: 782px) {
+	.wccm-col-tablet {
+		display: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.wccm-col-desktop {
+		display: none;
+	}
+}

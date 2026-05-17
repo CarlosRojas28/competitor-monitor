@@ -91,8 +91,12 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_post_wc_competitor_monitor_delete_alert', array( $this, 'handle_delete_alert' ) );
 		add_action( 'admin_post_wc_competitor_monitor_clear_logs', array( $this, 'handle_clear_logs' ) );
 		add_action( 'admin_post_wc_competitor_monitor_bulk_restore', array( $this, 'handle_bulk_restore_original_prices' ) );
+		add_action( 'admin_post_wc_competitor_monitor_export_mappings_csv', array( $this, 'handle_export_mappings_csv' ) );
+		add_action( 'admin_post_wc_competitor_monitor_import_mappings_csv', array( $this, 'handle_import_mappings_csv' ) );
 		add_action( 'wp_ajax_wccm_quick_add_mapping', array( $this, 'handle_ajax_quick_add_mapping' ) );
 		add_action( 'wp_ajax_wc_competitor_monitor_run_check', array( $this, 'handle_ajax_run_check' ) );
+		add_action( 'admin_notices', array( $this, 'render_cron_stale_notice' ) );
+		add_action( 'wc_competitor_monitor_first_mapping_email', array( $this, 'send_first_mapping_email' ), 10, 2 );
 	}
 
 	/**
@@ -124,8 +128,8 @@ class WC_Competitor_Monitor_Admin {
 
 		add_submenu_page(
 			'competitor-price-stock-monitor',
-			__( 'Product Mapping', 'competitor-price-stock-monitor' ),
-			__( 'Product Mapping', 'competitor-price-stock-monitor' ),
+			__( 'Competitors', 'competitor-price-stock-monitor' ),
+			__( 'Competitors', 'competitor-price-stock-monitor' ),
 			$capability,
 			'competitor-price-stock-monitor-products',
 			array( $this, 'render_products' )
@@ -133,8 +137,8 @@ class WC_Competitor_Monitor_Admin {
 
 		add_submenu_page(
 			'competitor-price-stock-monitor',
-			__( 'Competitor URLs', 'competitor-price-stock-monitor' ),
-			__( 'Competitor URLs', 'competitor-price-stock-monitor' ),
+			__( 'Competitor Prices', 'competitor-price-stock-monitor' ),
+			__( 'Competitor Prices', 'competitor-price-stock-monitor' ),
 			$capability,
 			'competitor-price-stock-monitor-competitors',
 			array( $this, 'render_competitors' )
@@ -403,18 +407,52 @@ class WC_Competitor_Monitor_Admin {
 		?>
 		<div class="wccm-product-box">
 			<div class="wccm-product-grid">
+				<?php if ( $pro_is_active ) : ?>
 				<div>
 					<label for="wccm_product_auto_price_mode"><strong><?php esc_html_e( 'Apply recommended prices automatically', 'competitor-price-stock-monitor' ); ?></strong></label>
-					<select id="wccm_product_auto_price_mode" name="wccm_product_auto_price_mode"<?php disabled( $pro_is_active, false ); ?>>
+					<select id="wccm_product_auto_price_mode" name="wccm_product_auto_price_mode">
 						<option value="global" <?php selected( $product_mode, 'global' ); ?>><?php echo esc_html( $global_mode_label ); ?></option>
 						<option value="enabled" <?php selected( $product_mode, 'enabled' ); ?>><?php esc_html_e( 'Yes, apply recommended prices for this product', 'competitor-price-stock-monitor' ); ?></option>
 						<option value="disabled" <?php selected( $product_mode, 'disabled' ); ?>><?php esc_html_e( 'No, never change this product price automatically', 'competitor-price-stock-monitor' ); ?></option>
 					</select>
-					<p class="description"><?php esc_html_e( 'When allowed and a Pro license is active, competitor checks can update this WooCommerce product to the margin-aware recommended price. Every automatic change creates an alert and can send email.', 'competitor-price-stock-monitor' ); ?></p>
-					<?php if ( ! $pro_is_active ) : ?>
-						<p class="description"><a href="<?php echo esc_url( $settings_url ); ?>"><?php esc_html_e( 'Requires an active Pro license.', 'competitor-price-stock-monitor' ); ?></a></p>
-					<?php endif; ?>
+					<p class="description"><?php esc_html_e( 'When allowed, competitor checks can update this product to the margin-aware recommended price. Every automatic change creates an alert and can send email.', 'competitor-price-stock-monitor' ); ?></p>
 				</div>
+			<?php else : ?>
+				<div class="wccm-product-summary">
+					<strong><?php esc_html_e( 'Auto-pricing (Pro)', 'competitor-price-stock-monitor' ); ?></strong>
+					<?php
+					$wccm_opportunity_count = 0;
+					if ( ! empty( $mappings ) ) {
+						global $wpdb;
+						$wccm_mapping_ids = implode( ',', array_map( 'absint', wp_list_pluck( $mappings, 'id' ) ) );
+						$wccm_hist_table  = $this->db->tables()['history'];
+						// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$wccm_opportunity_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wccm_hist_table} WHERE mapping_id IN ({$wccm_mapping_ids}) AND difference_percentage > 0 AND checked_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)" );
+					}
+					?>
+					<p>
+						<?php
+						if ( $wccm_opportunity_count > 0 ) {
+							echo esc_html(
+								sprintf(
+									/* translators: %d: number of pricing opportunities. */
+									_n(
+										'Pro would have suggested a price adjustment %d time in the last 30 days.',
+										'Pro would have suggested price adjustments %d times in the last 30 days.',
+										$wccm_opportunity_count,
+										'competitor-price-stock-monitor'
+									),
+									$wccm_opportunity_count
+								)
+							);
+						} else {
+							esc_html_e( 'Pro applies pricing suggestions automatically as competitors change prices.', 'competitor-price-stock-monitor' );
+						}
+						?>
+					</p>
+					<a class="button button-small" href="<?php echo esc_url( $settings_url . '#wccm-pro-license-section' ); ?>"><?php esc_html_e( 'Connect Pro', 'competitor-price-stock-monitor' ); ?></a>
+				</div>
+			<?php endif; ?>
 				<div>
 					<label for="wccm_product_cost"><strong><?php esc_html_e( 'Product cost for margin checks', 'competitor-price-stock-monitor' ); ?></strong></label>
 					<input id="wccm_product_cost" type="number" step="0.0001" min="0" name="wccm_product_cost" value="<?php echo esc_attr( (string) $manual_cost ); ?>" placeholder="<?php echo esc_attr_x( 'Example: 42.50', 'product cost example', 'competitor-price-stock-monitor' ); ?>">
@@ -715,6 +753,14 @@ class WC_Competitor_Monitor_Admin {
 			$data['competitor_product_title'] = $this->competitor_product_title_from_url( $url, $data['competitor_name'] );
 			$mapping_id                       = $this->db->insert_mapping( $data );
 			$message                          = __( 'Mapping created.', 'competitor-price-stock-monitor' );
+
+			if ( $mapping_id > 0 && 1 === count( $this->db->get_mappings( array( 'limit' => 2 ) ) ) ) {
+				wp_schedule_single_event(
+					time() + DAY_IN_SECONDS,
+					'wc_competitor_monitor_first_mapping_email',
+					array( get_option( 'admin_email' ), home_url() )
+				);
+			}
 		}
 
 		if ( $mapping_id > 0 ) {
@@ -1147,6 +1193,196 @@ class WC_Competitor_Monitor_Admin {
 				)
 			)
 		);
+	}
+
+	/**
+	 * Shows a warning when the last price check was over 48 hours ago while active mappings exist.
+	 *
+	 * @return void
+	 */
+	public function render_cron_stale_notice(): void {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || ! str_contains( (string) $screen->id, 'competitor-price-stock-monitor' ) ) {
+			return;
+		}
+
+		$mappings = $this->db->get_mappings( array( 'limit' => 1 ) );
+		if ( empty( $mappings ) ) {
+			return;
+		}
+
+		$history = $this->db->get_history( 1 );
+		if ( empty( $history ) ) {
+			printf(
+				'<div class="notice notice-warning"><p>%s</p></div>',
+				esc_html__( 'Competitor Monitor: No price check has run yet. Click "Check prices now" on the dashboard or wait for the next scheduled run.', 'competitor-price-stock-monitor' )
+			);
+			return;
+		}
+
+		$last_check_ts = strtotime( (string) $history[0]->checked_at );
+		if ( $last_check_ts && ( time() - $last_check_ts ) > 2 * DAY_IN_SECONDS ) {
+			printf(
+				'<div class="notice notice-warning"><p>%s</p></div>',
+				esc_html(
+					sprintf(
+						/* translators: %s: human-readable time difference. */
+						__( 'Competitor Monitor: The last price check ran %s ago — prices may be stale. Check your hosting cron configuration or click "Check prices now" on the dashboard.', 'competitor-price-stock-monitor' ),
+						human_time_diff( $last_check_ts, time() )
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Exports all mappings as a CSV file download.
+	 *
+	 * @return never
+	 */
+	public function handle_export_mappings_csv(): never {
+		WC_Competitor_Monitor_Security::require_capability();
+		check_admin_referer( 'wc_competitor_monitor_export_mappings_csv' );
+
+		$mappings = $this->db->get_mappings( array( 'limit' => 5000 ) );
+
+		header( 'Content-Type: text/csv; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="competitor-mappings-' . gmdate( 'Y-m-d' ) . '.csv"' );
+		header( 'Pragma: no-cache' );
+		header( 'Expires: 0' );
+
+		$out = fopen( 'php://output', 'w' );
+		fputcsv( $out, array( 'product_id', 'competitor_name', 'competitor_url', 'currency', 'min_margin_percentage', 'suggested_increase_mode', 'suggested_increase_percentage', 'active' ) );
+
+		foreach ( $mappings as $mapping ) {
+			fputcsv( $out, array(
+				absint( $mapping->product_id ),
+				(string) $mapping->competitor_name,
+				(string) $mapping->competitor_url,
+				(string) $mapping->currency,
+				(string) $mapping->min_margin_percentage,
+				(string) ( $mapping->suggested_increase_mode ?? 'global' ),
+				(string) ( $mapping->suggested_increase_percentage ?? '' ),
+				$mapping->active ? '1' : '0',
+			) );
+		}
+
+		fclose( $out );
+		exit;
+	}
+
+	/**
+	 * Imports mappings from an uploaded CSV file.
+	 *
+	 * @return never
+	 */
+	public function handle_import_mappings_csv(): never {
+		WC_Competitor_Monitor_Security::require_capability();
+		check_admin_referer( 'wc_competitor_monitor_import_mappings_csv' );
+
+		$tmp_name = isset( $_FILES['mappings_csv']['tmp_name'] ) ? sanitize_text_field( wp_unslash( $_FILES['mappings_csv']['tmp_name'] ) ) : '';
+		if ( '' === $tmp_name || ! is_uploaded_file( $tmp_name ) ) {
+			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', __( 'No CSV file uploaded.', 'competitor-price-stock-monitor' ) );
+		}
+
+		$handle = fopen( $tmp_name, 'r' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $handle ) {
+			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', __( 'Could not read the uploaded file.', 'competitor-price-stock-monitor' ) );
+		}
+
+		$headers = fgetcsv( $handle );
+		if ( ! is_array( $headers ) || ! in_array( 'competitor_url', $headers, true ) || ! in_array( 'product_id', $headers, true ) ) {
+			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', __( 'Invalid CSV. Required columns: product_id, competitor_name, competitor_url.', 'competitor-price-stock-monitor' ) );
+		}
+
+		$col      = array_flip( $headers );
+		$imported = 0;
+		$skipped  = 0;
+
+		while ( ( $row = fgetcsv( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+			$product_id = absint( $row[ $col['product_id'] ] ?? 0 );
+			$name       = sanitize_text_field( $row[ $col['competitor_name'] ] ?? '' );
+			$url        = esc_url_raw( $row[ $col['competitor_url'] ] ?? '' );
+
+			if ( $product_id <= 0 || '' === $url || '' === $name ) {
+				++$skipped;
+				continue;
+			}
+
+			$validation = WC_Competitor_Monitor_Security::validate_competitor_url( $url );
+			if ( is_wp_error( $validation ) ) {
+				++$skipped;
+				continue;
+			}
+
+			if ( $this->product_mapping_url_exists( $product_id, $url, 0 ) ) {
+				++$skipped;
+				continue;
+			}
+
+			$currency_col = $col['currency'] ?? null;
+			$currency     = ( null !== $currency_col && isset( $row[ $currency_col ] ) )
+				? sanitize_text_field( $row[ $currency_col ] )
+				: ( function_exists( 'get_woocommerce_currency' ) ? get_woocommerce_currency() : 'USD' );
+
+			$margin_col = $col['min_margin_percentage'] ?? null;
+			$margin     = ( null !== $margin_col && isset( $row[ $margin_col ] ) ) ? (float) $row[ $margin_col ] : 20.0;
+
+			$this->db->insert_mapping( array(
+				'product_id'                    => $product_id,
+				'competitor_name'               => $name,
+				'competitor_url'                => $url,
+				'price_selector'                => '',
+				'stock_selector'                => '',
+				'browser_user_agent'            => '',
+				'browser_cookie_header'         => '',
+				'currency'                      => $currency,
+				'min_margin_percentage'         => $margin,
+				'suggested_increase_mode'       => 'global',
+				'suggested_increase_percentage' => null,
+				'active'                        => 1,
+				'competitor_product_title'      => $this->competitor_product_title_from_url( $url, $name ),
+			) );
+			++$imported;
+		}
+
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		$this->redirect_with_notice(
+			'competitor-price-stock-monitor-products',
+			'updated',
+			sprintf(
+				/* translators: 1: imported count, 2: skipped count. */
+				__( 'CSV imported: %1$d mapping(s) created, %2$d skipped (duplicates or invalid rows).', 'competitor-price-stock-monitor' ),
+				$imported,
+				$skipped
+			)
+		);
+	}
+
+	/**
+	 * Sends the first-mapping milestone email (scheduled event handler).
+	 *
+	 * @param string $email    Recipient email address.
+	 * @param string $site_url Site home URL.
+	 * @return void
+	 */
+	public function send_first_mapping_email( string $email, string $site_url ): void {
+		$subject = sprintf(
+			/* translators: %s: site URL. */
+			__( '[Competitor Monitor] Your first competitor is being tracked on %s', 'competitor-price-stock-monitor' ),
+			$site_url
+		);
+
+		$body = sprintf(
+			/* translators: 1: site URL, 2: dashboard URL. */
+			__( "Hi,\n\nYour first competitor mapping was created on %1\$s.\n\nVisit your dashboard to see pricing updates and suggestions:\n%2\$s\n\nTip: Add more competitors to get the most out of price monitoring.", 'competitor-price-stock-monitor' ),
+			$site_url,
+			admin_url( 'admin.php?page=competitor-price-stock-monitor' )
+		);
+
+		wp_mail( sanitize_email( $email ), $subject, $body );
 	}
 
 	/**

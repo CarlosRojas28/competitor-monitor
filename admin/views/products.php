@@ -59,7 +59,7 @@ $wc_competitor_monitor_discovery_url = add_query_arg(
 $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-price-stock-monitor-settings' );
 ?>
 <div class="wrap wccm-wrap">
-	<h1><?php esc_html_e( 'Product Mapping', 'competitor-price-stock-monitor' ); ?></h1>
+	<h1><?php esc_html_e( 'Competitors', 'competitor-price-stock-monitor' ); ?></h1>
 
 	<?php if ( ! function_exists( 'wc_get_products' ) ) : ?>
 		<div class="notice notice-warning"><p><?php esc_html_e( 'WooCommerce is not active. You can keep the plugin enabled, but mappings require WooCommerce products.', 'competitor-price-stock-monitor' ); ?></p></div>
@@ -217,19 +217,40 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 	</section>
 
 	<section class="wccm-panel" id="wccm-mappings-panel">
-		<h2><?php esc_html_e( 'Competitors being monitored', 'competitor-price-stock-monitor' ); ?></h2>
+		<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+			<h2 style="margin:0"><?php esc_html_e( 'Competitors being monitored', 'competitor-price-stock-monitor' ); ?></h2>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+					<input type="hidden" name="action" value="wc_competitor_monitor_export_mappings_csv">
+					<?php wp_nonce_field( 'wc_competitor_monitor_export_mappings_csv' ); ?>
+					<button type="submit" class="button button-small"><?php esc_html_e( 'Export CSV', 'competitor-price-stock-monitor' ); ?></button>
+				</form>
+				<button type="button" class="button button-small" id="wccm-import-csv-toggle"><?php esc_html_e( 'Import CSV', 'competitor-price-stock-monitor' ); ?></button>
+			</div>
+		</div>
+
+		<div id="wccm-import-csv-section" hidden style="margin-bottom:16px;padding:12px;background:#f6f7f7;border:1px solid #dcdcde;border-radius:4px">
+			<p class="description" style="margin-top:0"><?php esc_html_e( 'CSV must have columns: product_id, competitor_name, competitor_url. Optional: currency, min_margin_percentage. Duplicate URLs are skipped.', 'competitor-price-stock-monitor' ); ?></p>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" enctype="multipart/form-data">
+				<input type="hidden" name="action" value="wc_competitor_monitor_import_mappings_csv">
+				<?php wp_nonce_field( 'wc_competitor_monitor_import_mappings_csv' ); ?>
+				<input type="file" name="mappings_csv" accept=".csv,text/csv" required style="margin-right:8px">
+				<button type="submit" class="button button-primary button-small"><?php esc_html_e( 'Import', 'competitor-price-stock-monitor' ); ?></button>
+			</form>
+		</div>
+
 		<table class="widefat striped wccm-table">
 			<thead>
 				<tr>
 					<th><?php esc_html_e( 'Your product', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Competitor', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Their price', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Your price', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Difference', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Their stock', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Extra profit (30d)', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Last check', 'competitor-price-stock-monitor' ); ?></th>
-					<th><?php esc_html_e( 'Status', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-tablet"><?php esc_html_e( 'Their price', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-tablet"><?php esc_html_e( 'Your price', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-desktop"><?php esc_html_e( 'Difference', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-desktop"><?php esc_html_e( 'Their stock', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-desktop"><?php esc_html_e( 'Extra profit (30d)', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-desktop"><?php esc_html_e( 'Last check', 'competitor-price-stock-monitor' ); ?></th>
+					<th class="wccm-col-tablet"><?php esc_html_e( 'Status', 'competitor-price-stock-monitor' ); ?></th>
 					<th><?php esc_html_e( 'Actions', 'competitor-price-stock-monitor' ); ?></th>
 				</tr>
 			</thead>
@@ -256,17 +277,17 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 								<strong><?php echo esc_html( $wc_competitor_monitor_mapping->competitor_name ); ?></strong><br>
 								<a href="<?php echo esc_url( $wc_competitor_monitor_mapping->competitor_url ); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html( (string) wp_parse_url( $wc_competitor_monitor_mapping->competitor_url, PHP_URL_HOST ) ); ?></a>
 							</td>
-							<td><?php echo $this->format_price( null !== $wc_competitor_monitor_mapping->last_price ? (float) $wc_competitor_monitor_mapping->last_price : null ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-							<td><?php echo $this->format_price( $wc_competitor_monitor_our_price ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
-							<td>
+							<td class="wccm-col-tablet"><?php echo $this->format_price( null !== $wc_competitor_monitor_mapping->last_price ? (float) $wc_competitor_monitor_mapping->last_price : null ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+							<td class="wccm-col-tablet"><?php echo $this->format_price( $wc_competitor_monitor_our_price ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></td>
+							<td class="wccm-col-desktop">
 								<?php if ( $wc_competitor_monitor_latest && null !== $wc_competitor_monitor_latest->difference_percentage ) : ?>
 									<?php echo esc_html( number_format_i18n( (float) $wc_competitor_monitor_latest->difference_percentage, 2 ) ); ?>%
 								<?php else : ?>
 									&mdash;
 								<?php endif; ?>
 							</td>
-							<td><span class="wccm-badge wccm-badge-<?php echo esc_attr( $wc_competitor_monitor_mapping->last_stock_status ?: 'unknown' ); ?>"><?php echo esc_html( $wc_competitor_monitor_mapping->last_stock_status ?: __( 'unknown', 'competitor-price-stock-monitor' ) ); ?></span></td>
-							<td>
+							<td class="wccm-col-desktop"><span class="wccm-badge wccm-badge-<?php echo esc_attr( $wc_competitor_monitor_mapping->last_stock_status ?: 'unknown' ); ?>"><?php echo esc_html( $wc_competitor_monitor_mapping->last_stock_status ?: __( 'unknown', 'competitor-price-stock-monitor' ) ); ?></span></td>
+							<td class="wccm-col-desktop">
 								<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_impact['attributed_gross_profit'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
 								<?php if ( ! empty( $wc_competitor_monitor_impact['revenue_uplift_without_cost'] ) ) : ?>
 									<br><small>
@@ -282,14 +303,14 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 									</small>
 								<?php endif; ?>
 							</td>
-							<td>
+							<td class="wccm-col-desktop">
 								<?php
 								echo $wc_competitor_monitor_mapping->last_checked_at
 									? esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $wc_competitor_monitor_mapping->last_checked_at ) )
 									: '&mdash;'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 								?>
 							</td>
-							<td>
+							<td class="wccm-col-tablet">
 								<span class="wccm-status <?php echo empty( $wc_competitor_monitor_mapping->active ) ? 'is-inactive' : 'is-active'; ?>">
 									<?php echo esc_html( empty( $wc_competitor_monitor_mapping->active ) ? __( 'Inactive', 'competitor-price-stock-monitor' ) : __( 'Active', 'competitor-price-stock-monitor' ) ); ?>
 								</span>

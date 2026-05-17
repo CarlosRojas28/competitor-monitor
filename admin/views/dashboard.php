@@ -148,6 +148,9 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'cheaper', $wc_competitor_monitor_products_url ) ); ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'We charge less', 'competitor-price-stock-monitor' ); ?></span>
 			<strong><?php echo esc_html( number_format_i18n( $wc_competitor_monitor_stats['cheaper'] ) ); ?></strong>
+			<?php if ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['cheaper'] > 0 ) : ?>
+				<small><?php esc_html_e( 'You may be leaving margin on the table — Pro enforces a minimum margin floor', 'competitor-price-stock-monitor' ); ?></small>
+			<?php endif; ?>
 		</a>
 		<a class="wccm-card wccm-card-link" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'out_of_stock', $wc_competitor_monitor_products_url ) ); ?>">
 			<span class="wccm-card-label"><?php esc_html_e( 'Competitor out of stock', 'competitor-price-stock-monitor' ); ?></span>

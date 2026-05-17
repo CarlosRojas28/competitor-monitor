@@ -23,6 +23,7 @@
 		initFieldValidation();
 		bindBulkRestoreTrigger();
 		bindCheckPricesNow();
+		bindImportCsvToggle();
 	});
 
 	function wccmAdminConfirmMessage() {
@@ -475,6 +476,21 @@
 					btn.disabled    = false;
 					btn.textContent = adminConfig.labelCheckPrices || 'Check prices now';
 				});
+		});
+	}
+
+	function bindImportCsvToggle() {
+		var toggle  = document.getElementById('wccm-import-csv-toggle');
+		var section = document.getElementById('wccm-import-csv-section');
+		if (!toggle || !section) {
+			return;
+		}
+		toggle.addEventListener('click', function () {
+			var isHidden = section.hidden;
+			section.hidden = !isHidden;
+			toggle.textContent = isHidden
+				? (window.wccmAdmin && window.wccmAdmin.labelCancelImport ? window.wccmAdmin.labelCancelImport : 'Cancel')
+				: (window.wccmAdmin && window.wccmAdmin.labelImportCsv ? window.wccmAdmin.labelImportCsv : 'Import CSV');
 		});
 	}
 
