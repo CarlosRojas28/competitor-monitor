@@ -235,6 +235,8 @@ class WC_Competitor_Monitor_Admin {
 				'labelAdded'                => __( 'Competitor mapping added.', 'competitor-price-stock-monitor' ),
 				'labelRequestFailed'        => __( 'Request failed. Please try again.', 'competitor-price-stock-monitor' ),
 				'labelDuplicateUrl'         => __( 'This competitor URL is already mapped to this product.', 'competitor-price-stock-monitor' ),
+				'labelInvalidUrl'           => __( 'Enter a full URL starting with https:// or http://', 'competitor-price-stock-monitor' ),
+				'labelInvalidSelector'      => __( 'Invalid CSS selector syntax.', 'competitor-price-stock-monitor' ),
 			)
 		);
 	}
@@ -701,9 +703,10 @@ class WC_Competitor_Monitor_Admin {
 		WC_Competitor_Monitor_Security::require_capability();
 		check_admin_referer( 'wc_competitor_monitor_save_mapping' );
 
-		$mapping_id = isset( $_POST['mapping_id'] ) ? absint( wp_unslash( $_POST['mapping_id'] ) ) : 0;
-		$url        = isset( $_POST['competitor_url'] ) ? esc_url_raw( wp_unslash( $_POST['competitor_url'] ) ) : '';
-		$validation = WC_Competitor_Monitor_Security::validate_competitor_url( $url );
+		$mapping_id     = isset( $_POST['mapping_id'] ) ? absint( wp_unslash( $_POST['mapping_id'] ) ) : 0;
+		$is_new_mapping = 0 === $mapping_id;
+		$url            = isset( $_POST['competitor_url'] ) ? esc_url_raw( wp_unslash( $_POST['competitor_url'] ) ) : '';
+		$validation     = WC_Competitor_Monitor_Security::validate_competitor_url( $url );
 
 		if ( is_wp_error( $validation ) ) {
 			$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'error', $validation->get_error_message() );
@@ -756,7 +759,12 @@ class WC_Competitor_Monitor_Admin {
 			$this->sync->sync_mapping( $mapping_id, 'admin_save' );
 		}
 
-		$this->redirect_with_notice( 'competitor-price-stock-monitor-products', 'updated', $message );
+		$this->redirect_with_notice(
+			'competitor-price-stock-monitor-products',
+			'updated',
+			$message,
+			$is_new_mapping ? array( 'wccm_scroll' => 'mappings' ) : array()
+		);
 	}
 
 	/**
@@ -1310,13 +1318,16 @@ class WC_Competitor_Monitor_Admin {
 	 * @param string $message Message.
 	 * @return never
 	 */
-	private function redirect_with_notice( string $page, string $type, string $message ): never {
+	private function redirect_with_notice( string $page, string $type, string $message, array $extra_args = [] ): never {
 		wp_safe_redirect(
 			add_query_arg(
-				array(
-					'page'         => sanitize_key( $page ),
-					'wccm_notice'  => sanitize_key( $type ),
-					'wccm_message' => $message,
+				array_merge(
+					array(
+						'page'         => sanitize_key( $page ),
+						'wccm_notice'  => sanitize_key( $type ),
+						'wccm_message' => $message,
+					),
+					$extra_args
 				),
 				admin_url( 'admin.php' )
 			)

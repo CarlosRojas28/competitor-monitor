@@ -127,7 +127,8 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 
 				<label class="wccm-full">
 					<span><?php esc_html_e( 'Competitor URL', 'competitor-price-stock-monitor' ); ?></span>
-					<input type="url" name="competitor_url" value="<?php echo esc_url( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->competitor_url : '' ); ?>" required>
+					<input type="url" name="competitor_url" id="wccm-competitor-url" value="<?php echo esc_url( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->competitor_url : '' ); ?>" required aria-describedby="wccm-competitor-url-error">
+				<span class="wccm-field-error" id="wccm-competitor-url-error" hidden></span>
 				</label>
 
 				<details class="wccm-full" style="margin-bottom:.5rem">
@@ -136,12 +137,14 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 					<div class="wccm-form-grid">
 						<label>
 							<span><?php esc_html_e( 'Price CSS selector', 'competitor-price-stock-monitor' ); ?></span>
-							<input type="text" name="price_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->price_selector : '' ); ?>" maxlength="255" placeholder=".price">
+							<input type="text" name="price_selector" id="wccm-price-selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->price_selector : '' ); ?>" maxlength="255" placeholder=".price" aria-describedby="wccm-price-selector-error">
+						<span class="wccm-field-error" id="wccm-price-selector-error" hidden></span>
 						</label>
 
 						<label>
 							<span><?php esc_html_e( 'Stock CSS selector', 'competitor-price-stock-monitor' ); ?></span>
-							<input type="text" name="stock_selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->stock_selector : '' ); ?>" maxlength="255" placeholder=".stock">
+							<input type="text" name="stock_selector" id="wccm-stock-selector" value="<?php echo esc_attr( $wc_competitor_monitor_is_editing ? $wc_competitor_monitor_editing_mapping->stock_selector : '' ); ?>" maxlength="255" placeholder=".stock" aria-describedby="wccm-stock-selector-error">
+							<span class="wccm-field-error" id="wccm-stock-selector-error" hidden></span>
 						</label>
 
 						<label class="wccm-full">
@@ -213,7 +216,7 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 		</form>
 	</section>
 
-	<section class="wccm-panel">
+	<section class="wccm-panel" id="wccm-mappings-panel">
 		<h2><?php esc_html_e( 'Competitors being monitored', 'competitor-price-stock-monitor' ); ?></h2>
 		<table class="widefat striped wccm-table">
 			<thead>

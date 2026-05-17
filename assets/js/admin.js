@@ -19,6 +19,8 @@
 		initWooCommerceProductSearch();
 		bindCopyableSecrets();
 		bindMetaboxQuickAdd();
+		maybeScrollToMappings();
+		initFieldValidation();
 	});
 
 	function wccmAdminConfirmMessage() {
@@ -307,6 +309,91 @@
 		el.textContent = text;
 		el.style.color  = type === 'error' ? '#cc1818' : (type === 'success' ? '#00a32a' : '');
 		el.hidden       = !text;
+	}
+
+	function maybeScrollToMappings() {
+		var params = new URLSearchParams(window.location.search);
+		if (params.get('wccm_scroll') !== 'mappings') {
+			return;
+		}
+		var panel = document.getElementById('wccm-mappings-panel');
+		if (!panel) {
+			return;
+		}
+		panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		params.delete('wccm_scroll');
+		var newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+		window.history.replaceState(null, '', newUrl);
+	}
+
+	function initFieldValidation() {
+		var urlField = document.getElementById('wccm-competitor-url');
+		if (urlField) {
+			var urlError = document.getElementById('wccm-competitor-url-error');
+			urlField.addEventListener('blur', function () {
+				var val = urlField.value.trim();
+				if (val && !isValidHttpUrl(val)) {
+					showFieldError(urlError, urlField, (window.wccmAdmin && window.wccmAdmin.labelInvalidUrl) || 'Enter a full URL starting with https:// or http://');
+				} else {
+					clearFieldError(urlError, urlField);
+				}
+			});
+			urlField.addEventListener('input', function () {
+				clearFieldError(urlError, urlField);
+			});
+		}
+
+		[['wccm-price-selector', 'wccm-price-selector-error'], ['wccm-stock-selector', 'wccm-stock-selector-error']].forEach(function (pair) {
+			var field = document.getElementById(pair[0]);
+			var error = document.getElementById(pair[1]);
+			if (!field || !error) {
+				return;
+			}
+			field.addEventListener('blur', function () {
+				var val = field.value.trim();
+				if (val && !isValidCssSelector(val)) {
+					showFieldError(error, field, (window.wccmAdmin && window.wccmAdmin.labelInvalidSelector) || 'Invalid CSS selector syntax');
+				} else {
+					clearFieldError(error, field);
+				}
+			});
+			field.addEventListener('input', function () {
+				clearFieldError(error, field);
+			});
+		});
+	}
+
+	function isValidHttpUrl(val) {
+		try {
+			var u = new URL(val);
+			return u.protocol === 'http:' || u.protocol === 'https:';
+		} catch (e) {
+			return false;
+		}
+	}
+
+	function isValidCssSelector(sel) {
+		try {
+			document.createDocumentFragment().querySelector(sel);
+			return true;
+		} catch (e) {
+			return false;
+		}
+	}
+
+	function showFieldError(errorEl, field, message) {
+		if (!errorEl) { return; }
+		errorEl.textContent = message;
+		errorEl.hidden = false;
+		field.setAttribute('aria-invalid', 'true');
+		field.classList.add('wccm-input-error');
+	}
+
+	function clearFieldError(errorEl, field) {
+		if (!errorEl) { return; }
+		errorEl.hidden = true;
+		field.removeAttribute('aria-invalid');
+		field.classList.remove('wccm-input-error');
 	}
 
 	function bindCopyableSecrets() {

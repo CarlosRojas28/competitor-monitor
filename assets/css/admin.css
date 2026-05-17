@@ -289,6 +289,88 @@
 	margin-top: 8px;
 }
 
+.wccm-field-error {
+	color: #d63638;
+	display: block;
+	font-size: 12px;
+	margin-top: 3px;
+}
+
+input.wccm-input-error,
+input[aria-invalid="true"] {
+	border-color: #d63638;
+	box-shadow: 0 0 0 1px #d63638;
+}
+
+.wccm-first-run {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	margin: 16px 0;
+	padding: 24px;
+}
+
+.wccm-first-run > h2 {
+	font-size: 20px;
+	margin: 0 0 20px;
+}
+
+.wccm-first-run-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.wccm-step {
+	align-items: flex-start;
+	background: #f6f7f7;
+	border-left: 4px solid #72aee6;
+	border-radius: 4px;
+	display: flex;
+	gap: 16px;
+	padding: 16px;
+}
+
+.wccm-step-number {
+	align-items: center;
+	background: #1d2327;
+	border-radius: 50%;
+	color: #fff;
+	display: flex;
+	flex-shrink: 0;
+	font-size: 14px;
+	font-weight: 700;
+	height: 32px;
+	justify-content: center;
+	width: 32px;
+}
+
+.wccm-step-content strong {
+	display: block;
+	font-size: 14px;
+	margin-bottom: 6px;
+}
+
+.wccm-step-content p {
+	margin: 0 0 10px;
+}
+
+.wccm-step-content p:last-child {
+	margin-bottom: 0;
+}
+
+.wccm-first-run-pro {
+	background: #f0f6fc;
+	border: 1px solid #72aee6;
+	border-radius: 4px;
+	padding: 12px 16px;
+}
+
+.wccm-first-run-pro p {
+	margin: 0;
+}
+
 @media (max-width: 960px) {
 	.wccm-two-column,
 	.wccm-form-grid,

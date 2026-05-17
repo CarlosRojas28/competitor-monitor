@@ -19,6 +19,49 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/pr
 <div class="wrap wccm-wrap">
 	<h1><?php esc_html_e( 'Competitor Monitor', 'competitor-price-stock-monitor' ); ?></h1>
 
+	<?php if ( 0 === (int) $wc_competitor_monitor_stats['monitored_products'] && 0 === (int) $wc_competitor_monitor_stats['active_urls'] ) : ?>
+
+		<div class="wccm-first-run">
+			<h2><?php esc_html_e( 'Get started in 3 steps', 'competitor-price-stock-monitor' ); ?></h2>
+			<div class="wccm-first-run-steps">
+				<div class="wccm-step">
+					<div class="wccm-step-number">1</div>
+					<div class="wccm-step-content">
+						<strong><?php esc_html_e( 'Add your first competitor', 'competitor-price-stock-monitor' ); ?></strong>
+						<p><?php esc_html_e( 'Find a competitor\'s product page and map it to one of your WooCommerce products. The plugin will then track their price and stock automatically.', 'competitor-price-stock-monitor' ); ?></p>
+						<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=competitor-price-stock-monitor-products' ) ); ?>">
+							<?php esc_html_e( 'Add a competitor', 'competitor-price-stock-monitor' ); ?>
+						</a>
+					</div>
+				</div>
+				<div class="wccm-step">
+					<div class="wccm-step-number">2</div>
+					<div class="wccm-step-content">
+						<strong><?php esc_html_e( 'Run your first price check', 'competitor-price-stock-monitor' ); ?></strong>
+						<p><?php esc_html_e( 'After adding a competitor, trigger a manual check or wait for the next automatic run. The plugin checks prices on a schedule you control in Settings.', 'competitor-price-stock-monitor' ); ?></p>
+					</div>
+				</div>
+				<div class="wccm-step">
+					<div class="wccm-step-number">3</div>
+					<div class="wccm-step-content">
+						<strong><?php esc_html_e( 'See price differences and alerts', 'competitor-price-stock-monitor' ); ?></strong>
+						<p><?php esc_html_e( 'Your dashboard will show who is cheaper, pricing suggestions, and alerts when a competitor changes their price or goes out of stock.', 'competitor-price-stock-monitor' ); ?></p>
+					</div>
+				</div>
+			</div>
+			<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+				<div class="wccm-first-run-pro">
+					<p>
+						<strong><?php esc_html_e( 'Skip the manual search:', 'competitor-price-stock-monitor' ); ?></strong>
+						<?php esc_html_e( 'Pro uses AI to find and map competitors automatically — no URL hunting required.', 'competitor-price-stock-monitor' ); ?>
+						<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Learn about Pro', 'competitor-price-stock-monitor' ); ?></a>
+					</p>
+				</div>
+			<?php endif; ?>
+		</div>
+
+	<?php else : ?>
+
 	<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
 		<div class="notice notice-info">
 			<p>
@@ -202,4 +245,6 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/pr
 			<?php endif; ?>
 		</section>
 	<?php endif; ?>
+
+	<?php endif; /* end else (has mappings) */ ?>
 </div>
