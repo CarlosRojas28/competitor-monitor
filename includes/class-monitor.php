@@ -640,6 +640,13 @@ class WC_Competitor_Monitor_Monitor {
 	 * @return array<string,mixed>
 	 */
 	private function maybe_apply_auto_price_adjustment( object $mapping, $product ): array {
+		if ( get_transient( 'cpsm_bulk_restore_lock' ) ) {
+			return array(
+				'applied' => false,
+				'reason'  => 'bulk_restore_in_progress',
+			);
+		}
+
 		if ( ! $this->is_auto_price_adjustment_enabled( $mapping ) ) {
 			return array(
 				'applied' => false,

@@ -334,4 +334,55 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 			<p class="submit"><button type="submit" class="button button-primary"><?php esc_html_e( 'Save settings', 'competitor-price-stock-monitor' ); ?></button></p>
 		</form>
 	</section>
+
+	<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
+	<section class="wccm-panel" id="wccm-restore-section">
+		<h2><?php esc_html_e( 'Restore original prices', 'competitor-price-stock-monitor' ); ?></h2>
+		<p>
+			<?php
+			if ( $wc_competitor_monitor_original_price_count > 0 ) {
+				echo esc_html(
+					sprintf(
+						/* translators: %d: number of products with stored original prices. */
+						_n(
+							'Auto-pricing has adjusted %d product. Restoring will revert it to the price it had before the first automatic adjustment.',
+							'Auto-pricing has adjusted %d products. Restoring will revert each one to the price it had before the first automatic adjustment.',
+							$wc_competitor_monitor_original_price_count,
+							'competitor-price-stock-monitor'
+						),
+						$wc_competitor_monitor_original_price_count
+					)
+				);
+			} else {
+				esc_html_e( 'No products have been adjusted by auto-pricing yet. Nothing to restore.', 'competitor-price-stock-monitor' );
+			}
+			?>
+		</p>
+
+		<?php if ( $wc_competitor_monitor_original_price_count > 0 ) : ?>
+		<button type="button" id="wccm-restore-trigger" class="button-link-delete">
+			<?php esc_html_e( 'Restore original prices…', 'competitor-price-stock-monitor' ); ?>
+		</button>
+
+		<div id="wccm-restore-confirm" hidden style="margin-top:12px">
+			<div class="notice notice-warning inline" style="margin:0 0 12px">
+				<p>
+					<strong><?php esc_html_e( 'Are you sure?', 'competitor-price-stock-monitor' ); ?></strong>
+					<?php esc_html_e( 'This will revert all auto-adjusted products to their stored original price. Products where the competitor is still cheaper than the margin floor will be skipped.', 'competitor-price-stock-monitor' ); ?>
+				</p>
+			</div>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="wc_competitor_monitor_bulk_restore">
+				<?php wp_nonce_field( 'wc_competitor_monitor_bulk_restore' ); ?>
+				<button type="submit" class="button" style="background:#b32d2e;border-color:#8a1e1e;color:#fff">
+					<?php esc_html_e( 'Yes, restore all original prices', 'competitor-price-stock-monitor' ); ?>
+				</button>
+				<button type="button" id="wccm-restore-cancel" class="button" style="margin-left:6px">
+					<?php esc_html_e( 'Cancel', 'competitor-price-stock-monitor' ); ?>
+				</button>
+			</form>
+		</div>
+		<?php endif; ?>
+	</section>
+	<?php endif; ?>
 </div>

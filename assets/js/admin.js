@@ -21,6 +21,7 @@
 		bindMetaboxQuickAdd();
 		maybeScrollToMappings();
 		initFieldValidation();
+		bindBulkRestoreTrigger();
 	});
 
 	function wccmAdminConfirmMessage() {
@@ -394,6 +395,28 @@
 		errorEl.hidden = true;
 		field.removeAttribute('aria-invalid');
 		field.classList.remove('wccm-input-error');
+	}
+
+	function bindBulkRestoreTrigger() {
+		var trigger = document.getElementById('wccm-restore-trigger');
+		var confirm = document.getElementById('wccm-restore-confirm');
+		var cancel  = document.getElementById('wccm-restore-cancel');
+
+		if (!trigger || !confirm) {
+			return;
+		}
+
+		trigger.addEventListener('click', function () {
+			confirm.hidden = false;
+			trigger.hidden = true;
+		});
+
+		if (cancel) {
+			cancel.addEventListener('click', function () {
+				confirm.hidden = true;
+				trigger.hidden = false;
+			});
+		}
 	}
 
 	function bindCopyableSecrets() {

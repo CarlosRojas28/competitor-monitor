@@ -91,6 +91,7 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_post_wc_competitor_monitor_mark_alert_read', array( $this, 'handle_mark_alert_read' ) );
 		add_action( 'admin_post_wc_competitor_monitor_delete_alert', array( $this, 'handle_delete_alert' ) );
 		add_action( 'admin_post_wc_competitor_monitor_clear_logs', array( $this, 'handle_clear_logs' ) );
+		add_action( 'admin_post_wc_competitor_monitor_bulk_restore', array( $this, 'handle_bulk_restore_original_prices' ) );
 		add_action( 'wp_ajax_wccm_quick_add_mapping', array( $this, 'handle_ajax_quick_add_mapping' ) );
 	}
 
@@ -315,7 +316,8 @@ class WC_Competitor_Monitor_Admin {
 	public function render_settings(): void {
 		$this->require_page_capability();
 
-		$wc_competitor_monitor_settings = $this->db->get_settings();
+		$wc_competitor_monitor_settings             = $this->db->get_settings();
+		$wc_competitor_monitor_original_price_count = $this->count_products_with_original_price();
 
 		include WC_COMPETITOR_MONITOR_PATH . 'admin/views/settings.php';
 	}
@@ -1894,5 +1896,79 @@ class WC_Competitor_Monitor_Admin {
 				'message'  => __( 'Competitor mapping added.', 'competitor-price-stock-monitor' ),
 			)
 		);
+	}
+
+	/**
+	 * Handles bulk restore of original prices for all products that have had auto-pricing applied.
+	 */
+	public function handle_bulk_restore_original_prices(): never {
+		WC_Competitor_Monitor_Security::require_capability();
+		check_admin_referer( 'wc_competitor_monitor_bulk_restore' );
+
+		global $wpdb;
+		$product_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value != ''",
+				WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_META
+			)
+		);
+
+		if ( empty( $product_ids ) ) {
+			$this->redirect_with_notice( 'competitor-price-stock-monitor-settings', 'updated', __( 'No products have had their prices adjusted by auto-pricing.', 'competitor-price-stock-monitor' ) );
+		}
+
+		set_transient( 'cpsm_bulk_restore_lock', 1, 120 );
+
+		$restored = 0;
+		$skipped  = 0;
+		foreach ( $product_ids as $product_id ) {
+			$result = $this->monitor->restore_original_product_price( absint( $product_id ), get_current_user_id() );
+			if ( ! empty( $result['success'] ) ) {
+				++$restored;
+			} else {
+				++$skipped;
+			}
+		}
+
+		delete_transient( 'cpsm_bulk_restore_lock' );
+		delete_transient( 'cpsm_original_price_count' );
+
+		$message = $skipped > 0
+			? sprintf(
+				/* translators: 1: number of restored products, 2: number of skipped products. */
+				__( '%1$d products restored. %2$d skipped (competitor still cheaper or no original price recorded).', 'competitor-price-stock-monitor' ),
+				$restored,
+				$skipped
+			)
+			: sprintf(
+				/* translators: %d: number of restored products. */
+				_n( '%d product restored to original price.', '%d products restored to original price.', $restored, 'competitor-price-stock-monitor' ),
+				$restored
+			);
+
+		$this->redirect_with_notice( 'competitor-price-stock-monitor-settings', 'updated', $message );
+	}
+
+	/**
+	 * Counts products that have a stored original price from auto-pricing.
+	 *
+	 * @return int
+	 */
+	private function count_products_with_original_price(): int {
+		$cached = get_transient( 'cpsm_original_price_count' );
+		if ( false !== $cached ) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+		$count = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT post_id) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value != ''",
+				WC_Competitor_Monitor_DB::PRODUCT_ORIGINAL_PRICE_META
+			)
+		);
+
+		set_transient( 'cpsm_original_price_count', $count, 60 );
+		return $count;
 	}
 }
