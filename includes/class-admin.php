@@ -84,7 +84,7 @@ class WC_Competitor_Monitor_Admin {
 		add_action( 'admin_post_wc_competitor_monitor_toggle_mapping', array( $this, 'handle_toggle_mapping' ) );
 		add_action( 'admin_post_wc_competitor_monitor_run_check', array( $this, 'handle_run_check' ) );
 		add_action( 'admin_post_wc_competitor_monitor_save_settings', array( $this, 'handle_save_settings' ) );
-		add_action( 'admin_post_wc_competitor_monitor_save_auto_pricing', array( $this, 'handle_save_auto_pricing' ) );
+		add_action( 'admin_post_wc_competitor_monitor_mark_all_alerts_read', array( $this, 'handle_mark_all_alerts_read' ) );
 		add_action( 'admin_post_wc_competitor_monitor_activate_pro_license', array( $this, 'handle_activate_pro_license' ) );
 		add_action( 'admin_post_wc_competitor_monitor_rotate_bridge', array( $this, 'handle_rotate_bridge' ) );
 		add_action( 'admin_post_wc_competitor_monitor_mark_alert_read', array( $this, 'handle_mark_alert_read' ) );
@@ -810,14 +810,19 @@ class WC_Competitor_Monitor_Admin {
 		check_admin_referer( 'wc_competitor_monitor_save_settings' );
 
 		$previous = $this->db->get_settings();
+		$auto_price_mode_3state = sanitize_key( wp_unslash( $_POST['auto_price_mode'] ?? 'off' ) );
+		if ( ! in_array( $auto_price_mode_3state, array( 'off', 'on', 'paused' ), true ) ) {
+			$auto_price_mode_3state = 'off';
+		}
+
 		$settings = array(
 			'alert_email'                         => isset( $_POST['alert_email'] ) ? sanitize_email( wp_unslash( $_POST['alert_email'] ) ) : get_option( 'admin_email' ),
 			'email_alerts'                        => isset( $_POST['email_alerts'] ) ? 1 : 0,
 			'price_change_threshold'              => isset( $_POST['price_change_threshold'] ) ? max( 0, (float) sanitize_text_field( wp_unslash( $_POST['price_change_threshold'] ) ) ) : 5.0,
 			'suggested_increase_limit_mode'       => isset( $_POST['suggested_increase_limit_mode'] ) ? sanitize_key( wp_unslash( $_POST['suggested_increase_limit_mode'] ) ) : 'percent',
 			'suggested_increase_limit_percentage' => isset( $_POST['suggested_increase_limit_percentage'] ) ? max( 0, min( 999.99, (float) sanitize_text_field( wp_unslash( $_POST['suggested_increase_limit_percentage'] ) ) ) ) : 5.0,
-			'auto_price_adjustment_mode'          => isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : (string) ( $previous['auto_price_adjustment_mode'] ?? 'disabled' ),
-			'auto_price_kill_switch'              => isset( $_POST['auto_price_kill_switch'] ) ? 1 : 0,
+			'auto_price_adjustment_mode'          => in_array( $auto_price_mode_3state, array( 'on', 'paused' ), true ) ? 'enabled' : 'disabled',
+			'auto_price_kill_switch'              => 'paused' === $auto_price_mode_3state ? 1 : 0,
 			'check_frequency'                     => isset( $_POST['check_frequency'] ) ? sanitize_key( wp_unslash( $_POST['check_frequency'] ) ) : 'daily',
 			'user_agent'                          => isset( $_POST['user_agent'] ) ? sanitize_text_field( wp_unslash( $_POST['user_agent'] ) ) : '',
 			'timeout'                             => isset( $_POST['timeout'] ) ? max( 3, min( 30, absint( wp_unslash( $_POST['timeout'] ) ) ) ) : 10,
@@ -836,14 +841,11 @@ class WC_Competitor_Monitor_Admin {
 			$settings['suggested_increase_limit_mode'] = 'percent';
 		}
 
-		if ( ! in_array( $settings['auto_price_adjustment_mode'], array( 'disabled', 'enabled' ), true ) ) {
-			$settings['auto_price_adjustment_mode'] = 'disabled';
-		}
-
 		$pro_is_active = ! empty( $previous['pro_enabled'] ) && 'active' === (string) ( $previous['pro_license_status'] ?? '' );
 		if ( ! $pro_is_active ) {
 			$settings['check_frequency']            = 'daily';
 			$settings['auto_price_adjustment_mode'] = 'disabled';
+			$settings['auto_price_kill_switch']     = 0;
 		}
 
 		if ( '' === $settings['user_agent'] ) {
@@ -858,36 +860,17 @@ class WC_Competitor_Monitor_Admin {
 	}
 
 	/**
-	 * Handles the prominent Pro automatic pricing toggle.
+	 * Marks all alerts as read.
 	 *
 	 * @return void
 	 */
-	public function handle_save_auto_pricing(): void {
+	public function handle_mark_all_alerts_read(): void {
 		WC_Competitor_Monitor_Security::require_capability();
-		check_admin_referer( 'wc_competitor_monitor_save_auto_pricing' );
+		check_admin_referer( 'wc_competitor_monitor_mark_all_alerts_read' );
 
-		$mode = isset( $_POST['auto_price_adjustment_mode'] ) ? sanitize_key( wp_unslash( $_POST['auto_price_adjustment_mode'] ) ) : 'disabled';
-		if ( ! in_array( $mode, array( 'disabled', 'enabled' ), true ) ) {
-			$mode = 'disabled';
-		}
+		$this->db->mark_all_alerts_read();
 
-		$current_settings = $this->db->get_settings();
-		$pro_is_active    = ! empty( $current_settings['pro_enabled'] ) && 'active' === (string) ( $current_settings['pro_license_status'] ?? '' );
-		if ( ! $pro_is_active ) {
-			$mode = 'disabled';
-		}
-
-		$this->db->update_settings(
-			array(
-				'auto_price_adjustment_mode' => $mode,
-			)
-		);
-
-		$message = 'enabled' === $mode
-			? __( 'Automatic recommended price updates are enabled for products that use the global setting.', 'competitor-price-stock-monitor' )
-			: __( 'Automatic recommended price updates are disabled globally.', 'competitor-price-stock-monitor' );
-
-		$this->redirect_with_notice( 'competitor-price-stock-monitor-settings', 'updated', $message );
+		$this->redirect_with_notice( 'competitor-price-stock-monitor-alerts', 'updated', __( 'All alerts marked as read.', 'competitor-price-stock-monitor' ) );
 	}
 
 	/**

@@ -1300,6 +1300,23 @@ class WC_Competitor_Monitor_DB {
 	}
 
 	/**
+	 * Marks all unread alerts as read.
+	 *
+	 * @return void
+	 */
+	public function mark_all_alerts_read(): void {
+		global $wpdb;
+
+		$wpdb->update(
+			$this->tables()['alerts'],
+			array( 'is_read' => 1 ),
+			array( 'is_read' => 0 ),
+			array( '%d' ),
+			array( '%d' )
+		);
+	}
+
+	/**
 	 * Deletes an alert.
 	 *
 	 * @param int $id Alert ID.

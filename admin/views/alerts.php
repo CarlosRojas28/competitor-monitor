@@ -26,6 +26,24 @@ $wc_competitor_monitor_alert_type_labels = array(
 		<?php if ( empty( $wc_competitor_monitor_alerts ) ) : ?>
 			<p class="description"><?php esc_html_e( 'No alerts yet. You\'ll see notifications here when competitors change price, go out of stock, or when automatic repricing is applied or blocked.', 'competitor-price-stock-monitor' ); ?></p>
 		<?php else : ?>
+			<?php
+			$wc_competitor_monitor_has_unread = false;
+			foreach ( $wc_competitor_monitor_alerts as $wc_competitor_monitor_a ) {
+				if ( empty( $wc_competitor_monitor_a->is_read ) ) {
+					$wc_competitor_monitor_has_unread = true;
+					break;
+				}
+			}
+			?>
+			<?php if ( $wc_competitor_monitor_has_unread ) : ?>
+				<div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<input type="hidden" name="action" value="wc_competitor_monitor_mark_all_alerts_read">
+						<?php wp_nonce_field( 'wc_competitor_monitor_mark_all_alerts_read' ); ?>
+						<button type="submit" class="button button-small"><?php esc_html_e( 'Mark all as read', 'competitor-price-stock-monitor' ); ?></button>
+					</form>
+				</div>
+			<?php endif; ?>
 			<table class="widefat striped">
 				<thead>
 					<tr>

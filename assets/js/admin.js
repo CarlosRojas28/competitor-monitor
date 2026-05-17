@@ -62,6 +62,20 @@
 			select.addEventListener('change', updateVisibility);
 			updateVisibility();
 		});
+
+		// 3-state auto-pricing select: show/hide suggested increase fields.
+		var autoPriceModeSelect = document.querySelector('select[name="auto_price_mode"]');
+		if (autoPriceModeSelect) {
+			var autoPricingFields = document.querySelectorAll('[data-wccm-auto-pricing-settings]');
+			var updateAutoPricingFields = function () {
+				var isOn = autoPriceModeSelect.value === 'on';
+				autoPricingFields.forEach(function (row) {
+					row.hidden = !isOn;
+				});
+			};
+			autoPriceModeSelect.addEventListener('change', updateAutoPricingFields);
+			updateAutoPricingFields();
+		}
 	}
 
 	function initWooCommerceProductSearch() {

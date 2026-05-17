@@ -80,33 +80,62 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 		<span id="wccm-run-check-status" hidden style="font-size:13px"></span>
 	</div>
 
-	<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
-		<div class="wccm-card-grid">
-			<div class="wccm-card wccm-card-feature">
-				<span class="wccm-card-label"><?php esc_html_e( 'Extra profit from smart pricing (last 30 days)', 'competitor-price-stock-monitor' ); ?></span>
-				<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_profit_impact['attributed_gross_profit'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
-				<small><?php esc_html_e( 'Calculated from WooCommerce orders placed after automatic price adjustments. Requires product costs in WooCommerce.', 'competitor-price-stock-monitor' ); ?></small>
-			</div>
-			<div class="wccm-card">
-				<span class="wccm-card-label"><?php esc_html_e( 'Products repriced', 'competitor-price-stock-monitor' ); ?></span>
-				<strong><?php echo esc_html( number_format_i18n( (int) ( $wc_competitor_monitor_profit_impact['adjusted_products'] ?? 0 ) ) ); ?></strong>
-			</div>
-			<div class="wccm-card">
-				<span class="wccm-card-label"><?php esc_html_e( 'Units sold after repricing', 'competitor-price-stock-monitor' ); ?></span>
-				<strong><?php echo esc_html( number_format_i18n( (float) ( $wc_competitor_monitor_profit_impact['units_sold_after_adjustment'] ?? 0 ), 0 ) ); ?></strong>
-			</div>
-			<?php if ( (float) ( $wc_competitor_monitor_profit_impact['revenue_uplift_without_cost'] ?? 0 ) > 0 ) : ?>
-				<div class="wccm-card">
-					<span class="wccm-card-label"><?php esc_html_e( 'Extra revenue (add product costs for full tracking)', 'competitor-price-stock-monitor' ); ?></span>
-					<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_profit_impact['revenue_uplift_without_cost'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
-				</div>
-			<?php endif; ?>
+	<div class="wccm-card-grid<?php echo $wc_competitor_monitor_pro_is_active ? '' : ' wccm-cards-blurred'; ?>">
+		<div class="wccm-card wccm-card-feature">
+			<span class="wccm-card-label"><?php esc_html_e( 'Extra profit from smart pricing (last 30 days)', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_profit_impact['attributed_gross_profit'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
+			<small><?php esc_html_e( 'Calculated from WooCommerce orders placed after automatic price adjustments. Requires product costs in WooCommerce.', 'competitor-price-stock-monitor' ); ?></small>
 		</div>
-	<?php endif; ?>
+		<div class="wccm-card">
+			<span class="wccm-card-label"><?php esc_html_e( 'Products repriced', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( (int) ( $wc_competitor_monitor_profit_impact['adjusted_products'] ?? 0 ) ) ); ?></strong>
+		</div>
+		<div class="wccm-card">
+			<span class="wccm-card-label"><?php esc_html_e( 'Units sold after repricing', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo esc_html( number_format_i18n( (float) ( $wc_competitor_monitor_profit_impact['units_sold_after_adjustment'] ?? 0 ), 0 ) ); ?></strong>
+		</div>
+		<div class="wccm-card">
+			<span class="wccm-card-label"><?php esc_html_e( 'Extra revenue (add product costs for full tracking)', 'competitor-price-stock-monitor' ); ?></span>
+			<strong><?php echo $this->format_money( (float) ( $wc_competitor_monitor_profit_impact['revenue_uplift_without_cost'] ?? 0 ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></strong>
+		</div>
+		<?php if ( ! $wc_competitor_monitor_pro_is_active ) : ?>
+			<div class="wccm-blur-overlay">
+				<a class="button button-primary" href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to see your profit impact', 'competitor-price-stock-monitor' ); ?></a>
+			</div>
+		<?php endif; ?>
+	</div>
 
 	<?php
 	$wc_competitor_monitor_products_url = admin_url( 'admin.php?page=competitor-price-stock-monitor-products' );
 	$wc_competitor_monitor_alerts_url   = admin_url( 'admin.php?page=competitor-price-stock-monitor-alerts' );
+
+	// Post-crawl inaction notice: show when we charge more AND last check was 48+ hours ago.
+	if ( $wc_competitor_monitor_stats['more_expensive'] > 0 && ! empty( $wc_competitor_monitor_history ) ) {
+		$wc_competitor_monitor_last_check_ts = strtotime( $wc_competitor_monitor_history[0]->checked_at );
+		if ( $wc_competitor_monitor_last_check_ts && ( time() - $wc_competitor_monitor_last_check_ts ) > 2 * DAY_IN_SECONDS ) :
+			?>
+			<div class="notice notice-warning">
+				<p>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %d: number of products where we are more expensive. */
+							_n(
+								'You\'ve been more expensive than a competitor on %d product for over 48 hours. Review pricing suggestions or run a price check.',
+								'You\'ve been more expensive than competitors on %d products for over 48 hours. Review pricing suggestions or run a price check.',
+								$wc_competitor_monitor_stats['more_expensive'],
+								'competitor-price-stock-monitor'
+							),
+							$wc_competitor_monitor_stats['more_expensive']
+						)
+					);
+					?>
+					<a style="margin-left:8px" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'more_expensive', $wc_competitor_monitor_products_url ) ); ?>"><?php esc_html_e( 'Review now', 'competitor-price-stock-monitor' ); ?></a>
+				</p>
+			</div>
+			<?php
+		endif;
+	}
 	?>
 	<div class="wccm-card-grid">
 		<a class="wccm-card wccm-card-link <?php echo ( ! $wc_competitor_monitor_pro_is_active && $wc_competitor_monitor_stats['more_expensive'] > 0 ) ? 'wccm-card-highlight' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'wccm_filter', 'more_expensive', $wc_competitor_monitor_products_url ) ); ?>">
@@ -230,7 +259,16 @@ $wc_competitor_monitor_upgrade_url = $wc_competitor_monitor_saas_base_url . '/#p
 		</section>
 
 		<section class="wccm-panel">
-			<h2><?php esc_html_e( 'Alerts', 'competitor-price-stock-monitor' ); ?></h2>
+			<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px">
+				<h2 style="margin:0"><?php esc_html_e( 'Alerts', 'competitor-price-stock-monitor' ); ?></h2>
+				<?php if ( ! empty( $wc_competitor_monitor_alerts ) ) : ?>
+					<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+						<input type="hidden" name="action" value="wc_competitor_monitor_mark_all_alerts_read">
+						<?php wp_nonce_field( 'wc_competitor_monitor_mark_all_alerts_read' ); ?>
+						<button type="submit" class="button button-small"><?php esc_html_e( 'Mark all read', 'competitor-price-stock-monitor' ); ?></button>
+					</form>
+				<?php endif; ?>
+			</div>
 			<?php if ( empty( $wc_competitor_monitor_alerts ) ) : ?>
 				<p class="description"><?php esc_html_e( 'No unread alerts. You\'ll be notified here when a competitor changes price or goes out of stock.', 'competitor-price-stock-monitor' ); ?></p>
 			<?php else : ?>

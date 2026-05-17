@@ -348,6 +348,14 @@ $wc_competitor_monitor_settings_url  = admin_url( 'admin.php?page=competitor-pri
 						</tr>
 					<?php endforeach; ?>
 				<?php endif; ?>
+				<?php if ( ! $wc_competitor_monitor_pro_is_active && ! empty( $wc_competitor_monitor_mappings ) ) : ?>
+					<tr class="wccm-ghost-row">
+						<td colspan="10">
+							<span class="wccm-ghost-label">&#128274; <?php esc_html_e( 'Pro would auto-discover additional competitors for your products using AI — no URL hunting required.', 'competitor-price-stock-monitor' ); ?></span>
+							<a href="<?php echo esc_url( $wc_competitor_monitor_upgrade_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Upgrade to Pro', 'competitor-price-stock-monitor' ); ?></a>
+						</td>
+					</tr>
+				<?php endif; ?>
 			</tbody>
 		</table>
 	</section>
