@@ -360,7 +360,7 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 		</p>
 
 		<?php if ( $wc_competitor_monitor_original_price_count > 0 ) : ?>
-		<button type="button" id="wccm-restore-trigger" class="button-link-delete">
+		<button type="button" id="wccm-restore-trigger" class="button">
 			<?php esc_html_e( 'Restore original prices…', 'competitor-price-stock-monitor' ); ?>
 		</button>
 
