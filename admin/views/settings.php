@@ -210,6 +210,7 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 						<?php endif; ?>
 					</td>
 				</tr>
+				<?php if ( $wc_competitor_monitor_pro_is_active ) : ?>
 				<tr>
 					<th scope="row"><?php esc_html_e( 'Automatic pricing kill switch', 'competitor-price-stock-monitor' ); ?></th>
 					<td>
@@ -220,6 +221,7 @@ $wc_competitor_monitor_cron_schedule_labels = array(
 						<p class="description"><?php esc_html_e( 'Use this emergency control if you suspect bad competitor data, compromised credentials, or unexpected pricing behavior. Recommendations and alerts still work.', 'competitor-price-stock-monitor' ); ?></p>
 					</td>
 				</tr>
+				<?php endif; ?>
 				<tr>
 					<th scope="row"><label for="wccm_original_price_restore_mode"><?php esc_html_e( 'Allow original price restore (Pro)', 'competitor-price-stock-monitor' ); ?></label></th>
 					<td>
